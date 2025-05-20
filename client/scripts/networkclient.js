@@ -1,9 +1,12 @@
 import { io } from 'socket.io-client';
+import * as THREE from 'three';
 import {Player} from "./player";
 import {player} from "../../server/player_server";
 import {debug} from "three/tsl";
 
-
+export function toVec3(obj) {
+    return new THREE.Vector3(obj.x, obj.y, obj.z);
+}
 export class NetworkClient {
     constructor(pChat,pGame) {
         this.game=pGame;
@@ -17,7 +20,7 @@ export class NetworkClient {
                 log.scrollTop=log.scrollHeight;
             });
             this.socket.on('player-left', (id) => {
-                pGame.removePlayer(id);
+                this.game.removePlayer(id);
                 console.log(id+ " player left");
             });
 
@@ -25,14 +28,14 @@ export class NetworkClient {
             {
                 //🎅making other players on client
                 if (data.id !== this.socket.id) {
-                    pGame.addPlayer(data.id, data);
+                    this.game.addPlayer(data.id, data);
                 }
             });
 
 
 
             this.socket.on('disconnect', () => {
-                pGame.removePlayer(this.socket.id);
+                this.game.removePlayer(this.socket.id);
             })
             this.socket.on("player-positionupdate", (data) => {
                 console.log("position update received " );
@@ -41,13 +44,24 @@ export class NetworkClient {
                 console.log(data.position);
                 console.log(data.target);
 
-                pGame.posUpdate(data.id, data.position,data.target);
+                this.game.posUpdate(data.id, data.position,data.target);
 
 
 
             })
+            this.socket.on('npc-position-update', (npcs) => {
+                npcs.forEach(npc => {
+                    if(!this.game.npcs[npc.id])
+                    {
+                        this.game.addNpc(npc.id);
+                    }
+
+                    this.game.updateNpc(npc.id,npc.name,toVec3(npc.position),toVec3(npc.targetPosition),npc.angle,npc.health);
+                });
+            });
+
             this.socket.on('existing-players', (data) => {
-                console.log(data);
+                //console.log(data);
                 for (const id in data) {
                     if (id !== this.socket.id) {
                         pGame.addPlayer(id,data[id].position );

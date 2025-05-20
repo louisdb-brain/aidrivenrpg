@@ -2,7 +2,9 @@
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as THREE from 'three';
 import { Player } from './player.js';
+import {npc} from './npc.js';
 import {NetworkClient} from './networkclient.js';
+import { toVec3 } from './networkclient.js';
 import https from 'https';;
 
 export class Game {
@@ -29,6 +31,7 @@ export class Game {
         //this.player = new Player(this.scene,0,0,0,'/models/character.glb');
 
         this.players = {};
+        this.npcs={};
 
 
         const groundGeometry = new THREE.PlaneGeometry(100, 100);
@@ -42,6 +45,7 @@ export class Game {
         this.scene.add(this.ground);
 
 
+
     }
 
     update() {
@@ -49,6 +53,10 @@ export class Game {
         for (const id in this.players) {
             this.players[id].update(delta);
         }
+        for (const id in this.npcs) {
+            this.npcs[id].update(delta);
+        }
+        console.log(this.npcs)
     }
 
     draw() {
@@ -73,6 +81,25 @@ export class Game {
         }
 
     }
+
+    addNpc(id, position = { x: 0, y: 0, z: 0 })
+    {
+        const thisnpc=new npc(this.scene, position);
+        console.log(thisnpc);
+        this.npcs[id]=thisnpc;
+    }
+    updateNpc(id,name,position,targetposition,angle,health)
+    {
+        if (!this.npcs[id]) return;
+
+        this.npcs[id].name = name;
+        this.npcs[id].angle = angle;
+        this.npcs[id].health = health;
+
+        this.npcs[id].position.copy(position);
+        this.npcs[id].setTarget(targetposition);
+
+    }
     removePlayer(id) {
         const player = this.players[id];
         if (player && player.model) {
@@ -84,11 +111,13 @@ export class Game {
     posUpdate(id,pos,target)
     {
         //need this function to change from plain data to three vector object
-        const temppos = new THREE.Vector3(pos.x, pos.y, pos.z);
-        const temptarget = new THREE.Vector3(target.x, target.y, target.z);
+        //const temppos = new THREE.Vector3(pos.x, pos.y, pos.z);
+        //const temptarget = new THREE.Vector3(target.x, target.y, target.z);
+        //const temppos=toVec3(target)
+        //const temptarget=toVec3(target);
 
-        this.players[id].position.copy(temppos);
-        this.players[id].targetPosition.copy(temptarget);
+        this.players[id].position.copy(toVec3(pos));
+        this.players[id].targetPosition.copy(toVec3(target));
     }
 
 

@@ -47,6 +47,9 @@ window.addEventListener('click', (event) => {
     raycaster.setFromCamera(mouse, thisgame.camera); // use your camera instance
     const intersects = raycaster.intersectObject(thisgame.ground); // ground only
 
+    //check if target is monster here
+
+
     if (intersects.length > 0) {
         const point = intersects[0].point;
         const socketid = networkHandler.getsocket().id;
