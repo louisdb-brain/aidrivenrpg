@@ -1,7 +1,7 @@
 import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
-import {playerManager} from './playermanager.js';
+import {playermanager} from './playermanager.js';
 import {debug, output} from "three/tsl";
 
 const app = express();
@@ -12,15 +12,15 @@ app.use(express.static('public')); // Serve index.html and client.js
 
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
-    playerManager.addPlayer(socket.id);
+    playermanager.addPlayer(socket.id);
 
-    socket.emit('existing-players',playerManager.getAllPlayers() );
-    socket.broadcast.emit('playerjoin',{
+    io.emit('existing-players',playermanager.getAllPlayers() );
+    io.emit('playerjoin',{
         id:socket.id,
         position: {x: 0, y: 0, z: 0}
     });
 
-    console.log('Sending existing players:', playerManager.getAllPlayers());
+    console.log('Sending existing players:', playermanager.getAllPlayers());
 
     socket.on('chat-message', (msg) => {
         io.emit('chat-message', {
@@ -28,19 +28,21 @@ io.on('connection', (socket) => {
             message: msg
         });
     });
-    socket.on('move',(pos)=> {
 
-        playerManager.updatePlayerPosition(socket.id, pos);
+
+    socket.on('move',(pos,target)=> {
+
+        playermanager.updatePlayerPosition(socket.id, pos,target);
         socket.broadcast.emit('player-positionupdate',{
             id: socket.id,
-            pos: playermanager.getPlayer(socket.id).position
-
+            position: playermanager.getPlayerPosition(socket.id),
+            target:playermanager.getTarget(socket.id)
         })
 
     });
 
     socket.on('disconnect', () => {
-        playerManager.removePlayer(socket.id);
+        playermanager.removePlayer(socket.id);
         socket.emit('player-left', socket.id);
 
     });

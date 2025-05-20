@@ -7,7 +7,8 @@ export class Player {
     constructor(scene,position = { x: 0, y: 0, z: 0 }) {
 
         this.scene = scene;
-        this.model = 'models/character.glb';
+        this.model=null;
+        this.modelpath = 'models/character.glb';
         this.mixer = null;
         this.position = new THREE.Vector3(position.x, position.y, position.z);
 
@@ -17,7 +18,7 @@ export class Player {
 
         const loader = new GLTFLoader();
 
-        loader.load(this.model, (gltf) => {
+        loader.load(this.modelpath, (gltf) => {
             this.model = gltf.scene;
             this.model.position.copy(this.position);
             this.scene.add(this.model);
@@ -62,12 +63,15 @@ export class Player {
 
         // Animate
         if (this.mixer) this.mixer.update(delta);
+
     }
     setTarget(position) {
         let temppos=position.clone();
         temppos.y=0;
         this.targetPosition.copy(temppos); // store destination
     }
+    getposition()
+    {return this.position.clone();}
 
 
 

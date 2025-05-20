@@ -7,7 +7,13 @@ import {debug} from "three/tsl";
 const thisgame=new Game();
 const networkHandler = new NetworkClient("chatLog",thisgame);
 
-thisgame.loop();
+
+networkHandler.onPlayerReady(() => {
+
+    startSendingPosition();
+    thisgame.loop();
+
+});
 
 
 
@@ -43,9 +49,33 @@ window.addEventListener('click', (event) => {
 
     if (intersects.length > 0) {
         const point = intersects[0].point;
-        thisgame.players[networkHandler.socket.id].setTarget(point);
+        const socketid = networkHandler.getsocket().id;
+        const player = thisgame.players[socketid];
+        if (player) {
+            player.setTarget(point);
+        } else {
+            console.warn("Local player not ready yet.");
+        }
+
+        //networkHandler.sendPosition()
         // Move player toward this point
     }
 });
 
+let lastPos = new THREE.Vector3()
+
+
+//this is the main function that ticks the position in client and updates it on server
+//I need to ajust this part because it is easily abused (i need to make the movement check in the server)
+//basically i have to do this in reverse
+function startSendingPosition() {
+    setInterval(() => {
+        const player = thisgame.players[networkHandler.socket.id];
+        if (!player) return;
+        if (!player.position.equals(lastPos)) {
+            networkHandler.sendPosition(player.position);
+            lastPos.copy(player.position);
+        }
+    }, 100); // every 100ms
+}
 

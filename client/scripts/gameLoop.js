@@ -2,6 +2,7 @@
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as THREE from 'three';
 import { Player } from './player.js';
+import {NetworkClient} from './networkclient.js';
 import https from 'https';;
 
 export class Game {
@@ -64,6 +65,8 @@ export class Game {
     }
     addPlayer(id, position = { x: 0, y: 0, z: 0 }){
          {
+
+             //add more code here in future to make adding position on other location
             if (this.players[id]) return;
             const player = new Player(this.scene,position);
             this.players[id] = player;
@@ -78,9 +81,14 @@ export class Game {
         delete this.players[id];
 
     }
-    posUpdate(id,pos)
+    posUpdate(id,pos,target)
     {
-        this.players[id].position=pos;
+        //need this function to change from plain data to three vector object
+        const temppos = new THREE.Vector3(pos.x, pos.y, pos.z);
+        const temptarget = new THREE.Vector3(target.x, target.y, target.z);
+
+        this.players[id].position.copy(temppos);
+        this.players[id].targetPosition.copy(temptarget);
     }
 
 
