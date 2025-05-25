@@ -11,10 +11,13 @@ export class Player {
         this.modelpath = 'models/character.glb';
         this.mixer = null;
         this.position = new THREE.Vector3(position.x, position.y, position.z);
-
-
+        this.locked=false;
+        this.lockedPosition=this.position.clone();
         this.targetPosition = this.position.clone();
         this.speed = 1;
+        this.angle = null;
+
+        this.wantedlevel=0;
 
         const loader = new GLTFLoader();
 
@@ -35,15 +38,24 @@ export class Player {
 
     update(delta) {
         if (!this.model) return;
+        var direction=null;
 
-        const direction = new THREE.Vector3().subVectors(this.targetPosition, this.position);
-        const distance = direction.length();
+        const movedirection=new THREE.Vector3().subVectors(this.targetPosition,this.position);
+
+        if (this.locked==false) {
+            direction = new THREE.Vector3().subVectors(this.targetPosition, this.position);
+        }
+        else{
+            direction = new THREE.Vector3().subVectors(this.lockedPosition, this.position);
+        }
+        const distance = movedirection.length();
 
 
         if (distance > 0.1) {
+            movedirection.normalize();
             direction.normalize();
             const moveStep = this.speed * delta;
-            this.position.add(direction.clone().multiplyScalar(moveStep));
+            this.position.add(movedirection.clone().multiplyScalar(moveStep));
 
             const angle = Math.atan2(direction.x, direction.z);
             this.model.rotation.y = angle;
@@ -70,6 +82,12 @@ export class Player {
         temppos.y=0;
         this.targetPosition.copy(temppos); // store destination
     }
+    setLockedTarget(position) {
+        let temppos=position.clone();
+        temppos.y=0;
+        this.lockedPosition.copy(temppos); // store destination
+    }
+
     getposition()
     {return this.position.clone();}
 

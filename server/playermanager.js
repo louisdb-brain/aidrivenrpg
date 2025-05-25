@@ -1,14 +1,13 @@
+import {player} from "./player.js";
+
 const players = {};
 
 export const playermanager = {
+
     addPlayer(id, position = { x: 0, y: 0, z: 0 }) {
-        players[id] = {
-            id,
-            position,
-            target:{ x: 0, y: 0, z: 0 },
-            name: `Player-${id.slice(0, 5)}`
-        };
-        console.log(players[id]);
+        players[id] = new player(id,position,`Player-${id.slice(0, 5)}`)
+
+        //console.log(players[id]);
 
     },
 
@@ -19,7 +18,28 @@ export const playermanager = {
     getAllPlayers() {
         return players;
     },
+    update(delta)
+    {
+        for(const player in players) {
+            players[player].update(delta);
+        }
+    },
+    setTarget(id,pTarget,rightmouse){
 
+        if(rightmouse==true)
+        {
+
+            if(!players[id].locked){
+                players[id].locked = true;
+                players[id].lockedPosition=pTarget;
+                players[id].targetPosition = pTarget;
+            }
+            else players[id].locked = false;
+        }
+        else{
+            players[id].targetPosition = pTarget;
+        }
+    },
     updatePlayerPosition(id, pos,target) {
 
         //console.log(pos);
@@ -30,7 +50,7 @@ export const playermanager = {
     },
     getTarget(id)
     {
-        return players[id].target;
+        return players[id].targetPosition;
     },
     getPlayerPosition(id) {
 
@@ -43,6 +63,13 @@ export const playermanager = {
 
     getPlayer(id) {
         return players[id];
+    },
+
+    setwantedLevel(id, pwantedlevel) {
+        if (players[id] )
+        {
+            players[id].wantedlevel = pwantedlevel;
+        }
     }
 
 };

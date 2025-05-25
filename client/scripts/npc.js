@@ -51,6 +51,7 @@ export class npc {
         let temppos = position.clone();
         temppos.y = 0;
         this.targetPosition.copy(temppos);
-        console.log(temppos);;
+
     }
+
 }

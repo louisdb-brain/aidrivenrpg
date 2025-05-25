@@ -10,7 +10,7 @@ import https from 'https';;
 export class Game {
     constructor() {
         this.scene = new THREE.Scene();
-
+        this.localPlayerId=0;
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.camera.position.z = 5;
 
@@ -28,10 +28,12 @@ export class Game {
         this.scene.add(light);
 
         this.clock = new THREE.Clock();
-        //this.player = new Player(this.scene,0,0,0,'/models/character.glb');
+
 
         this.players = {};
         this.npcs={};
+
+
 
 
         const groundGeometry = new THREE.PlaneGeometry(100, 100);
@@ -56,7 +58,18 @@ export class Game {
         for (const id in this.npcs) {
             this.npcs[id].update(delta);
         }
-        console.log(this.npcs)
+
+        const player = this.players[this.localPlayerId];
+        if (player) {
+            const offset = new THREE.Vector3(0, 10, -15); // tweak to your taste
+            const targetPos = player.position.clone()
+            //this.controls.target.set(targetPos);
+            this.camera.lookAt(targetPos);
+            //this.camera.position.lerp(targetPos, 0.1);
+            /*this.camera.lookAt(player.position);*/
+        }
+        this.debuglocktarget();
+
     }
 
     draw() {
@@ -67,6 +80,8 @@ export class Game {
         requestAnimationFrame(() => this.loop());
         this.update();
         this.draw();
+        this.debugmovetarget()
+
         this.controls.update();
         this.renderer.render(this.scene, this.camera);
 
@@ -85,7 +100,7 @@ export class Game {
     addNpc(id, position = { x: 0, y: 0, z: 0 })
     {
         const thisnpc=new npc(this.scene, position);
-        console.log(thisnpc);
+
         this.npcs[id]=thisnpc;
     }
     updateNpc(id,name,position,targetposition,angle,health)
@@ -96,8 +111,8 @@ export class Game {
         this.npcs[id].angle = angle;
         this.npcs[id].health = health;
 
-        this.npcs[id].position.copy(position);
-        this.npcs[id].setTarget(targetposition);
+        this.npcs[id].position.copy(toVec3(position));
+        this.npcs[id].setTarget(toVec3(targetposition));
 
     }
     removePlayer(id) {
@@ -108,19 +123,27 @@ export class Game {
         delete this.players[id];
 
     }
-    posUpdate(id,pos,target)
+    playerUpdate(id,pos,target,locked,lockedpos,angle)
     {
-        //need this function to change from plain data to three vector object
-        //const temppos = new THREE.Vector3(pos.x, pos.y, pos.z);
-        //const temptarget = new THREE.Vector3(target.x, target.y, target.z);
-        //const temppos=toVec3(target)
-        //const temptarget=toVec3(target);
-
-        this.players[id].position.copy(toVec3(pos));
-        this.players[id].targetPosition.copy(toVec3(target));
+        if (!this.players[id]) return;
+        const player=this.players[id]
+        player.angle = angle;
+        player.position.copy(toVec3(pos));
+        player.setTarget(toVec3(target));
+        player.locked = locked;
+        player.setLockedTarget(toVec3(lockedpos));
     }
+    debuglocktarget() {
+        const targetGeometry = new THREE.BoxGeometry(1, 1, 1);
+        const targetMaterial = new THREE.MeshStandardMaterial({color: 'red'});
+        this.object = new THREE.Mesh(targetGeometry, targetMaterial);
 
-
+        this.scene.add(this.object);
+    }
+    debugmovetarget()
+    {
+        this.object.position.copy(this.players[this.localPlayerId].lockedPosition);
+    }
 
 
 

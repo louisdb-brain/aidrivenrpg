@@ -1,16 +1,23 @@
 //SERVER NPC//
 import {toVec3} from "./utilities.js"
 import * as THREE from 'three';
+
+
 export class npc{
 
     constructor(npcID,positionObj,pName){
         this.npcid = npcID;
         this.position= new THREE.Vector3(positionObj.x,positionObj.y,positionObj.z);
+        this.zone=0;
         this.name=pName;
         this.health=10;
         this.attack=0;
+        this.detectionRadius=1000;
+        this.detectionsphere= new THREE.Sphere(this.position, this.detectionRadius);
 
         this.speed= 2;
+        this.attackspeed=3;
+        this.cooldown=50;
         this.targetPosition = this.position.clone();
 
         this.targetPlayerId=null;//later for targetting in combat
@@ -22,9 +29,11 @@ export class npc{
 
 
     }
-    update(delta){
+    update(delta,players){
         this.aiupdate(delta);
+        this.checkFollow(players)
         this.move(delta);
+
 
 
     }
@@ -44,9 +53,23 @@ export class npc{
             this.position.add(direction.clone().multiplyScalar(moveStep));
             this.angle = Math.atan2(direction.x, direction.z);
         }
+        this.detectionsphere.center.copy(this.position);
+    }
+    checkFollow(players){
+
+        for (const playerId in players) {
+            const player = players[playerId];
+            const playerpos=new THREE.Vector3(player.x, player.y,player.z);
+
+
+            if (this.detectionsphere.containsPoint(playerpos)) {
+                this.setTarget(playerpos);
+                //console.log(playerId + "  is colliding with  "+this.name +" "+playerpos.x + " "+playerpos.y);
+            }
+        }
     }
     aiupdate(delta){
-        console.log(this.targetPosition.x +" " +this.position.x);
+        //console.log(this.targetPosition.x +" " +this.position.x);
         //console.log(this.decisiontimer);
         if(this.decisiontimer<this.decisiontreshhold)
         {
@@ -65,6 +88,20 @@ export class npc{
             this.setTarget(randomVec.clone());
 
         }
+
+    }
+    calculateCombat()
+    {
+        if( this.cooldown == 50)
+        {
+            this.cooldown-=this.attackspeed;
+            return true; // register hit
+        }else
+        {
+            this.cooldown-=this.attackspeed;
+        }
+        if (this.cooldown <=0){this.cooldown=50;}
+
 
     }
 

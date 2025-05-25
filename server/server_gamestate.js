@@ -1,17 +1,19 @@
 
 import {npcManager} from "./npcmanager.js";
 import * as THREE from 'three';
+import {playermanager} from "./playermanager.js";
 
 export class gamestateClass{
     constructor(pIO) {
         this.io=pIO;
         this.clock = new THREE.Clock();
-        this.players = {};
+
 
         this.maps={}        //maplist for later
         this.maps[1]=true;  //later we check if players are on this map
 
         this.npcManager=new npcManager()
+
 
         this.onNpcUpdate = null;
 
@@ -31,8 +33,11 @@ export class gamestateClass{
     tick(delta) {
         if(this.maps[1]==true){
 
-           this.emitNpc();
            this.npcManager.update(delta);
+           this.emitNpc();
+           playermanager.update(delta);
+           this.emitPlayers();
+
         }
 
 
@@ -41,6 +46,35 @@ export class gamestateClass{
         this.npcManager.addNpc(pNPC);
         this.emitNpc();
 
+    }
+    emitPlayers()
+    {
+        const playerMap=playermanager.getAllPlayers();
+
+        const payload=Object.values(playerMap).map(player=>({
+            id:player.id,
+            pos:{
+                x:player.position.x,
+                y:player.position.y,
+                z:player.position.z,
+            },
+            targetpos:{
+                x:player.targetPosition.x,
+                y:player.targetPosition.y,
+                z:player.targetPosition.z
+            },
+            lockedpos:{
+                x:player.lockedPosition.x,
+                y:player.lockedPosition.y,
+                z:player.lockedPosition.z
+            },
+            angle: player.angle,
+            locked:player.locked
+
+
+        }));
+        console.log(payload);;
+        this.io.emit('player-positionupdate', payload);
     }
     emitNpc()
     {
@@ -66,13 +100,5 @@ export class gamestateClass{
 
         this.io.emit('npc-position-update', payload);
     }
-    getNpcList()
-    {
-        return this.npcManager.getNpcList();
-    }
 
-    updateposition()
-    {
-
-    }
 }

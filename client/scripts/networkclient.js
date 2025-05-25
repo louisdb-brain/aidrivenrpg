@@ -38,14 +38,10 @@ export class NetworkClient {
                 this.game.removePlayer(this.socket.id);
             })
             this.socket.on("player-positionupdate", (data) => {
-                console.log("position update received " );
-                console.log(data);
-                console.log("vector received");
-                console.log(data.position);
-                console.log(data.target);
+               data.forEach(player => {
+                   this.game.playerUpdate(player.id,player.pos,player.targetpos,player.locked,player.lockedpos,player.angle)
 
-                this.game.posUpdate(data.id, data.position,data.target);
-
+               })
 
 
             })
@@ -75,15 +71,19 @@ export class NetworkClient {
         this.socket.on('connect', () => {
             this.game.addPlayer(this.socket.id, { x: 0, y: 0, z: 0 });
             console.log("Local player created with ID:", this.socket.id);
+            this.localPlayerId=this.socket.id;
             setTimeout(() => {
                 callback();
             }, 0); // Wait one tick to ensure player is added
         });
     }
-    sendPosition() {
+    sendTarget(pTarget,rightmouse) {
         const player = this.game.players[this.socket.id];
         if (player) {
-            this.socket.emit('move', player.position,player.targetPosition);
+
+            this.socket.emit('player-target',pTarget,rightmouse);
+            console.log('network click' + rightmouse);
+            //this.socket.emit('move', player.position,player.targetPosition);
         } else {
             console.warn("Tried to send position but player doesn't exist yet.");
         }

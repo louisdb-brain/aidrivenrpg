@@ -34,9 +34,10 @@ io.on('connection', (socket) => {
         position: {x: 0, y: 0, z: 0}
     });
 
-    gamestate.emitNpc();
+    //gamestate.emitNpc();
+    //gamestate.emitPlayers();
 
-    console.log('Sending existing players:', playermanager.getAllPlayers());
+    //console.log('Sending existing players:', playermanager.getAllPlayers());
 
 
     socket.on('chat-message', (msg) => {
@@ -46,7 +47,11 @@ io.on('connection', (socket) => {
         });
     });
 
+    socket.on('player-target',(target,rightmouse)=>
+    {
+        playermanager.setTarget(socket.id,target,rightmouse)
 
+    })/*
     socket.on('move',(pos,target)=> {
 
         playermanager.updatePlayerPosition(socket.id, pos,target);
@@ -56,7 +61,7 @@ io.on('connection', (socket) => {
             target:playermanager.getTarget(socket.id)
         })
 
-    });
+    });*/
 
     socket.on('disconnect', () => {
         playermanager.removePlayer(socket.id);

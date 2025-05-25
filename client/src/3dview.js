@@ -9,8 +9,7 @@ const networkHandler = new NetworkClient("chatLog",thisgame);
 
 
 networkHandler.onPlayerReady(() => {
-
-    startSendingPosition();
+    thisgame.localPlayerId = networkHandler.getsocket().id;
     thisgame.loop();
 
 });
@@ -40,37 +39,48 @@ const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
 
-window.addEventListener('click', (event) => {
+window.addEventListener('mouseup', (event) => {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
     raycaster.setFromCamera(mouse, thisgame.camera); // use your camera instance
     const intersects = raycaster.intersectObject(thisgame.ground); // ground only
-
-    //check if target is monster here
-
-
     if (intersects.length > 0) {
+
         const point = intersects[0].point;
         const socketid = networkHandler.getsocket().id;
         const player = thisgame.players[socketid];
         if (player) {
-            player.setTarget(point);
+            const isRightClick = event.button === 2;
+
+            // Optional: handle left/right click differently
+            if (isRightClick) {
+                networkHandler.sendTarget(point,true);
+                console.log("rightclick");
+            }
+            else {
+                networkHandler.sendTarget(point,false);
+                console.log("leftclick");
+            }
+
         } else {
             console.warn("Local player not ready yet.");
         }
-
-        //networkHandler.sendPosition()
-        // Move player toward this point
     }
+    //check if target is monster here
+
 });
 
 let lastPos = new THREE.Vector3()
 
+function clickTarget(x,y){
+
+}
 
 //this is the main function that ticks the position in client and updates it on server
 //I need to ajust this part because it is easily abused (i need to make the movement check in the server)
 //basically i have to do this in reverse
+/*
 function startSendingPosition() {
     setInterval(() => {
         const player = thisgame.players[networkHandler.socket.id];
@@ -80,5 +90,5 @@ function startSendingPosition() {
             lastPos.copy(player.position);
         }
     }, 100); // every 100ms
-}
+}*/
 
