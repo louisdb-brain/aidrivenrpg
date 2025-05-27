@@ -144,6 +144,10 @@ export class Game {
     {
         this.object.position.copy(this.players[this.localPlayerId].lockedPosition);
     }
+    getScene()
+    {
+        return this.scene;
+    }
 
 
 
