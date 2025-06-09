@@ -53,9 +53,19 @@ export class NetworkClient {
                     }
 
                     this.game.updateNpc(npc.id,npc.name,toVec3(npc.position),toVec3(npc.targetPosition),npc.angle,npc.health);
+                    console.log("updated " + npc.name);
                 });
             });
-
+            this.socket.on('\'chest-position-update\''),(chests)=>{
+                chests.forEach(chest => {
+                    if(!this.game.chests[chest.id])
+                    {
+                        this.game.addChest(chest.id);
+                    }
+                    this.game.UpdateChest(chest.id,toVec3(chest.position),chest.grounded,toVec3(chest.parent),chest.angle);
+                    console.log("updated " + chest.id);
+                })
+            }
             this.socket.on('existing-players', (data) => {
                 //console.log(data);
                 for (const id in data) {
@@ -64,6 +74,7 @@ export class NetworkClient {
                     }
                 }
             });
+
         });
     }
 

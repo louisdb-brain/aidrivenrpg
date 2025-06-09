@@ -39,6 +39,32 @@ const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
 
+const objectIntersects = raycaster.intersectObjects(thisgame.chests, true);
+/*
+if (objectIntersects.length > 0) {
+    const clicked = objectIntersects[0].object;
+
+    // Check if it's an NPC
+    for (const id in thisgame.npcs) {
+        const npc = thisgame.npcs[id];
+        if (npc.model === clicked || npc.model.children.includes(clicked)) {
+            npc.interact?.(); // call npc.interact() if defined
+            return;
+        }
+    }
+
+    // Check if it's a loot object
+    if (thisgame.objects) {
+        for (const obj of thisgame.objects) {
+            if (obj === clicked || obj.children.includes(clicked)) {
+                obj.pickup?.(); // call pickup() if defined
+                return;
+            }
+        }
+    }
+}*/
+
+
 window.addEventListener('mouseup', (event) => {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -77,18 +103,5 @@ function clickTarget(x,y){
 
 }
 
-//this is the main function that ticks the position in client and updates it on server
-//I need to ajust this part because it is easily abused (i need to make the movement check in the server)
-//basically i have to do this in reverse
-/*
-function startSendingPosition() {
-    setInterval(() => {
-        const player = thisgame.players[networkHandler.socket.id];
-        if (!player) return;
-        if (!player.position.equals(lastPos)) {
-            networkHandler.sendPosition(player.position);
-            lastPos.copy(player.position);
-        }
-    }, 100); // every 100ms
-}*/
+
 

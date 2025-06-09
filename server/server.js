@@ -6,6 +6,7 @@ import {gamestateClass} from './server_gamestate.js';
 import * as THREE from 'three';
 import {npc} from "./npc.js";
 import {toVec3} from "./utilities.js"
+import {Chest} from "./chest.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -17,7 +18,7 @@ const gamestate=new gamestateClass(io);
 
 gamestate.addnpc(new npc("goblin1id",{x:10,y:0,z:0},"goblin_1"))
 gamestate.addnpc(new npc("goblin2id",{x:20,y:0,z:0},"goblin_2"))
-
+gamestate.addChest(new Chest({x:10,y:0,z:0},"chest1"))
 gamestate.start();
 //hardcoded temporary npcs
 
@@ -51,7 +52,16 @@ io.on('connection', (socket) => {
     {
         playermanager.setTarget(socket.id,target,rightmouse)
 
-    })/*
+    })
+    socket.on('clickchest',(chestid)=>
+    {
+        const chest=gamestate.objectManager.getChest(chestid);
+        chest.parentObject=playermanager.getPlayer(socket.id);
+        chest.toggleGrounded(socket.id);
+
+
+    })
+    /*
     socket.on('move',(pos,target)=> {
 
         playermanager.updatePlayerPosition(socket.id, pos,target);

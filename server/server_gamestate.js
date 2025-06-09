@@ -2,6 +2,7 @@
 import {npcManager} from "./npcmanager.js";
 import * as THREE from 'three';
 import {playermanager} from "./playermanager.js";
+import {objectManager} from "./dynamicObjectsManager.js";
 
 export class gamestateClass{
     constructor(pIO) {
@@ -13,6 +14,7 @@ export class gamestateClass{
         this.maps[1]=true;  //later we check if players are on this map
 
         this.npcManager=new npcManager()
+        this.objectManager=new objectManager();
 
 
         this.onNpcUpdate = null;
@@ -37,6 +39,8 @@ export class gamestateClass{
            this.emitNpc();
            playermanager.update(delta);
            this.emitPlayers();
+           this.objectManager.update(delta);
+           this.emitChests();
 
         }
 
@@ -99,6 +103,28 @@ export class gamestateClass{
         }));
 
         this.io.emit('npc-position-update', payload);
+    }
+    addChest(pChest){
+    this.objectManager.addChest(pChest,pChest.chestId);
+    }
+
+    emitChests() {
+        const chestmap = this.objectManager.getChestdict();
+
+        const payload = Object.values(chestmap).map(chest => ({
+            id: chestmap.chestId,
+            pos: this.returnPos(chest),
+            grounded: chestmap.grounded,
+            parent: chestmap.parentObject,
+            angle:chestmap.angle
+
+        }));
+        this.io.emit('chest-position-update', payload);
+    }
+
+    returnPos(pObj)
+    {
+        return {x:pObj.position.x,y:pObj.position.y,z:pObj.position.z};
     }
 
 }

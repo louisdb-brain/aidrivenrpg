@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as THREE from 'three';
 import { Player } from './player.js';
 import {npc} from './npc.js';
+import {Chest} from './chest.js';
 import {NetworkClient} from './networkclient.js';
 import { toVec3 } from './networkclient.js';
 import https from 'https';;
@@ -32,6 +33,8 @@ export class Game {
 
         this.players = {};
         this.npcs={};
+        this.chests={};
+        this.clickableObjects=[];
 
 
 
@@ -57,6 +60,11 @@ export class Game {
         }
         for (const id in this.npcs) {
             this.npcs[id].update(delta);
+
+        }
+        for (const id in this.chests)
+        {
+            this.chests[id].update(delta);
         }
 
         const player = this.players[this.localPlayerId];
@@ -94,6 +102,7 @@ export class Game {
             const player = new Player(this.scene,position);
             this.players[id] = player;
         }
+        this.cacheClickableObjects();
 
     }
 
@@ -102,6 +111,11 @@ export class Game {
         const thisnpc=new npc(this.scene, position);
 
         this.npcs[id]=thisnpc;
+        this.cacheClickableObjects();
+    }
+    addChest(id, position = { x: 0, y: 0, z: 0 })
+    {
+        const thischest=new chest(id,this.scene,grounded,)
     }
     updateNpc(id,name,position,targetposition,angle,health)
     {
@@ -133,6 +147,18 @@ export class Game {
         player.locked = locked;
         player.setLockedTarget(toVec3(lockedpos));
     }
+    UpdateChest(id,pos,grounded,targetObject,angle)
+    {
+        if(this.chests[id]) {
+
+            this.chests[id].position.copy(toVec3(pos));
+            this.chests[id].grounded=grounded;
+            this.chests[id].targetObject=targetObject;
+            this.chests[id].angle=angle;
+
+
+        }
+    }
     debuglocktarget() {
         const targetGeometry = new THREE.BoxGeometry(1, 1, 1);
         const targetMaterial = new THREE.MeshStandardMaterial({color: 'red'});
@@ -147,6 +173,18 @@ export class Game {
     getScene()
     {
         return this.scene;
+    }
+    handleClick(event)
+    {
+        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+        this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    }
+    cacheClickableObjects()
+    {
+
     }
 
 
