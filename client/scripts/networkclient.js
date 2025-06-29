@@ -12,6 +12,7 @@ export class NetworkClient {
         this.game=pGame;
         this.socket = io('http://localhost:3000');
         window.addEventListener('DOMContentLoaded', () => {
+            //CHAT MESSAGE
             this.socket.on('chat-message', (msg) => {
                 const log = document.getElementById(pChat);
                 const entry = document.createElement('li');
@@ -19,11 +20,12 @@ export class NetworkClient {
                 log.appendChild(entry);
                 log.scrollTop=log.scrollHeight;
             });
+            //PLAYER LEAVE
             this.socket.on('player-left', (id) => {
                 this.game.removePlayer(id);
                 console.log(id+ " player left");
             });
-
+            //PLAYER JOIN
             this.socket.on('playerjoin',(data)=>
             {
                 //🎅making other players on client
@@ -31,7 +33,6 @@ export class NetworkClient {
                     this.game.addPlayer(data.id, data);
                 }
             });
-
 
 
             this.socket.on('disconnect', () => {
@@ -56,7 +57,7 @@ export class NetworkClient {
                     console.log("updated " + npc.name);
                 });
             });
-            this.socket.on('\'chest-position-update\''),(chests)=>{
+            this.socket.on('chest-position-update',(chests)=>{
                 chests.forEach(chest => {
                     if(!this.game.chests[chest.id])
                     {
@@ -65,7 +66,7 @@ export class NetworkClient {
                     this.game.UpdateChest(chest.id,toVec3(chest.position),chest.grounded,toVec3(chest.parent),chest.angle);
                     console.log("updated " + chest.id);
                 })
-            }
+            })
             this.socket.on('existing-players', (data) => {
                 //console.log(data);
                 for (const id in data) {

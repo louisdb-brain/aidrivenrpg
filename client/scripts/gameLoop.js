@@ -7,6 +7,7 @@ import {Chest} from './chest.js';
 import {NetworkClient} from './networkclient.js';
 import { toVec3 } from './networkclient.js';
 import https from 'https';;
+import{UI}from'./uiclient.js';
 
 export class Game {
     constructor() {
@@ -29,6 +30,10 @@ export class Game {
         this.scene.add(light);
 
         this.clock = new THREE.Clock();
+
+        this.canvas=document.createElement('canvas');
+        this.ctx=this.canvas.getContext('2d');
+        this.UI=new UI(this.scene,this.ctx,this.camera,this.canvas);
 
 
         this.players = {};
@@ -54,6 +59,9 @@ export class Game {
     }
 
     update() {
+        this.UI.createRect();
+        //this.UI.drawImage("sprites/uitest.png")
+
         const delta = this.clock.getDelta();
         for (const id in this.players) {
             this.players[id].update(delta);
@@ -113,9 +121,12 @@ export class Game {
         this.npcs[id]=thisnpc;
         this.cacheClickableObjects();
     }
-    addChest(id, position = { x: 0, y: 0, z: 0 })
+    addChest(id)
     {
-        const thischest=new chest(id,this.scene,grounded,)
+        const pos = { x: 5, y: 0, z: -3 };
+        const thischest=new Chest(id,this.scene,true,pos);
+        this.chests[id]=thischest;
+        this.cacheClickableObjects();
     }
     updateNpc(id,name,position,targetposition,angle,health)
     {
@@ -131,8 +142,23 @@ export class Game {
     }
     removePlayer(id) {
         const player = this.players[id];
+
+        if (!player) {
+            console.warn(`Tried to remove player with ID ${id}, but they do not exist.`);
+            return;
+        }
+
         if (player && player.model) {
             this.scene.remove(player.model);
+
+            if (player.model.geometry) player.model.geometry.dispose();
+            if (player.model.material) {
+                if (Array.isArray(player.model.material)) {
+                    player.model.material.forEach(mat => mat.dispose());
+                } else {
+                    player.model.material.dispose();
+                }
+            }
         }
         delete this.players[id];
 

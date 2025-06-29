@@ -23,6 +23,7 @@ export class  spriteHandeler {
         this.scene.add(thisSprite);
 
     }
+    drawtext(){}
 
 
 }

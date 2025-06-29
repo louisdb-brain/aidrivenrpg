@@ -15,7 +15,9 @@ export class objectManager{
         }
         if(!this.chests[thisId]){
             this.chests[thisId]=pChest;
+            console.log("chest"+thisId);
         }
+        console.log("tried to add chest");
 
     }
     getChest(pId){

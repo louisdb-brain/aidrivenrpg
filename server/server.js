@@ -16,8 +16,8 @@ app.use(express.static('public')); // Serve index.html and client.js
 
 const gamestate=new gamestateClass(io);
 
-gamestate.addnpc(new npc("goblin1id",{x:10,y:0,z:0},"goblin_1"))
-gamestate.addnpc(new npc("goblin2id",{x:20,y:0,z:0},"goblin_2"))
+//gamestate.addnpc(new npc("goblin1id",{x:10,y:0,z:0},"goblin_1"))
+//gamestate.addnpc(new npc("goblin2id",{x:20,y:0,z:0},"goblin_2"))
 gamestate.addChest(new Chest({x:10,y:0,z:0},"chest1"))
 gamestate.start();
 //hardcoded temporary npcs

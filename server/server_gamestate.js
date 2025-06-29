@@ -77,7 +77,7 @@ export class gamestateClass{
 
 
         }));
-        console.log(payload);;
+        //console.log(payload);;
         this.io.emit('player-positionupdate', payload);
     }
     emitNpc()
@@ -120,6 +120,7 @@ export class gamestateClass{
 
         }));
         this.io.emit('chest-position-update', payload);
+
     }
 
     returnPos(pObj)

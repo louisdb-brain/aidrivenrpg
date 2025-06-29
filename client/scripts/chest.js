@@ -25,8 +25,13 @@ export class  Chest {
 
     }
     update(delta){
-        if(this.grounded!==null) {
-            this.position = this.targetObject.position.clone();
+        if(this.grounded!==false) {
+            if(this.targetObject!=null) {
+                this.position = this.targetObject.position.clone();
+            }
+            else {
+                console.log("tried to make ")
+            }
         }
 
     }
