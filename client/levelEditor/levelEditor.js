@@ -39,16 +39,47 @@ const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 const selector = document.getElementById('modelSelector');
 window.addEventListener('pointerdown', (event) => {
+    if (event.button !== 0) return; // Only left-click (button 0)
+
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
 
-    const intersects = raycaster.intersectObject(ground); // Assuming you have `ground`
+    const intersects = raycaster.intersectObject(ground);
 
     if (intersects.length > 0) {
         const point = intersects[0].point;
         placeCube(point);
+    }
+});
+window.addEventListener('contextmenu', (event) => {
+    event.preventDefault(); // Prevent default browser right-click menu
+
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+
+    const intersects = raycaster.intersectObjects(placedObjects, false); // Only check placed objects
+
+    if (intersects.length > 0) {
+        const obj = intersects[0].object;
+
+        // Safety check: Ignore ground, even if accidentally included
+        if (obj === ground) {
+            console.log('Cannot remove ground plane.');
+            return;
+        }
+
+        scene.remove(obj);
+
+        const index = placedObjects.indexOf(obj);
+        if (index > -1) {
+            placedObjects.splice(index, 1);
+        }
+
+        console.log('Object removed.');
     }
 });
 
@@ -83,6 +114,46 @@ function download(filename, text) {
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
+}
+document.getElementById('loadbutton').addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+
+    input.onchange = (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            const data = JSON.parse(reader.result);
+            loadLevel(data);
+        };
+        reader.readAsText(file);
+    };
+
+    input.click();
+});
+function loadLevel(data) {
+    clearPlacedObjects()
+    data.forEach(objData => {
+        const cube = new THREE.Mesh(
+            new THREE.BoxGeometry(1, 1, 1),
+            new THREE.MeshStandardMaterial({ color: objData.color })
+        );
+
+        cube.position.set(objData.position.x, objData.position.y, objData.position.z);
+        scene.add(cube);
+        placedObjects.push(cube);
+    });
+
+    console.log('Loaded', data.length, 'objects.');
+}
+function clearPlacedObjects() {
+    placedObjects.forEach(obj => {
+        scene.remove(obj);
+    });
+    placedObjects.length = 0; // Clear the array
 }
 
 animate();

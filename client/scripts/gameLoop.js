@@ -57,6 +57,21 @@ export class Game {
 
 
     }
+    loadLevel() {
+
+        data.forEach(objData => {
+            const cube = new THREE.Mesh(
+                new THREE.BoxGeometry(1, 1, 1),
+                new THREE.MeshStandardMaterial({ color: objData.color })
+            );
+
+            cube.position.set(objData.position.x, objData.position.y, objData.position.z);
+            scene.add(cube);
+            placedObjects.push(cube);
+        });
+
+        console.log('Loaded', data.length, 'objects.');
+    }
 
     update() {
         this.UI.createRect();
