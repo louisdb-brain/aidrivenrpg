@@ -23,7 +23,7 @@ export class UI{
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height/20);
 
         const texture = new THREE.CanvasTexture(this.canvas);
-        const material = new THREE.SpriteMaterial({ map: texture, transparent: true ,depthtest:false});
+        const material = new THREE.SpriteMaterial({ map: texture, transparent: true ,depthTest:false});
         const sprite = new THREE.Sprite(material);
         sprite.scale.set(1, 1, 1);
         sprite.position.set(0, 0, -1);

@@ -41,6 +41,8 @@ export class Game {
         this.chests={};
         this.clickableObjects=[];
 
+        //this.loadLevel()
+
 
 
 
@@ -58,7 +60,14 @@ export class Game {
 
     }
     loadLevel() {
-
+        const data=[]
+        fetch('../levelEditor/levelData.json')
+            .then(res => res.json())
+            .then(data => {
+                console.log('Parsed JSON:', data);
+                loadLevel(data); // You can process the loaded objects here
+            })
+            .catch(err => console.error('Failed to load file:', err));
         data.forEach(objData => {
             const cube = new THREE.Mesh(
                 new THREE.BoxGeometry(1, 1, 1),
@@ -67,7 +76,7 @@ export class Game {
 
             cube.position.set(objData.position.x, objData.position.y, objData.position.z);
             scene.add(cube);
-            placedObjects.push(cube);
+            this.clickableObjects.push(cube);
         });
 
         console.log('Loaded', data.length, 'objects.');

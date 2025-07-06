@@ -63,8 +63,10 @@ export class NetworkClient {
                     {
                         this.game.addChest(chest.id);
                     }
-                    this.game.UpdateChest(chest.id,toVec3(chest.position),chest.grounded,toVec3(chest.parent),chest.angle);
-                    console.log("updated " + chest.id);
+                    else {
+                        this.game.UpdateChest(chest.id, toVec3(chest.position), chest.grounded, toVec3(chest.parent), chest.angle);
+                        console.log("updated " + chest.id);
+                    }
                 })
             })
             this.socket.on('existing-players', (data) => {
