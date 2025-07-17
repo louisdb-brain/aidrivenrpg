@@ -4,14 +4,14 @@ import {GLTFLoader} from "three/addons/loaders/GLTFLoader";
 
 export class npc {
 
-    constructor(scene, pStartpos={x:0,y:0,z:0}) {
+    constructor(scene, pStartpos={x:0,y:0,z:0},npcid) {
         this.scene = scene;
         this.model=null;
         this.modelpath = 'models/goblin.glb';
-        this.pNpcID = "";
+        this.pNpcID = npcid;
         this.position = new THREE.Vector3(pStartpos.x, pStartpos.y, pStartpos.z);
         this.name = "";
-        this.health = 10;
+        this.health = 100;
         this.attack = 0;
         this.speed= 2;
         this.targetPosition = this.position.clone();
@@ -51,6 +51,11 @@ export class npc {
         let temppos = position.clone();
         temppos.y = 0;
         this.targetPosition.copy(temppos);
+
+    }
+    takedamage(amount)
+    {
+        this.health-= amount;
 
     }
 

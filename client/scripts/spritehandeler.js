@@ -8,7 +8,7 @@ export class  spriteHandeler {
             map: texture,
             transparent: true
         });
-        this.hitSprite=new THREE.Sprite(spriteMaterial);
+
 
     }
 
@@ -18,9 +18,17 @@ export class  spriteHandeler {
 
     drawhit(pAmount,pLocation) {
         const thisSprite=new THREE.Sprite(spriteMaterial);
-        thisSprite.
+        const scale = 0.5 + pAmount * 0.1;
+        thisSprite.scale.set(scale, scale, 1); // XY for size, Z is ignored for sprites
+
         thisSprite.frustumCulled = true;
         this.scene.add(thisSprite);
+
+        setTimeout(() => {
+            this.scene.remove(thisSprite);
+            thisSprite.material.dispose();
+            thisSprite.geometry?.dispose?.(); // geometry is usually not needed for sprites
+        }, 500); // show for 500ms
 
     }
     drawtext(){}

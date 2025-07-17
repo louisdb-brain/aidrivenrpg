@@ -7,6 +7,7 @@ import {objectManager} from "./dynamicObjectsManager.js";
 export class gamestateClass{
     constructor(pIO) {
         this.io=pIO;
+        this.ticks = 0;
         this.clock = new THREE.Clock();
 
 
@@ -22,14 +23,21 @@ export class gamestateClass{
 
     }
     start() {
+
+
         let lastTime = Date.now();
 
         setInterval(() => {
             const now = Date.now();
-            const delta = (now - lastTime) / 1000; // convert ms to seconds
+            const delta = (now - lastTime) / 1000;
             lastTime = now;
 
             this.tick(delta);
+
+            this.ticks++;
+            if (this.ticks % 60 === 0) {
+                console.log("Server tick:", this.ticks);
+            }
         }, 50); // 20 FPS
     }
     tick(delta) {
@@ -86,7 +94,7 @@ export class gamestateClass{
 
         const payload = Object.values(npcMap).map(npc => ({
             id: npc.npcid,
-            name: npc.name, // 👈 add this line
+            name: npc.name,
             position: {
                 x: npc.position.x,
                 y: npc.position.y,
@@ -127,5 +135,6 @@ export class gamestateClass{
     {
         return {x:pObj.position.x,y:pObj.position.y,z:pObj.position.z};
     }
+
 
 }

@@ -5,7 +5,8 @@ import * as THREE from 'three';
 
 export class npc{
 
-    constructor(npcID,positionObj,pName){
+    constructor(npcID,positionObj,pName,io){
+        this.io=io;
         this.npcid = npcID;
         this.position= new THREE.Vector3(positionObj.x,positionObj.y,positionObj.z);
         this.zone=0;
@@ -103,6 +104,17 @@ export class npc{
         if (this.cooldown <=0){this.cooldown=50;}
 
 
+    }
+    takeDamage(pAmount){
+        this.health-=pAmount;
+        this.pNpcID-= pAmount;
+        const payload=
+            {
+                id:this.npcid,
+                name:this.name,
+                amount:pAmount
+            }
+            this.io.emit('npc-takedamge',payload);
     }
 
 

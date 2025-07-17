@@ -32,7 +32,7 @@ export class UI{
         texture.needsUpdate = true;
         this.scene.add(this.camera);
         this.camera.add(sprite);
-        console.log("drawing sprite")
+        //console.log("drawing sprite")
 
     }
     drawImage(imagePath) {

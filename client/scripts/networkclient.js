@@ -10,6 +10,7 @@ export function toVec3(obj) {
 export class NetworkClient {
     constructor(pChat,pGame) {
         this.game=pGame;
+        this.spriteHandeler=pGame.spriteHandeler;
         this.socket = io('http://localhost:3000');
         window.addEventListener('DOMContentLoaded', () => {
             //CHAT MESSAGE
@@ -54,10 +55,20 @@ export class NetworkClient {
                     }
 
                     this.game.updateNpc(npc.id,npc.name,toVec3(npc.position),toVec3(npc.targetPosition),npc.angle,npc.health);
-                    console.log("updated " + npc.name);
+                    //console.log("updated " + npc.name);
                 });
             });
-            this.socket.on('chest-position-update',(chests)=>{
+            this.socket.on('npc-takedamage',(payload) => {
+                if (this.game.npcs[payload.id]) {
+                    this.game.npcs[payload.id].takedamage(payload.amount);
+                    this.spriteHandeler.drawhit(payload.amount,0);
+                }
+                else
+                {
+                    console.log("no npc with id " + this.game.npcs[payload.id]);
+                }
+            })
+            /*this.socket.on('chest-position-update',(chests)=>{
                 chests.forEach(chest => {
                     if(!this.game.chests[chest.id])
                     {
@@ -68,7 +79,7 @@ export class NetworkClient {
                         console.log("updated " + chest.id);
                     }
                 })
-            })
+            })*/
             this.socket.on('existing-players', (data) => {
                 //console.log(data);
                 for (const id in data) {
@@ -101,6 +112,10 @@ export class NetworkClient {
         } else {
             console.warn("Tried to send position but player doesn't exist yet.");
         }
+    }
+    attackNpc(pNpcID)
+    {
+        this.socket.emit('player-attacknpc',pNpcID);
     }
     getsocket(){
         return this.socket;

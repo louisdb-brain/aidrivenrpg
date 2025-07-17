@@ -138,9 +138,9 @@ export class Game {
 
     }
 
-    addNpc(id, position = { x: 0, y: 0, z: 0 })
+    addNpc(id, position = { x: 0, y: 0, z: 0 },npcid)
     {
-        const thisnpc=new npc(this.scene, position);
+        const thisnpc=new npc(this.scene, position,npcid);
 
         this.npcs[id]=thisnpc;
         this.cacheClickableObjects();
