@@ -2,9 +2,9 @@ import * as THREE from 'three';
 import {gamestateClass}     from './server_gamestate.js';
 
 export class player {
-    constructor(pId,position = { x: 0, y: 0, z: 0 },pName,gamestate) {
+    constructor(pId,position = { x: 0, y: 0, z: 0 },pName) {
 
-        this.gamestate=gamestate;
+
         this.id=pId;
         this.position = new THREE.Vector3(position.x, position.y, position.z);
         this.targetPosition = this.position.clone();
@@ -12,6 +12,7 @@ export class player {
         this.locked=false;
         this.speed = 1;
         this.angle=null;
+        this.maxcooldown=150;
         this.cooldown=50;
 
         this.attackspeed=3;
@@ -19,6 +20,7 @@ export class player {
         this.equipmentpower=5;
         this.attacking=false;
         this.followTarget="";
+        this.targetObject=null;
         this.follow=false;
 
         this.wantedlevel=0;
@@ -67,15 +69,18 @@ export class player {
     combatlogic()
     {
         //BUG HERE FOR COMBAT
-        if(this.followTarget="" || this.gamestate.npcManager==null || this.gamestate.npcManager=="")
+        if(this.followTarget=="" )
         {
+            console.log("error doing combat logic ,no follow target");
+
             return;
         }
-        const target=this.gamestate.npcManager.npcs.getNpc(this.followTarget);
-        console.log(target);
+        console.log("combatlogic: attacking "+this.followTarget);
+
         console.log(this.followTarget);
 
-        this.targetPosition= target.position.clone();
+
+        this.targetPosition= this.targetObject.position.clone();
         const movedirection=new THREE.Vector3().subVectors(this.targetPosition,this.position);
         const distance=movedirection.length();
 
@@ -84,10 +89,11 @@ export class player {
             }
             //hit register
             if (this.cooldown <= 0) {
-                this.cooldown = 50;
+                this.cooldown = this.maxcooldown;
                 const randomhHit = Math.floor(Math.random() * (this.basepower + this.equipmentpower / 2));
-                target.takeDamage(randomhHit);
-                console.log(randomhHit + "damage dealt");
+                this.targetObject.takeDamage(randomhHit);
+                this.targetObject.takeDamage(randomhHit);
+                console.log(randomhHit + "damage dealt to " + this.targetObject);
             }
 
 
@@ -104,9 +110,10 @@ export class player {
         temppos.y=0;
         this.targetPosition.copy(temppos); // store destination
     }
-    setTargetEntity(entityID)
+    setTargetEntity(entityID,npcobject)
     {
         this.followTarget=entityID;
+        this.targetObject=npcobject;
     }
 
     getposition()

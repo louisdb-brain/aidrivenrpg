@@ -87,6 +87,33 @@ export class Player {
         temppos.y=0;
         this.lockedPosition.copy(temppos); // store destination
     }
+    playAnimation(animationNumber)
+    {
+
+        if (!gltf.animations || gltf.animations.length <= animationNumber) {
+            console.log("no extra animations")
+            return;
+        }
+
+        // Clean up previous mixer/action if needed
+        if (!this.mixer) {
+            this.mixer = new THREE.AnimationMixer(this.model);
+        }
+
+        const clip = gltf.animations[animationNumber];
+        const action = this.mixer.clipAction(clip);
+
+
+        action.reset();
+        action.setLoop(THREE.LoopOnce);
+        action.clampWhenFinished = true; // Keeps final frame visible
+        //action.setDuration(time); // Optional: force the duration
+        action.play();
+
+        this.currentAction = action;
+
+
+    }
 
     getposition()
     {return this.position.clone();}

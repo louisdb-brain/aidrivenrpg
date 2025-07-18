@@ -13,10 +13,107 @@ export class UI{
     makeSprite()
     {
 
+
+    }
+    drawchat(position,text)
+    {
+        const canvas = document.createElement('canvas');
+        canvas.width = 128;
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+
+        ctx.font = '20px sans-serif';
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.fillText(text, canvas.width / 2, canvas.height / 1.8);
+
+        // Create texture
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.needsUpdate = true;
+
+        const material = new THREE.SpriteMaterial({
+            map: texture,
+            transparent: true,
+            depthTest: false
+        });
+
+        const sprite = new THREE.Sprite(material);
+
+        sprite.scale.set(2, 0.5, 1); // Adjust to your scene units
+        sprite.position.copy(position.clone().add(new THREE.Vector3(0, 2.5, 0))); // float above head
+
+        this.scene.add(sprite);
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+            this.scene.remove(sprite);
+            texture.dispose();
+            material.dispose();
+        }, 3000);
+
+    }
+    drawHit(position, amount) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 128;
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+
+
+        const img = new Image();
+        if (amount != 0)
+        {
+            img.src = './sprites/hit.png';
+        }
+        else
+        {
+            img.src='./sprites/miss.png';
+        }
+
+
+        img.onload = () => {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw background image
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            // Draw text
+            ctx.font = 'bold 28px sans-serif';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.fillText(amount, canvas.width / 2, canvas.height / 1.8);
+
+            // Create texture after drawing
+            const texture = new THREE.CanvasTexture(canvas);
+            const material = new THREE.SpriteMaterial({
+                map: texture,
+                transparent: true,
+                depthTest: false
+            });
+
+            const sprite = new THREE.Sprite(material);
+
+
+            sprite.scale.set(0.7, 0.7, 0);
+            sprite.position.copy(position.clone().add(new THREE.Vector3(0, 1.5, 0)));
+            this.scene.add(sprite);
+
+
+            setTimeout(() => {
+                this.scene.remove(sprite);
+                texture.dispose();
+                material.dispose();
+            }, 600);
+        };
     }
     createRect()
     {
-        const ctx=this.ctx;
+        const canvas = document.createElement('canvas');
+        canvas.width = 1280;
+        canvas.height = 640;
+        const ctx = canvas.getContext('2d');
+
+
         ctx.fillStyle  = 'green';
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height/20);
         ctx.fillStyle ='green';
@@ -32,19 +129,24 @@ export class UI{
         texture.needsUpdate = true;
         this.scene.add(this.camera);
         this.camera.add(sprite);
-        //console.log("drawing sprite")
+        //console.log("drawing sprite")*/
 
     }
     drawImage(imagePath) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 128;
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+
         const img = new Image();
         img.src = imagePath;
 
         img.onload = () => {
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
-            this.texture.needsUpdate = true;
+            ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+            texture.needsUpdate = true;
 
-        };
+        }
     }
 
 

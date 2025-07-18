@@ -1,4 +1,5 @@
 import {player} from "./player.js";
+import {gamestateClass} from "./server_gamestate.js";
 
 const players = {};
 

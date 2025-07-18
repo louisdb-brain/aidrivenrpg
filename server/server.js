@@ -16,8 +16,8 @@ app.use(express.static('public')); // Serve index.html and client.js
 
 const gamestate=new gamestateClass(io);
 
-gamestate.addnpc(new npc("goblin1id",{x:10,y:0,z:0},"goblin_1"),io)
-gamestate.addnpc(new npc("goblin2id",{x:20,y:0,z:0},"goblin_2"),io)
+gamestate.addnpc(new npc("goblin1id",{x:10,y:0,z:0},"goblin_1",io));
+gamestate.addnpc(new npc("goblin2id",{x:20,y:0,z:0},"goblin_2",io));
 gamestate.addChest(new Chest({x:10,y:0,z:0},"chest1"))
 gamestate.start();
 //hardcoded temporary npcs
@@ -51,14 +51,17 @@ io.on('connection', (socket) => {
     socket.on('player-target',(target,rightmouse)=>
     {
         playermanager.setTarget(socket.id,target,rightmouse)
+        playermanager.getPlayer(socket.id)
 
     })
     socket.on('player-attacknpc',(npcid)=>
     {
+        console.log("received attack target" +npcid+" for player "+socket.id);
         const player=playermanager.getPlayer(socket.id);
-        player.setTargetEntity(npcid);
+        const npcobject=gamestate.npcManager.npcs[npcid];
+        player.setTargetEntity(npcid,npcobject);
         player.attacking=true;
-        console.log("attacking "+npc)
+
     }
     )
     socket.on('clickchest',(chestid)=>

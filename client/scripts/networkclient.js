@@ -20,6 +20,8 @@ export class NetworkClient {
                 entry.textContent = `[${msg.id.slice(0, 5)}]: ${msg.message}`;
                 log.appendChild(entry);
                 log.scrollTop=log.scrollHeight;
+                const npc=this.game.players[msg.id];
+                this.game.UI.drawchat(npc.position.clone(),msg.message)
             });
             //PLAYER LEAVE
             this.socket.on('player-left', (id) => {
@@ -59,9 +61,12 @@ export class NetworkClient {
                 });
             });
             this.socket.on('npc-takedamage',(payload) => {
+                console.log(payload)
                 if (this.game.npcs[payload.id]) {
-                    this.game.npcs[payload.id].takedamage(payload.amount);
-                    this.spriteHandeler.drawhit(payload.amount,0);
+                    const npc=this.game.npcs[payload.id];
+                    npc.takedamage(payload.amount);
+                    this.game.UI.drawHit(npc.position.clone(),payload.amount);
+                    this.game.players[this.socket.id].playAnimation(1);
                 }
                 else
                 {
@@ -84,7 +89,7 @@ export class NetworkClient {
                 //console.log(data);
                 for (const id in data) {
                     if (id !== this.socket.id) {
-                        pGame.addPlayer(id,data[id].position );
+                        this.game.addPlayer(id,data[id].position );
                     }
                 }
             });
@@ -115,6 +120,7 @@ export class NetworkClient {
     }
     attackNpc(pNpcID)
     {
+        console.log('clicked and sendind ' +pNpcID);
         this.socket.emit('player-attacknpc',pNpcID);
     }
     getsocket(){

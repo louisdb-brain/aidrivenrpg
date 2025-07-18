@@ -12,24 +12,57 @@ export class  spriteHandeler {
 
     }
 
-    draw(ctx) {
+    draw(position,text) {
+        const ctx = this.ctx;
+        const canvas = this.canvas;
+
+        ctx.font = 'bold 28px sans-serif';
+        ctx.fillStyle = 'yellow';
+        ctx.textAlign = 'center';
+        ctx.fillText(text, canvas.width / 2, canvas.height / 1.8);
 
     }
 
-    drawhit(pAmount,pLocation) {
-        const thisSprite=new THREE.Sprite(spriteMaterial);
-        const scale = 0.5 + pAmount * 0.1;
-        thisSprite.scale.set(scale, scale, 1); // XY for size, Z is ignored for sprites
+    drawHit(position, amount) {
+        const ctx = this.ctx;
+        const canvas = this.canvas;
 
-        thisSprite.frustumCulled = true;
-        this.scene.add(thisSprite);
+        const img = new Image();
+        img.src = './sprites/hit.png';
 
-        setTimeout(() => {
-            this.scene.remove(thisSprite);
-            thisSprite.material.dispose();
-            thisSprite.geometry?.dispose?.(); // geometry is usually not needed for sprites
-        }, 500); // show for 500ms
+        img.onload = () => {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+            // Draw background image
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            // Draw text
+            ctx.font = 'bold 28px sans-serif';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.fillText(amount, canvas.width / 2, canvas.height / 1.8);
+
+            // Create texture after drawing
+            const texture = new THREE.CanvasTexture(canvas);
+            const material = new THREE.SpriteMaterial({
+                map: texture,
+                transparent: true,
+                depthTest: false
+            });
+
+            const sprite = new THREE.Sprite(material);
+            sprite.scale.set(1.5, 0.75, 1);
+            sprite.position.copy(position);
+
+            scene.add(sprite);
+
+            setTimeout(() => {
+                scene.remove(sprite);
+                texture.dispose();
+                material.dispose();
+            }, 600);
+        };
     }
     drawtext(){}
 
