@@ -28,6 +28,7 @@ export class npc {
 
     update(delta) {
         this.move(delta);
+        console.log(this.position.x);
 
     }
     move(delta){

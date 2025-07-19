@@ -1,6 +1,7 @@
 //SERVER NPC//
 import {toVec3} from "./utilities.js"
 import * as THREE from 'three';
+import {materialThickness} from "three/tsl";
 
 
 export class npc{
@@ -32,8 +33,9 @@ export class npc{
     }
     update(delta,players){
         this.aiupdate(delta);
-        this.checkFollow(players)
+        //this.checkFollow(players)
         this.move(delta);
+        console.log(this.position)
 
 
 
@@ -56,11 +58,13 @@ export class npc{
         }
         this.detectionsphere.center.copy(this.position);
     }
+
     checkFollow(players){
 
         for (const playerId in players) {
             const player = players[playerId];
             const playerpos=new THREE.Vector3(player.x, player.y,player.z);
+
 
 
             if (this.detectionsphere.containsPoint(playerpos)) {
@@ -85,8 +89,9 @@ export class npc{
                 Math.random() * 20 - 10
 
             );
-
-            this.setTarget(randomVec.clone());
+            const targetpos=randomVec.clone().add(this.position);
+            console.log(targetpos)
+            this.setTarget(targetpos);
 
         }
 

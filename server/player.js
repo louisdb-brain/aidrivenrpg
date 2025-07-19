@@ -68,10 +68,10 @@ export class player {
     }
     combatlogic()
     {
-        //BUG HERE FOR COMBAT
+
         if(this.followTarget=="" )
         {
-            console.log("error doing combat logic ,no follow target");
+            //console.log("error doing combat logic ,no follow target");
 
             return;
         }

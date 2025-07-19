@@ -21,3 +21,4 @@ function populateSelector() {
 selector.addEventListener('change', () => {
     console.log('Selected:', selector.value);
 });
+

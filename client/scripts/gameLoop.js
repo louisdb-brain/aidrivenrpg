@@ -8,6 +8,7 @@ import {NetworkClient} from './networkclient.js';
 import { toVec3 } from './networkclient.js';
 import https from 'https';;
 import{UI}from'./uiclient.js';
+import { loadLevel } from '../leveleditor/loadlevel.js';
 
 export class Game {
     constructor() {
@@ -56,30 +57,18 @@ export class Game {
         this.ground.position.y = -1.05;
         this.scene.add(this.ground);
 
+        fetch('/levels/level1.json')
+            .then(res => res.json())
+            .then(data => {
+                loadLevel(data, this.scene); // scene should be the same one you render in
+            });
+
 
 
     }
     loadLevel() {
-        const data=[]
-        fetch('../levelEditor/levelData.json')
-            .then(res => res.json())
-            .then(data => {
-                console.log('Parsed JSON:', data);
-                loadLevel(data); // You can process the loaded objects here
-            })
-            .catch(err => console.error('Failed to load file:', err));
-        data.forEach(objData => {
-            const cube = new THREE.Mesh(
-                new THREE.BoxGeometry(1, 1, 1),
-                new THREE.MeshStandardMaterial({ color: objData.color })
-            );
 
-            cube.position.set(objData.position.x, objData.position.y, objData.position.z);
-            scene.add(cube);
-            this.clickableObjects.push(cube);
-        });
 
-        console.log('Loaded', data.length, 'objects.');
     }
 
     update() {
@@ -108,7 +97,8 @@ export class Game {
             //this.camera.position.lerp(targetPos, 0.1);
             /*this.camera.lookAt(player.position);*/
         }
-        this.debuglocktarget();
+        //places cube where locktarget is for debugging
+        //this.debuglocktarget();
 
     }
 
@@ -120,7 +110,7 @@ export class Game {
         requestAnimationFrame(() => this.loop());
         this.update();
         this.draw();
-        this.debugmovetarget()
+        //this.debugmovetarget()
 
         this.controls.update();
         this.renderer.render(this.scene, this.camera);
@@ -234,7 +224,7 @@ export class Game {
     }
     cacheClickableObjects()
     {
-
+        //code here for clickable objects like npc or players
     }
 
 

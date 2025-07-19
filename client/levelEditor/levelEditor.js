@@ -1,5 +1,6 @@
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 const placedObjects=[];
 const scene = new THREE.Scene();
@@ -50,7 +51,7 @@ window.addEventListener('pointerdown', (event) => {
 
     if (intersects.length > 0) {
         const point = intersects[0].point;
-        placeCube(point);
+        placeObject(point,scene);
     }
 });
 window.addEventListener('contextmenu', (event) => {
@@ -82,11 +83,20 @@ window.addEventListener('contextmenu', (event) => {
         console.log('Object removed.');
     }
 });
-
+/*
 function placeCube(position) {
     const color = selector.value;
+    if (value.endsWith('.glb')) {
+        const loader = new THREE.GLTFLoader();
 
-    const cube = new THREE.Mesh(
+        loader.load(value, function (gltf) {
+            const model = gltf.scene;
+            model.position.copy(position);
+            scene.add(model);
+        }
+
+
+            const cube = new THREE.Mesh(
         new THREE.BoxGeometry(1, 1, 1),
         new THREE.MeshStandardMaterial({ color })
     );
@@ -94,17 +104,77 @@ function placeCube(position) {
     cube.position.copy(position);
     scene.add(cube);
     placedObjects.push(cube);
+}*/
+function placeObject(position) {
+    const value = selector.value;
+    const pathname='/models/house.glb';
+    //CHECK FOR .GLB MODELS
+    if (value.endsWith('.glb')) {
+        const loader = new GLTFLoader();
+        console.log("Trying to load:", pathname);
+        console.log(pathname);
+        loader.load(pathname, function (gltf) {
+            const model = gltf.scene;
+            model.position.copy(position);
+            scene.add(model);
+
+            placedObjects.push({
+                type: 'model',
+                name: value, // glb file name or path
+                position: {
+                    x: position.x,
+                    y: position.y,
+                    z: position.z
+                }
+            });
+        });
+    }
+    else {
+        // You can ignore this part if you want to load models  .glb
+        const cube = new THREE.Mesh(
+            new THREE.BoxGeometry(1, 1, 1),
+            new THREE.MeshStandardMaterial({ color: value })
+        );
+        cube.position.copy(position);
+        scene.add(cube);
+
+        // Optional: Save cube info too
+        placedObjects.push({
+            type: 'cube',
+            color: value,
+            position: {
+                x: position.x,
+                y: position.y,
+                z: position.z
+            }
+        });
+    }
 }
 
-document.getElementById('savebutton').addEventListener('click',savemodels)
+
+document.getElementById('savebutton').addEventListener('click', savemodels)
+
 function savemodels()
 {
-    const saveData = placedObjects.map(obj => ({
-        color: obj.material.color.getStyle(),
-        position: { x: obj.position.x, y: obj.position.y, z: obj.position.z }
-    }));
-    const json=JSON.stringify(saveData, null,2);
+    const saveData = placedObjects.map(obj => {
+        if (obj.type === 'cube') {
+            return {
+                type: 'cube',
+                color: obj.color,
+                position: obj.position
+            };
+        } else if (obj.type === 'model') {
+            return {
+                type: 'model',
+                name: obj.name,
+                position: obj.position
+            };
+        }
+    });
+
+    const json = JSON.stringify(saveData, null, 2);
     download('levelData.json', json);
+
 }
 
 function download(filename, text) {
@@ -127,27 +197,64 @@ document.getElementById('loadbutton').addEventListener('click', () => {
         const reader = new FileReader();
         reader.onload = () => {
             const data = JSON.parse(reader.result);
-            loadLevel(data);
+            loadLevel(data,scene);
         };
         reader.readAsText(file);
     };
 
     input.click();
 });
-function loadLevel(data) {
-    clearPlacedObjects()
+export function loadLevel(data,pScene) {
+    clearPlacedObjects();
+
+    const loader = new GLTFLoader();
+
     data.forEach(objData => {
-        const cube = new THREE.Mesh(
-            new THREE.BoxGeometry(1, 1, 1),
-            new THREE.MeshStandardMaterial({ color: objData.color })
-        );
+        if(objData.type==='npc'&& objData.name && objData.name.endsWith('.glb')){
+            //LOAD NPCS TROUGH THIS
+        }
+        // Handle GLB models
+        if (objData.type === 'model' && objData.name && objData.name.endsWith('.glb')) {
+            const pathname="models/"+objData.name;
+            loader.load(pathname, gltf => {
+                const model = gltf.scene;
+                model.position.set(
+                    objData.position.x,
+                    objData.position.y,
+                    objData.position.z
+                );
+                pScene.add(model);
 
-        cube.position.set(objData.position.x, objData.position.y, objData.position.z);
-        scene.add(cube);
-        placedObjects.push(cube);
+                placedObjects.push({
+                    type: 'model',
+                    name: objData.name,
+                    position: objData.position
+                });
+            }, undefined, error => {
+                console.error('Failed to load model:', objData.name, error);
+            });
+        }
+
+        // Handle cubes
+        else if (objData.type === 'cube') {
+            const cube = new THREE.Mesh(
+                new THREE.BoxGeometry(1, 1, 1),
+                new THREE.MeshStandardMaterial({ color: objData.color || '#ffffff' })
+            );
+            cube.position.set(
+                objData.position.x,
+                objData.position.y,
+                objData.position.z
+            );
+            pScene.add(cube);
+
+            placedObjects.push({
+                type: 'cube',
+                color: objData.color,
+                position: objData.position
+            });
+        }
     });
-
-    console.log('Loaded', data.length, 'objects.');
 }
 function clearPlacedObjects() {
     placedObjects.forEach(obj => {
