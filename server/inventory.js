@@ -1,0 +1,41 @@
+export class inventory{
+    constructor(playerid,io,holdMax){
+        this.playerid = playerid;
+        this.io=io;
+
+        this.itemslist="items/itemlist.json"
+        this.holdmax=holdMax;
+        this.items=[]
+    }
+
+    additem(itemId)
+    {
+        if(this.items.length<this.holdmax){
+            this.items.add(itemId);
+            const payload={
+                id:this.playerid,
+                item:itemId
+            }
+            this.io.emit('add-item', payload);
+        }
+    }
+    removeitem(index){
+        this.items.splice(1,index);
+        const payload={
+            id:this.playerid,
+            index:index
+        }
+        //change this to socket
+        //this.io.emit('remove-item', payload);
+    }
+    searchItem(itemid){
+        for(let i=0;i<this.items.length;i++){
+            if (this.items[i].id == itemid){
+                return i;
+            }
+        }
+    }
+    getItems(){
+        return this.items;
+    }
+}

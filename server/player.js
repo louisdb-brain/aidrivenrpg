@@ -1,11 +1,13 @@
 import * as THREE from 'three';
 import {gamestateClass}     from './server_gamestate.js';
+import {inventory} from "./inventory";
 
 export class player {
-    constructor(pId,position = { x: 0, y: 0, z: 0 },pName) {
+    constructor(pId,pIO,position = { x: 0, y: 0, z: 0 },pName) {
 
 
         this.id=pId;
+        this.io=pIO;
         this.position = new THREE.Vector3(position.x, position.y, position.z);
         this.targetPosition = this.position.clone();
         this.lockedPosition= this.position.clone();
@@ -26,6 +28,8 @@ export class player {
         this.wantedlevel=0;
         this.zone=0;
         this.name=pName;
+
+        this.inventory=new inventory(this.id,this.io,20);
     }
 
 

@@ -1,0 +1,49 @@
+.spell-editor {
+    padding: 1rem;
+    height: 100vh;               /* or a fixed height like 600px */
+    overflow-y: auto;            /* enables vertical scroll */
+    box-sizing: border-box;
+
+}
+.spell-editor::-webkit-scrollbar {
+    width: 8px;
+}
+
+.spell-editor::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 4px;
+}
+
+.spell-editor::-webkit-scrollbar-track {
+    background-color: #222;
+}
+
+.spell-card {
+    background: #333;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+}
+
+.spell-card input,
+.spell-card textarea {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    padding: 8px;
+    background: #222;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+.save-button {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    width: 100%;
+    font-size: 1rem;
+    cursor: pointer;
+}
+

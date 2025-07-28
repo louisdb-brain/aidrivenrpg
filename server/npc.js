@@ -119,7 +119,7 @@ export class npc{
                 name:this.name,
                 amount:pAmount
             }
-            console.log("damage taken = "+pAmount);;
+            //console.log("damage taken = "+pAmount);;
             this.io.emit('npc-takedamage',payload);
     }
 
