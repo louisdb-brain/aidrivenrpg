@@ -1,7 +1,7 @@
 export class inventory{
-    constructor(playerid,io,holdMax){
+    constructor(playerid,emitCallback,holdMax){
         this.playerid = playerid;
-        this.io=io;
+        this.emit=emitCallback;
 
         this.itemslist="items/itemlist.json"
         this.holdmax=holdMax;
@@ -16,7 +16,7 @@ export class inventory{
                 id:this.playerid,
                 item:itemId
             }
-            this.io.emit('add-item', payload);
+            this.emit('add-item', payload);
         }
     }
     removeitem(index){
@@ -26,7 +26,7 @@ export class inventory{
             index:index
         }
         //change this to socket
-        //this.io.emit('remove-item', payload);
+        this.emit('remove-item', payload);
     }
     searchItem(itemid){
         for(let i=0;i<this.items.length;i++){

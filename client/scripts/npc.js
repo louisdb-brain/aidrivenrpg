@@ -4,7 +4,7 @@ import {GLTFLoader} from "three/addons/loaders/GLTFLoader";
 
 export class npc {
 
-    constructor(scene, pStartpos={x:0,y:0,z:0},npcid) {
+    constructor(scene, pStartpos={x:0,y:0,z:0},npcid,onLoaded = () => {}) {
         this.scene = scene;
         this.model=null;
         this.modelpath = 'models/goblin.glb';
@@ -22,13 +22,16 @@ export class npc {
             this.model = gltf.scene;
             this.model.position.copy(this.position);
             this.scene.add(this.model);});
-
+            onLoaded(this); //callback after loaded mesh (i used this to add meshes to clickablelist)
 
     }
-
+    get mesh()
+    {
+        return this.model;
+    }
     update(delta) {
         this.move(delta);
-        console.log(this.position.x);
+        //console.log(this.position.x);
 
     }
     move(delta){

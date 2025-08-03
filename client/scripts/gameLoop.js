@@ -19,7 +19,8 @@ export class Game {
 
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(this.renderer.domElement);
+        document.getElementById('game-container').appendChild(this.renderer.domElement);
+        //document.body.appendChild(this.renderer.domElement);
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.target.set(0, 1, 0); // optional: focus on character height
@@ -41,6 +42,7 @@ export class Game {
         this.npcs={};
         this.chests={};
         this.clickableObjects=[];
+        this.hoverFrameCounter=10;
 
         //this.loadLevel()
 
@@ -72,8 +74,9 @@ export class Game {
     }
 
     update() {
-        this.UI.createRect();
+        //this.UI.createRect();
         //this.UI.drawImage("sprites/uitest.png")
+
 
         const delta = this.clock.getDelta();
         for (const id in this.players) {
@@ -107,15 +110,24 @@ export class Game {
     }
 
     loop() {
+        /*this.hoverFrameCounter++;
+        if (this.hoverFrameCounter % 60 === 0) {
+            //calls the ui to check for hovers
+            //this.UI.checkhover(this.clickableObjects);
+        }*/
+
         requestAnimationFrame(() => this.loop());
         this.update();
-        this.draw();
+
         //this.debugmovetarget()
 
         this.controls.update();
-        this.renderer.render(this.scene, this.camera);
+
+        this.draw();
+
 
     }
+
     addPlayer(id, position = { x: 0, y: 0, z: 0 }){
          {
 
@@ -123,24 +135,27 @@ export class Game {
             if (this.players[id]) return;
             const player = new Player(this.scene,position);
             this.players[id] = player;
+
         }
-        this.cacheClickableObjects();
+
 
     }
 
     addNpc(id, position = { x: 0, y: 0, z: 0 },npcid)
     {
-        const thisnpc=new npc(this.scene, position,npcid);
+        const thisnpc=new npc(this.scene, position,npcid,(npcInstance) => {
+            if (npcInstance.mesh) {
+                this.clickableObjects.push(npcInstance.mesh);
+            }
+        });
+        this.npcs[id] = thisnpc;
 
-        this.npcs[id]=thisnpc;
-        this.cacheClickableObjects();
     }
     addChest(id)
     {
         const pos = { x: 5, y: 0, z: -3 };
         const thischest=new Chest(id,this.scene,true,pos);
         this.chests[id]=thischest;
-        this.cacheClickableObjects();
     }
     updateNpc(id,name,position,targetposition,angle,health)
     {
@@ -222,12 +237,5 @@ export class Game {
         this.raycaster.setFromCamera(this.mouse, this.camera);
 
     }
-    cacheClickableObjects()
-    {
-        //code here for clickable objects like npc or players
-    }
-
-
-
 
 }

@@ -9,12 +9,28 @@ export class UI{
         this.ctx = ctx;
         this.camera=camera;
         this.canvas=canvas;
+
+        this.raycaster = new THREE.Raycaster();
+        this.mouse = new THREE.Vector2();
+        this.currentHovered = null;
+
+        this.clickableObjects=[];
+
+        window.addEventListener('mousemove', (event) => {
+            this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
+        });
     }
     makeSprite()
     {
+        const canvas = document.createElement('canvas');
+        canvas.width = 128;
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d');
 
 
     }
+
     drawchat(position,text)
     {
         const canvas = document.createElement('canvas');
@@ -148,6 +164,31 @@ export class UI{
 
         }
     }
+    checkhover(clickableobjects) {
+        this.clickableObjects=clickableobjects;
+        //console.log(this.clickableObjects);
+        if (!Array.isArray(this.clickableObjects) || this.clickableObjects.length === 0) {
+            return; // Skip if there's nothing to check
+        }
+        this.raycaster.setFromCamera(this.mouse, this.camera);
+
+
+
+        const intersects = this.raycaster.intersectObjects(this.clickableObjects, false);
+
+        if (intersects.length > 0) {
+            const hovered = intersects[0].object;
+
+            if (hovered !== this.currentHovered) {
+                // Hover ENTER: new object
+                console.log('hovering over'+hovered);
+            }
+        } else {
+            // Hover EXIT: no objects under mouse
+
+        }
+    }
+
 
 
 }

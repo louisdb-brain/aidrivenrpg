@@ -17,8 +17,8 @@ function SpellEditor() {
     }, []);
 
     const handleSpellChange = (field, value) => {
-        const updated = [...spells];
-        updated[selectedIndex][field] = value;
+        const updated = [...spells]; //copy the list of spells that works with react
+        updated[selectedIndex][field] = value;// for spell selectindex change the value of field (property)
         setSpells(updated);
     };
 

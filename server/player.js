@@ -1,13 +1,14 @@
 import * as THREE from 'three';
 import {gamestateClass}     from './server_gamestate.js';
-import {inventory} from "./inventory";
+import {inventory} from "./inventory.js";
 
 export class player {
-    constructor(pId,pIO,position = { x: 0, y: 0, z: 0 },pName) {
+    constructor(pId,emitCallback,position = { x: 0, y: 0, z: 0 },pName) {
 
 
         this.id=pId;
-        this.io=pIO;
+        //this.io=pIO; NEVER PASS IO->circular ref
+        this.emit=emitCallback;
         this.position = new THREE.Vector3(position.x, position.y, position.z);
         this.targetPosition = this.position.clone();
         this.lockedPosition= this.position.clone();
@@ -29,7 +30,7 @@ export class player {
         this.zone=0;
         this.name=pName;
 
-        this.inventory=new inventory(this.id,this.io,20);
+        this.inventory=new inventory(this.id,this.emit,20);
     }
 
 

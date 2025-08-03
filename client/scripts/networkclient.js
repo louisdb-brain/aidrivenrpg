@@ -14,9 +14,9 @@ export class NetworkClient {
         this.socket = io('http://localhost:3000');
         window.addEventListener('DOMContentLoaded', () => {
             //socket token
-            socket.on('session-token', (token) => {
+            /*socket.on('session-token', (token) => {
                 localStorage.setItem('sessionToken', token);
-            });
+            });*/
 
             //CHAT MESSAGE
             this.socket.on('chat-message', (msg) => {
@@ -99,7 +99,7 @@ export class NetworkClient {
                 }
             });
             this.socket.on('add-item', (data) => {
-                this.game.players[]
+                this.game.players[data.id] = 0;//change this
             })
 
         });

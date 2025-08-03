@@ -9,26 +9,20 @@
     </style>
 </head>
 <body>
+<div id="game-container">
+    <!-- Three.js will append the canvas here -->
 
+    <div id="ui-overlay">
+        <a href="./levelEditor/levelEditor.html" target="_blank" rel="noopener noreferrer">
+            Open Level Editor
+        </a>
+        <ul id="chatLog">chatlog</ul>
+        <input id="chatInput" placeholder="Type to talk ..." style="width: 400px" />
+        <button id="chatButton">send</button>
+    </div>
+</div>
 
-<a href="./levelEditor/levelEditor.html" target="_blank" rel="noopener noreferrer">
-    Open Level Editor
-</a>
-<ul id="chatLog">
-    chatlog
-
-
-
-</ul>
-<input id="chatInput" placeholder="Type to talk ..." style='width: 400px'/>
-<button id="chatButton" >send</button>
-
-<br>
-<script type="module" src="scripts/3dview.js"  ></script>
-
-
-
-
-
+<script type="module" src="scripts/3dview.js"></script>
 </body>
+
 </html>

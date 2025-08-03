@@ -27,8 +27,10 @@ gamestate.start();
 
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
-    playermanager.addPlayer(socket.id,io);
-    socket.emit('session-token', sessionToken);
+    playermanager.addPlayer(socket.id,(event, data) => {
+        io.to(socket.id).emit(event, data);//callback function for events
+    });
+    //socket.emit('session-token', sessionToken);
 
 
     io.emit('existing-players',playermanager.getAllPlayers() );
@@ -41,7 +43,10 @@ io.on('connection', (socket) => {
     //gamestate.emitPlayers();
 
     //console.log('Sending existing players:', playermanager.getAllPlayers());
-    socket.on('login',(playerID=>))
+    socket.on('login',(playerID=>
+    {
+
+    }));
 
     socket.on('chat-message', (msg) => {
         io.emit('chat-message', {
