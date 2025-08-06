@@ -58,6 +58,7 @@ export class Game {
         this.ground.rotation.x = -Math.PI / 2; // Rotate to face up
         this.ground.position.y = -1.05;
         this.scene.add(this.ground);
+        this.UI.drawInventoryBag;
 
         fetch('/levels/level1.json')
             .then(res => res.json())
@@ -102,6 +103,7 @@ export class Game {
         }
         //places cube where locktarget is for debugging
         //this.debuglocktarget();
+        this.UI.updateCooking();
 
     }
 

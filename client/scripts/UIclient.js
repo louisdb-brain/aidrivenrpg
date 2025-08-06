@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader";
 
 import {spriteHandeler}from './spriteHandeler.js';
+import {CookingGame} from "./skills/cooking.js";
 
 export class UI{
     constructor(scene,ctx,camera,canvas) {
@@ -9,17 +10,32 @@ export class UI{
         this.ctx = ctx;
         this.camera=camera;
         this.canvas=canvas;
-
+        this.playerInventory=["potion","sword"]
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
         this.currentHovered = null;
 
         this.clickableObjects=[];
 
+        this.itemLibrary = {};
+        fetch('./items.json')
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(item => {
+                    this.itemLibrary[item.id] = item;
+                    console.log(this.itemLibrary);
+                });
+            });
+
         window.addEventListener('mousemove', (event) => {
             this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
         });
+
+        this.cookinggame=new CookingGame(ctx,canvas);
+        this.cookinggame.addIngredient("tomato");
+        this.cookinggame.addIngredient("steak");
+
     }
     makeSprite()
     {
@@ -28,6 +44,81 @@ export class UI{
         canvas.height = 64;
         const ctx = canvas.getContext('2d');
 
+
+    }
+
+    updateCooking()
+    {
+        this.cookinggame.update();
+        this.cookinggame.draw(this.ctx);
+
+    }
+
+    drawInventoryBag(slotCount = 6) {
+        // Create inventory container
+        const inventory = document.createElement('div');
+        inventory.className = 'inventory-bag';
+
+        // Create close button
+        const closeBtn = document.createElement('div');
+        closeBtn.className = 'close-button';
+        closeBtn.textContent = '✖';
+        closeBtn.onclick = () => inventory.remove();
+        inventory.appendChild(closeBtn);
+
+        // Create slots
+        this.playerInventory.forEach((item, index) => {
+            const slot = document.createElement('div');
+            slot.className = 'bag-slot';
+            slot.dataset.slotIndex = index; // for drop tracking
+
+            // Allow dropping into this slot
+            slot.addEventListener('dragover', (e) => e.preventDefault());
+
+            slot.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const draggedItemId = e.dataTransfer.getData('text/plain');
+                const draggedImg = document.querySelector(`img[data-item-id="${draggedItemId}"]`);
+
+                if (draggedImg && slot !== draggedImg.parentElement) {
+                    // Remove from old slot
+                    const oldSlot = draggedImg.parentElement;
+                    oldSlot.innerHTML = '';
+
+                    // Move to new slot
+                    slot.innerHTML = '';
+                    slot.appendChild(draggedImg);
+
+                    // Update playerInventory structure
+                    const fromIndex = parseInt(oldSlot.dataset.slotIndex);
+                    const toIndex = parseInt(slot.dataset.slotIndex);
+
+                    const temp = playerInventory[fromIndex];
+                    playerInventory[fromIndex] = playerInventory[toIndex];
+                    playerInventory[toIndex] = temp;
+                }
+            });
+
+            if (item) {
+                const itemData = this.itemLibrary[item];
+                const img = document.createElement('img');
+                img.src = itemData.image;
+                img.alt = itemData.name;
+                img.title = itemData.name;
+                img.draggable = true;
+                img.dataset.itemId = item.id;
+
+                // Drag start logic
+                img.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', item.id);
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+
+                slot.appendChild(img);
+            }
+
+            inventory.appendChild(slot);
+        });
 
     }
 

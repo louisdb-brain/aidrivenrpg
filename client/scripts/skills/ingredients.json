@@ -1,0 +1,15 @@
+[
+  {
+    "name": "tomato",
+    "image": "sprites/tomato.png"
+  },
+  {
+    "name": "steak",
+    "image": "sprites/steak.png"
+  },
+  {
+    "name": "onion",
+    "image": "sprites/onion.png"
+  }
+]
+
