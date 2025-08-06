@@ -24,14 +24,35 @@ export class CookingGame {
             DONE: "DONE",
             BURNED: "BURNED",
         };
-
+    this.itemLibrary = {};
         this.pot = { x: 600, y: 400, w: 150, h: 100 };
+
+        fetch('scripts/skills/ingredients.json')
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(item => {
+                    this.itemLibrary[item.id] = item;
+                    console.log(this.itemLibrary);
+                });
+
+                this.addIngredient("steak");
+                this.addIngredient("onion");
+                this.addIngredient("steak");
+            });
         this.activeIngredients = [];
     }
 
+
     addIngredient(name) {
-        const y = this.activeIngredients.length * 120;
-        const ing = new Ingredient(200, y, name, this.ingredientPhase);
+
+        const y = 50+this.activeIngredients.length * 120;
+
+        const jsonobject=this.itemLibrary[name];
+        const imagepath=jsonobject.image;
+
+
+
+        const ing = new Ingredient(200, y, name, this.ingredientPhase,imagepath);
 
         // Event listeners (basic)
         this.canvas.addEventListener("mousedown", (e) => {
@@ -64,7 +85,10 @@ export class CookingGame {
                     ing.y < this.pot.y + this.pot.h
                 ) {
                     alert("Success! Ingredient in the pot!");
-                    ing.state = this.ingredientPhase.COOKING;
+                    ing.isCooking=true;
+                }
+                else {
+                    ing.isCooking = false;
                 }
             }
         });
@@ -94,8 +118,18 @@ export class CookingGame {
 }
 
 export class Ingredient {
-    constructor(x, y, name, phases) {
+    constructor(x, y, name, phases,imagePath) {
         this.name = name;
+        this.imagePath = imagePath;
+        this.image = new Image();
+        this.image.src = imagePath;
+        this.image.onload = () => {
+            console.log(`✅ Loaded: ${imagePath}`);
+        };
+
+        this.image.onerror = () => {
+            console.error(`❌ FAILED TO LOAD IMAGE: ${imagePath}`);
+        };
         this.x = x;
         this.y = y;
         this.w = 100;
@@ -103,15 +137,17 @@ export class Ingredient {
         this.cut = false;
         this.cutCount = 0;
         this.dragging = false;
+        this.isCooking=false;
         this.timeCooking = 0;
         this.cookTime = 200;
-        this.burnTime = 500;
+        this.burnTime = 400;
         this.phases = phases;
         this.state = this.phases.UNCUT;
     }
 
     update() {
-        if (this.state === this.phases.COOKING) {
+        if(this.isCooking) {
+            this.state=this.phases.COOKING;
             this.timeCooking++;
             if (this.timeCooking > this.burnTime) {
                 this.state = this.phases.BURNED;
@@ -119,13 +155,37 @@ export class Ingredient {
                 this.state = this.phases.DONE;
             }
         }
+
     }
 
     draw(ctx) {
-        ctx.fillStyle = this.cut ? "lightgreen" : "tomato";
+
+        ctx.fillStyle = this.cut ? "lightgreen" : "blue";
+        switch (this.state) {
+            case this.phases.DONE:
+                ctx.fillStyle="orange";
+                break;
+
+
+            case this.phases.BURNED:
+                ctx.fillStyle="red";
+
+        }
         ctx.fillRect(this.x, this.y, this.w, this.h);
-        ctx.fillStyle = "black";
+        ctx.fillStyle = "yellow";
         ctx.fillText(`${this.name} (${this.state})`, this.x, this.y - 10);
+
+        if (this.image && this.image.complete && this.image.naturalWidth !== 0) {
+            const padding = 10;
+            const imgX = this.x + padding;
+            const imgY = this.y + padding;
+            const imgW = this.w - padding * 2;
+            const imgH = this.h - padding * 2;
+            ctx.drawImage(this.image, imgX, imgY, imgW, imgH);
+
+
+
+        }
     }
 
     hitTest(x, y) {

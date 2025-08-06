@@ -23,7 +23,7 @@ export class UI{
             .then(data => {
                 data.forEach(item => {
                     this.itemLibrary[item.id] = item;
-                    console.log(this.itemLibrary);
+                    //console.log(this.itemLibrary);
                 });
             });
 
@@ -33,8 +33,8 @@ export class UI{
         });
 
         this.cookinggame=new CookingGame(ctx,canvas);
-        this.cookinggame.addIngredient("tomato");
-        this.cookinggame.addIngredient("steak");
+        /*this.cookinggame.addIngredient("tomato");
+        this.cookinggame.addIngredient("steak");*/
 
     }
     makeSprite()

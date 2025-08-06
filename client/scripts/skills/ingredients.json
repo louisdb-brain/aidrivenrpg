@@ -1,14 +1,14 @@
 [
   {
-    "name": "tomato",
+    "id": "tomato",
     "image": "sprites/tomato.png"
   },
   {
-    "name": "steak",
+    "id": "steak",
     "image": "sprites/steak.png"
   },
   {
-    "name": "onion",
+    "id": "onion",
     "image": "sprites/onion.png"
   }
 ]
