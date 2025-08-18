@@ -13,23 +13,42 @@ import { loadLevel } from '../leveleditor/loadlevel.js';
 export class Game {
     constructor() {
         this.scene = new THREE.Scene();
+        this.scene.fog = new THREE.FogExp2(
+            0x99ffcc,    // Light green color (hex)
+            0.01,           // Near (start distance of fog)
+
+        );
+
+        this.scene.background = new THREE.Color(0x99ffcc);
+
+
         this.localPlayerId=0;
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.camera.position.z = 5;
 
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         document.getElementById('game-container').appendChild(this.renderer.domElement);
         //document.body.appendChild(this.renderer.domElement);
+        this.renderer.outputEncoding = THREE.sRGBEncoding;
+        this.renderer.toneMapping = THREE.LinearToneMapping;
+        this.renderer.toneMappingExposure = 0.9;
+
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.target.set(0, 1, 0); // optional: focus on character height
         this.controls.update();
 
 
-        const light = new THREE.HemisphereLight(0xffffff, 0x444444);
+        const light = new THREE.HemisphereLight(0xF0B05B, 0xA1A1A1);
         light.position.set(0, 200, 0);
         this.scene.add(light);
+        const ambient = new THREE.AmbientLight(0xffffff, 1.2); // 1.5 is brighter.
+        this.scene.add(ambient);
+        const pointlight=new THREE.PointLight(0xffffff, 1.2,800);
+        pointlight.position.set(5, 0, -4);
+        this.scene.add(pointlight);
+        this.scene.add(new THREE.PointLightHelper(pointlight, 0.3));
 
         this.clock = new THREE.Clock();
 

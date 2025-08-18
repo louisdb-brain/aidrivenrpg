@@ -1,5 +1,6 @@
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as THREE from 'three';
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 const SPRITE_SCALE_DIVISOR = 100; // 100px = 1 world unit. Adjust for your game!
@@ -260,7 +261,7 @@ export function loadLevel(data, pScene) {
                 const planeH = imgH / SPRITE_SCALE_DIVISOR;
 
                 const geometry = new THREE.PlaneGeometry(planeW, planeH);
-                const material = new THREE.MeshStandardMaterial({
+                const material = new THREE.MeshBasicMaterial({
                     map: texture,
                     transparent: true,
                     depthWrite: false,

@@ -37,7 +37,13 @@ export function loadLevel(data, pScene) {
             });
         }
         else if (objData.type === 'sprite' && objData.name) {
-            textureLoader.load('/sprites/environment/' + objData.name, (texture) => {
+            textureLoader.load('/sprites/environment/' + (objData.texture || objData.name), (texture) => {
+
+                //texture sharpness
+                texture.encoding = THREE.sRGBEncoding;
+                texture.magFilter = THREE.NearestFilter;
+                texture.minFilter = THREE.NearestFilter;
+
                 const imgW = texture.image.width;
                 const imgH = texture.image.height;
                 const planeW = imgW / SPRITE_SCALE_DIVISOR;
@@ -46,9 +52,11 @@ export function loadLevel(data, pScene) {
                 const geometry = new THREE.PlaneGeometry(planeW, planeH);
                 const material = new THREE.MeshStandardMaterial({
                     map: texture,
+
                     transparent: true,
-                    depthWrite: false,
-                    side: THREE.DoubleSide
+                    side: THREE.DoubleSide,
+
+                    alphaTest: 0.5
                 });
 
                 const plane = new THREE.Mesh(geometry, material);
@@ -58,8 +66,7 @@ export function loadLevel(data, pScene) {
                     objData.position.y + planeH / 2,
                     objData.position.z
                 );
-                // Optionally rotate here too if desired
-                // plane.rotation.y = ...;
+                // Optional: plane.rotation.y = ...;
 
                 pScene.add(plane);
 
@@ -95,7 +102,7 @@ export function loadLevel(data, pScene) {
         }
 
         // NEW: Sprite
-        else if (objData.type === 'sprite' && objData.texture) {
+        /*else if (objData.type === 'sprite' && objData.texture) {
             const texture = textureLoader.load("sprites/environment/" + objData.texture);
 
             const material = new THREE.SpriteMaterial({
@@ -124,6 +131,6 @@ export function loadLevel(data, pScene) {
                 texture: objData.texture,
                 position: objData.position
             });
-        }
+        }*/
     });
 }
