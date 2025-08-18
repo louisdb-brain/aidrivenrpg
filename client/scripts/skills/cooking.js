@@ -1,5 +1,6 @@
+
 export class CookingGame {
-    constructor() {
+    constructor(canvas) {
         // Create a new canvas for UI
         this.canvas = document.createElement('canvas');
         this.canvas.id = "uiCanvas";
@@ -7,7 +8,7 @@ export class CookingGame {
         this.canvas.height = window.innerHeight;
         this.canvas.style.position = 'absolute';
         this.canvas.style.top = '0';
-        this.canvas.style.left = '0';
+        this.canvas.style.left = '500';
         this.canvas.style.zIndex = '10';
         this.canvas.style.pointerEvents = 'auto'; // allow mouse input
 
@@ -32,15 +33,34 @@ export class CookingGame {
             .then(data => {
                 data.forEach(item => {
                     this.itemLibrary[item.id] = item;
-                    console.log(this.itemLibrary);
+                    //console.log(this.itemLibrary);
                 });
 
                 this.addIngredient("steak");
                 this.addIngredient("onion");
                 this.addIngredient("steak");
             });
+
+        this.canvas.addEventListener("mousedown", this.handleMouseDown.bind(this));
+        this.canvas.addEventListener("mousemove", this.handleMouseMove.bind(this));
+        this.canvas.addEventListener("mouseup", this.handleMouseUp.bind(this));
+        this.canvas.addEventListener("mouseleave", this.handleMouseLeave.bind(this));
+
+
         this.activeIngredients = [];
+        //cursor
+        this.customCursor = document.createElement("div");
+        this.customCursor.id = "customCursor";
+        document.body.appendChild(this.customCursor);
+        this.cursorAngle=0;
+        //SOUND
+        this.cutSound = new Audio("sounds/cooking_cut.mp3");
+        this.sizzleSound=new Audio("sounds/cooking_longsizzle.mp3");
+        this.shortSizzleSound=new Audio("sounds/cooking_sizzle.mp3");
+        this.playsizzle=false;
     }
+
+
 
 
     addIngredient(name) {
@@ -52,13 +72,18 @@ export class CookingGame {
 
 
 
-        const ing = new Ingredient(200, y, name, this.ingredientPhase,imagepath);
+        const ing = new Ingredient(200, y, name, this.ingredientPhase,imagepath,this.shortSizzleSound);
 
-        // Event listeners (basic)
-        this.canvas.addEventListener("mousedown", (e) => {
-            const { offsetX, offsetY } = e;
+
+        this.activeIngredients.push(ing);
+    }
+    handleMouseDown(e) {
+        const { offsetX, offsetY } = e;
+        for (const ing of this.activeIngredients) {
             if (!ing.cut && ing.hitTest(offsetX, offsetY)) {
                 ing.cutCount++;
+                this.cutSound.currentTime = 0;
+                this.cutSound.play();
                 if (ing.cutCount >= 3) {
                     ing.cut = true;
                     ing.state = this.ingredientPhase.CUT;
@@ -66,16 +91,55 @@ export class CookingGame {
             } else if (ing.cut && ing.hitTest(offsetX, offsetY)) {
                 ing.dragging = true;
             }
-        });
+        }
 
-        this.canvas.addEventListener("mousemove", (e) => {
-            if (ing.dragging) {
-                ing.x = e.offsetX - ing.w / 2;
-                ing.y = e.offsetY - ing.h / 2;
+        // Animate knife
+        this.customCursor.style.transition = 'transform 0.1s';
+        this.customCursor.style.transform = `rotate(-45deg)`;
+
+
+
+    }
+
+    handleMouseMove(e) {
+        const { offsetX, offsetY, pageX, pageY } = e;
+
+        let isHoveringUncut = false;
+        let isHoveringCut = false;
+
+        for (const ing of this.activeIngredients) {
+            if (!ing.cut && ing.hitTest(offsetX, offsetY)) {
+                isHoveringUncut = true;
+            } else if (ing.cut && ing.hitTest(offsetX, offsetY)) {
+                isHoveringCut = true;
             }
-        });
 
-        this.canvas.addEventListener("mouseup", (e) => {
+            if (ing.dragging) {
+                ing.x = offsetX - ing.w / 2;
+                ing.y = offsetY - ing.h / 2;
+            }
+        }
+
+        // Cursor logic
+        if (isHoveringUncut || isHoveringCut) {
+            document.body.classList.add("cursor-hidden");
+            this.customCursor.style.display = "block";
+            this.customCursor.style.left = `${pageX - 24}px`;
+            this.customCursor.style.top = `${pageY - 24}px`;
+
+            if (isHoveringUncut) {
+                this.customCursor.className = "knife";
+            } else if (isHoveringCut) {
+                this.customCursor.className = "spatula";
+            }
+        } else {
+            document.body.classList.remove("cursor-hidden");
+            this.customCursor.style.display = "none";
+        }
+    }
+
+    handleMouseUp(e) {
+        for (const ing of this.activeIngredients) {
             if (ing.dragging) {
                 ing.dragging = false;
                 if (
@@ -84,21 +148,42 @@ export class CookingGame {
                     ing.y + ing.h > this.pot.y &&
                     ing.y < this.pot.y + this.pot.h
                 ) {
-                    alert("Success! Ingredient in the pot!");
-                    ing.isCooking=true;
-                }
-                else {
+                    ing.isCooking = true;
+                    this.sizzleSound.currentTime=0;
+                    this.sizzleSound.play();
+                } else {
                     ing.isCooking = false;
+
                 }
             }
-        });
+        }
+        this.customCursor.style.transition = 'transform 0.05s';
+        this.customCursor.style.transform = `rotate(0deg)`;
 
-        this.activeIngredients.push(ing);
     }
 
+    handleMouseLeave() {
+        document.body.classList.remove("cursor-hidden");
+        this.customCursor.style.display = "none";
+    }
+
+
     update() {
+        this.playsizzle=false;
         for (let ing of this.activeIngredients) {
             ing.update();
+            if(ing.isCooking){this.playsizzle=true;}
+        }
+        if (this.playsizzle) {
+            if (this.sizzleSound.paused) {
+                this.sizzleSound.currentTime = 0;
+                this.sizzleSound.play().catch(console.error);
+            }
+        } else {
+            if (!this.sizzleSound.paused) {
+                this.sizzleSound.pause();
+                this.sizzleSound.currentTime = 0;
+            }
         }
 
 
@@ -107,7 +192,8 @@ export class CookingGame {
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.fillStyle = "#654321";
-        this.ctx.fillRect(this.pot.x, this.pot.y, this.pot.w, this.pot.h);
+        const potrect=this.ctx.fillRect(this.pot.x, this.pot.y, this.pot.w, this.pot.h);
+
 
         for (let ing of this.activeIngredients) {
             ing.draw(this.ctx);
@@ -115,10 +201,12 @@ export class CookingGame {
 
         requestAnimationFrame(() => this.draw());
     }
+
+
 }
 
 export class Ingredient {
-    constructor(x, y, name, phases,imagePath) {
+    constructor(x, y, name, phases,imagePath,psizzlesound) {
         this.name = name;
         this.imagePath = imagePath;
         this.image = new Image();
@@ -143,20 +231,37 @@ export class Ingredient {
         this.burnTime = 400;
         this.phases = phases;
         this.state = this.phases.UNCUT;
+        this.sizzlesound=psizzlesound;
+        this.hasPlayedSound=false;
     }
 
     update() {
-        if(this.isCooking) {
-            this.state=this.phases.COOKING;
+        if (this.isCooking) {
+            this.state = this.phases.COOKING;
             this.timeCooking++;
-            if (this.timeCooking > this.burnTime) {
+
+            if (this.timeCooking > this.burnTime && this.state !== this.phases.BURNED) {
                 this.state = this.phases.BURNED;
-            } else if (this.timeCooking > this.cookTime) {
+                if (!this.hasPlayedSound) {
+                    this.sizzlesound.currentTime = 0;
+                    this.sizzlesound.play().catch(console.error);
+                    this.hasPlayedSound = true;
+                }
+            } else if (this.timeCooking > this.cookTime && this.state !== this.phases.DONE) {
                 this.state = this.phases.DONE;
+
+                if (!this.hasPlayedSound) {
+                    this.sizzlesound.currentTime = 0;
+                    this.sizzlesound.play().catch(console.error);
+                    this.hasPlayedSound = true;
+                }
+                if(this.timeCooking==this.burnTime-1) this.hasPlayedSound=false;
             }
-        }
 
     }
+
+
+}
 
     draw(ctx) {
 
@@ -189,7 +294,7 @@ export class Ingredient {
     }
 
     hitTest(x, y) {
-        console.log(this.x, this.y);
+        //console.log(this.x, this.y);
         return (
             x >= this.x &&
             x <= this.x + this.w &&

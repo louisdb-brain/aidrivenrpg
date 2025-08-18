@@ -99,7 +99,9 @@ export class NetworkClient {
                 }
             });
             this.socket.on('add-item', (data) => {
-                this.game.players[data.id] = 0;//change this
+                if(this.socket.id === data.id) {
+                    this.game.UI.inventory.addItem(data.name,"./sprites/onion.png");
+                }
             })
 
         });

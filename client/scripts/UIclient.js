@@ -4,12 +4,15 @@ import {GLTFLoader} from "three/addons/loaders/GLTFLoader";
 import {spriteHandeler}from './spriteHandeler.js';
 import {CookingGame} from "./skills/cooking.js";
 
+import{Inventory} from "./inventory.js";
+
 export class UI{
     constructor(scene,ctx,camera,canvas) {
         this.scene = scene;
         this.ctx = ctx;
         this.camera=camera;
         this.canvas=canvas;
+        this.inventory=new Inventory(document.getElementById("inventoryCanvas"));
         this.playerInventory=["potion","sword"]
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
@@ -32,9 +35,11 @@ export class UI{
             this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
         });
 
-        this.cookinggame=new CookingGame(ctx,canvas);
+        //this.cookinggame=new CookingGame(this.canvas);
         /*this.cookinggame.addIngredient("tomato");
         this.cookinggame.addIngredient("steak");*/
+
+
 
     }
     makeSprite()
@@ -47,14 +52,15 @@ export class UI{
 
     }
 
-    updateCooking()
+    update()
     {
-        this.cookinggame.update();
-        this.cookinggame.draw(this.ctx);
+        //this.cookinggame.update();
+        //this.cookinggame.draw();
+        this.inventory.draw();
 
     }
 
-    drawInventoryBag(slotCount = 6) {
+    /*drawInventoryBag(slotCount = 6) {
         // Create inventory container
         const inventory = document.createElement('div');
         inventory.className = 'inventory-bag';
@@ -120,7 +126,7 @@ export class UI{
             inventory.appendChild(slot);
         });
 
-    }
+    }*/
 
     drawchat(position,text)
     {

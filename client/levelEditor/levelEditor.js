@@ -2,9 +2,12 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
-const placedObjects=[];
+const SPRITE_SCALE_DIVISOR = 100; // 100px = 1 world unit. Adjust for your game!
+
+const placedObjects = [];
 const scene = new THREE.Scene();
-const localPlayerId=0;
+const localPlayerId = 0;
+
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.z = 5;
 
@@ -13,9 +16,8 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 1, 0); // optional: focus on character height
+controls.target.set(0, 1, 0);
 controls.update();
-
 
 const light = new THREE.HemisphereLight(0xffffff, 0x444444);
 light.position.set(0, 200, 0);
@@ -27,110 +29,126 @@ const groundMaterial = new THREE.MeshStandardMaterial({
     side: THREE.DoubleSide,
 });
 const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-ground.rotation.x = -Math.PI / 2; // Rotate to face up
+ground.rotation.x = -Math.PI / 2;
 ground.position.y = -1.05;
 scene.add(ground);
 
-function animate() {
-    requestAnimationFrame(animate);
-    controls.update(); // Keeps OrbitControls responsive
-    renderer.render(scene, camera);
-}
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 const selector = document.getElementById('modelSelector');
+
+function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+}
+animate();
+
 window.addEventListener('pointerdown', (event) => {
-    if (event.button !== 0) return; // Only left-click (button 0)
+    if (event.button !== 0) return; // Left click only
 
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
-
     const intersects = raycaster.intersectObject(ground);
 
     if (intersects.length > 0) {
         const point = intersects[0].point;
-        placeObject(point,scene);
+        placeObject(point);
     }
 });
+
 window.addEventListener('contextmenu', (event) => {
-    event.preventDefault(); // Prevent default browser right-click menu
+    event.preventDefault();
 
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
-
-    const intersects = raycaster.intersectObjects(placedObjects, false); // Only check placed objects
+    const intersects = raycaster.intersectObjects(scene.children, false);
 
     if (intersects.length > 0) {
         const obj = intersects[0].object;
-
-        // Safety check: Ignore ground, even if accidentally included
-        if (obj === ground) {
-            console.log('Cannot remove ground plane.');
-            return;
-        }
+        if (obj === ground) return; // Don't remove ground
 
         scene.remove(obj);
-
-        const index = placedObjects.indexOf(obj);
-        if (index > -1) {
-            placedObjects.splice(index, 1);
+        // Remove from placedObjects by matching position and type
+        for (let i = 0; i < placedObjects.length; i++) {
+            const po = placedObjects[i];
+            if (
+                (po.mesh === obj) ||
+                (po.type === 'cube' && obj.position.equals(new THREE.Vector3(po.position.x, po.position.y, po.position.z))) ||
+                (po.type === 'model' && obj.position.equals(new THREE.Vector3(po.position.x, po.position.y, po.position.z))) ||
+                (po.type === 'sprite' && obj.position.equals(new THREE.Vector3(po.position.x, po.position.y + (po.spriteScale ? po.spriteScale.h / 2 : 0), po.position.z)))
+            ) {
+                placedObjects.splice(i, 1);
+                break;
+            }
         }
-
-        console.log('Object removed.');
     }
 });
-/*
-function placeCube(position) {
-    const color = selector.value;
-    if (value.endsWith('.glb')) {
-        const loader = new THREE.GLTFLoader();
 
-        loader.load(value, function (gltf) {
-            const model = gltf.scene;
-            model.position.copy(position);
-            scene.add(model);
-        }
-
-
-            const cube = new THREE.Mesh(
-        new THREE.BoxGeometry(1, 1, 1),
-        new THREE.MeshStandardMaterial({ color })
-    );
-
-    cube.position.copy(position);
-    scene.add(cube);
-    placedObjects.push(cube);
-}*/
 function placeObject(position) {
     const value = selector.value;
-    const pathname='/models/house.glb';
-    //CHECK FOR .GLB MODELS
+
+    // Place GLB model
     if (value.endsWith('.glb')) {
         const loader = new GLTFLoader();
-        console.log("Trying to load:", pathname);
-        console.log(pathname);
-        loader.load(pathname, function (gltf) {
+        loader.load('/models/' + value, function (gltf) {
             const model = gltf.scene;
             model.position.copy(position);
             scene.add(model);
 
             placedObjects.push({
                 type: 'model',
-                name: value, // glb file name or path
-                position: {
-                    x: position.x,
-                    y: position.y,
-                    z: position.z
-                }
+                name: value,
+                position: { x: position.x, y: position.y, z: position.z },
+                mesh: model
             });
         });
     }
+    // Place Sprite
+    else if (value.endsWith('.png') || value.endsWith('.jpg') || value.endsWith('.jpeg')) {
+        const textureLoader = new THREE.TextureLoader();
+        textureLoader.load('/sprites/environment/' + value, (texture) => {
+            const imgW = texture.image.width;
+            const imgH = texture.image.height;
+            const planeW = imgW / SPRITE_SCALE_DIVISOR;
+            const planeH = imgH / SPRITE_SCALE_DIVISOR;
+
+            const geometry = new THREE.PlaneGeometry(planeW, planeH);
+            const material = new THREE.MeshStandardMaterial({
+                map: texture,
+                transparent: true,
+                depthWrite: false,
+                side: THREE.DoubleSide
+            });
+
+            const plane = new THREE.Mesh(geometry, material);
+
+            // Place with origin at bottom
+            plane.position.copy(position);
+            plane.position.y += planeH / 2;
+
+            // Optionally rotate: for example, to make it vertical in world space
+            // plane.rotation.y = Math.PI / 4; // Example: 45° around Y
+
+            scene.add(plane);
+
+            placedObjects.push({
+                type: 'sprite',
+                name: value,
+                position: { x: position.x, y: position.y, z: position.z },
+                spriteScale: { w: planeW, h: planeH },
+                mesh: plane
+            });
+        });
+    }
+
+
+    // Place Cube
     else {
-        // You can ignore this part if you want to load models  .glb
         const cube = new THREE.Mesh(
             new THREE.BoxGeometry(1, 1, 1),
             new THREE.MeshStandardMaterial({ color: value })
@@ -138,24 +156,18 @@ function placeObject(position) {
         cube.position.copy(position);
         scene.add(cube);
 
-        // Optional: Save cube info too
         placedObjects.push({
             type: 'cube',
             color: value,
-            position: {
-                x: position.x,
-                y: position.y,
-                z: position.z
-            }
+            position: { x: position.x, y: position.y, z: position.z },
+            mesh: cube
         });
     }
 }
 
+document.getElementById('savebutton').addEventListener('click', savemodels);
 
-document.getElementById('savebutton').addEventListener('click', savemodels)
-
-function savemodels()
-{
+function savemodels() {
     const saveData = placedObjects.map(obj => {
         if (obj.type === 'cube') {
             return {
@@ -169,12 +181,19 @@ function savemodels()
                 name: obj.name,
                 position: obj.position
             };
+        } else if (obj.type === 'sprite') {
+            return {
+                type: 'sprite',
+                name: obj.name,
+                position: obj.position
+                // Optional: also save scale if you want custom size reload
+                //, spriteScale: obj.spriteScale
+            };
         }
     });
 
     const json = JSON.stringify(saveData, null, 2);
     download('levelData.json', json);
-
 }
 
 function download(filename, text) {
@@ -185,6 +204,7 @@ function download(filename, text) {
     element.click();
     document.body.removeChild(element);
 }
+
 document.getElementById('loadbutton').addEventListener('click', () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -197,26 +217,24 @@ document.getElementById('loadbutton').addEventListener('click', () => {
         const reader = new FileReader();
         reader.onload = () => {
             const data = JSON.parse(reader.result);
-            loadLevel(data,scene);
+            loadLevel(data, scene);
         };
         reader.readAsText(file);
     };
 
     input.click();
 });
-export function loadLevel(data,pScene) {
+
+export function loadLevel(data, pScene) {
     clearPlacedObjects();
 
     const loader = new GLTFLoader();
+    const textureLoader = new THREE.TextureLoader();
 
     data.forEach(objData => {
-        if(objData.type==='npc'&& objData.name && objData.name.endsWith('.glb')){
-            //LOAD NPCS TROUGH THIS
-        }
-        // Handle GLB models
+        // GLB Models
         if (objData.type === 'model' && objData.name && objData.name.endsWith('.glb')) {
-            const pathname="models/"+objData.name;
-            loader.load(pathname, gltf => {
+            loader.load('/models/' + objData.name, gltf => {
                 const model = gltf.scene;
                 model.position.set(
                     objData.position.x,
@@ -228,14 +246,50 @@ export function loadLevel(data,pScene) {
                 placedObjects.push({
                     type: 'model',
                     name: objData.name,
-                    position: objData.position
+                    position: objData.position,
+                    mesh: model
                 });
-            }, undefined, error => {
-                console.error('Failed to load model:', objData.name, error);
+            });
+        }
+        // Sprites
+        else if (objData.type === 'sprite' && objData.name) {
+            textureLoader.load('/sprites/environment/' + objData.name, (texture) => {
+                const imgW = texture.image.width;
+                const imgH = texture.image.height;
+                const planeW = imgW / SPRITE_SCALE_DIVISOR;
+                const planeH = imgH / SPRITE_SCALE_DIVISOR;
+
+                const geometry = new THREE.PlaneGeometry(planeW, planeH);
+                const material = new THREE.MeshStandardMaterial({
+                    map: texture,
+                    transparent: true,
+                    depthWrite: false,
+                    side: THREE.DoubleSide
+                });
+
+                const plane = new THREE.Mesh(geometry, material);
+
+                plane.position.set(
+                    objData.position.x,
+                    objData.position.y + planeH / 2,
+                    objData.position.z
+                );
+                // Optionally rotate here too if desired
+                // plane.rotation.y = ...;
+
+                pScene.add(plane);
+
+                placedObjects.push({
+                    type: 'sprite',
+                    name: objData.name,
+                    position: objData.position,
+                    spriteScale: { w: planeW, h: planeH },
+                    mesh: plane
+                });
             });
         }
 
-        // Handle cubes
+        // Cubes
         else if (objData.type === 'cube') {
             const cube = new THREE.Mesh(
                 new THREE.BoxGeometry(1, 1, 1),
@@ -251,16 +305,18 @@ export function loadLevel(data,pScene) {
             placedObjects.push({
                 type: 'cube',
                 color: objData.color,
-                position: objData.position
+                position: objData.position,
+                mesh: cube
             });
         }
     });
 }
+
 function clearPlacedObjects() {
     placedObjects.forEach(obj => {
-        scene.remove(obj);
+        if (obj.mesh && obj.mesh.parent) {
+            obj.mesh.parent.remove(obj.mesh);
+        }
     });
-    placedObjects.length = 0; // Clear the array
+    placedObjects.length = 0;
 }
-
-animate();

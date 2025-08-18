@@ -38,6 +38,9 @@ io.on('connection', (socket) => {
         id:socket.id,
         position: {x: 0, y: 0, z: 0}
     });
+    playermanager.additem(socket.id,"onion");
+    playermanager.additem(socket.id,"onion");
+    playermanager.additem(socket.id,"onion");
 
     //gamestate.emitNpc();
     //gamestate.emitPlayers();

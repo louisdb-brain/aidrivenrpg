@@ -35,7 +35,7 @@ export class npc{
         this.aiupdate(delta);
         //this.checkFollow(players)
         this.move(delta);
-        console.log(this.position)
+        //console.log(this.position)
 
 
 

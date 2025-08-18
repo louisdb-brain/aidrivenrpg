@@ -2,5 +2,12 @@
   "green",
   "blue",
   "black",
-  "house.glb"
+  "house.glb",
+  "brush_green.png",
+  "brush_green_grass.png",
+  "brush_background.png",
+  "tree_oak.png",
+  "woodlandhouse_fence.png",
+  "woodlandhouse_main.png",
+  "woodlandhouse_back.png"
 ]

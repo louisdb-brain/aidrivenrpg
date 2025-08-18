@@ -1,0 +1,22 @@
+[
+  {
+    "id": "potion",
+    "name": "sword",
+    "image": "./sprites/potion.png"
+  },
+  {
+    "id": "sword",
+    "name": "sword",
+    "image": "./sprites/sword.png"
+  },
+  {
+    "id": "onion",
+    "name": "onion",
+    "image": "./sprites/onion.png"
+  }
+  ,{
+  "id":"steak",
+  "name": "steak",
+  "image": "./sprites/steak.png"
+}
+]

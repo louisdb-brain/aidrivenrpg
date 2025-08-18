@@ -72,6 +72,10 @@ export const playermanager = {
         {
             players[id].wantedlevel = pwantedlevel;
         }
+    },
+    additem(id,itemname)
+    {
+        players[id].inventory.additem(itemname);
     }
 
 };

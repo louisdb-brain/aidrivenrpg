@@ -1,15 +1,22 @@
 [
   {
     "id": "tomato",
-    "image": "sprites/tomato.png"
+    "image": "sprites/tomato.png",
+    "burntime": "300",
+    "cooktime": "120"
   },
   {
     "id": "steak",
-    "image": "sprites/steak.png"
+    "image": "sprites/steak.png",
+    "burntime": "400",
+    "cooktime": "220"
   },
   {
     "id": "onion",
-    "image": "sprites/onion.png"
+    "image": "sprites/onion.png",
+    "burntime": "500",
+    "cooktime": "120"
   }
 ]
+
 

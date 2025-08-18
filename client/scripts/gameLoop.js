@@ -58,7 +58,7 @@ export class Game {
         this.ground.rotation.x = -Math.PI / 2; // Rotate to face up
         this.ground.position.y = -1.05;
         this.scene.add(this.ground);
-        this.UI.drawInventoryBag;
+        this.UI.update();
 
         fetch('/levels/level1.json')
             .then(res => res.json())
@@ -69,10 +69,8 @@ export class Game {
 
 
     }
-    loadLevel() {
-
-
-    }
+    /*loadLevel() {
+    }*/
 
     update() {
         //this.UI.createRect();
@@ -103,7 +101,8 @@ export class Game {
         }
         //places cube where locktarget is for debugging
         //this.debuglocktarget();
-        this.UI.updateCooking();
+        this.UI.update();
+
 
     }
 
@@ -117,15 +116,18 @@ export class Game {
             //calls the ui to check for hovers
             //this.UI.checkhover(this.clickableObjects);
         }*/
+        this.draw();
 
-        requestAnimationFrame(() => this.loop());
         this.update();
+
 
         //this.debugmovetarget()
 
         this.controls.update();
 
-        this.draw();
+        requestAnimationFrame(() => this.loop());
+
+
 
 
     }

@@ -11,7 +11,7 @@ export class inventory{
     additem(itemId)
     {
         if(this.items.length<this.holdmax){
-            this.items.add(itemId);
+            this.items.push(itemId);
             const payload={
                 id:this.playerid,
                 item:itemId

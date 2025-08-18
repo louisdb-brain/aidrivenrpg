@@ -98,7 +98,7 @@ export class player {
                 const randomhHit = Math.floor(Math.random() * (this.basepower + this.equipmentpower / 2));
                 this.targetObject.takeDamage(randomhHit);
                 this.targetObject.takeDamage(randomhHit);
-                console.log(randomhHit + "damage dealt to " + this.targetObject);
+                //console.log(randomhHit + "damage dealt to " + this.targetObject);
             }
 
 
