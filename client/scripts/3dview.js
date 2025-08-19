@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { GLTFLoader } from 'three/addons//loaders/GLTFLoader.js';
 import { NetworkClient } from "./networkclient.js";
 import { Game } from "./gameLoop";
 
