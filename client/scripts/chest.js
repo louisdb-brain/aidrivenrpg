@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import {GLTFLoader} from "three/addons/loaders/GLTFLoader";
-import {player} from "../../server/player";
+import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
+
 
 export class  Chest {
     constructor(id,scene,grounded,pStartPos={x:0,y:0,z:0}){

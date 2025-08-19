@@ -1,5 +1,5 @@
 
-import { OrbitControls } from 'three/addons/jsm/controls/OrbitControls.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import * as THREE from 'three';
 import { Player } from './player.js';
 import {npc} from './npc.js';

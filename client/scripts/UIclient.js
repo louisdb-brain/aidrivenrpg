@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {GLTFLoader} from "three/addons/loaders/GLTFLoader";
+
 
 import {spriteHandeler}from './spriteHandeler.js';
 import {CookingGame} from "./skills/cooking.js";

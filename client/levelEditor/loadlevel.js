@@ -1,4 +1,4 @@
-import {GLTFLoader} from "three/addons/loaders/GLTFLoader";
+import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import * as THREE from "three";
 
 const placedObjects = [];
