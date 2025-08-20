@@ -59,6 +59,16 @@ window.addEventListener('mouseup', (event) => {
             }
         }
     }
+    const availableLoot=thisgame.levelHandeler.loots;
+    if (availableLoot .size!=0)
+    {
+        const thisloot=thisgame.levelHandeler.tryPickupLootFromRay(raycaster);
+        if(thisloot)
+        {
+            networkHandler.loot(thisloot.itemID);
+        }
+
+    }
 
     // Optionally also check for ground click
     const groundIntersects = raycaster.intersectObject(thisgame.ground);

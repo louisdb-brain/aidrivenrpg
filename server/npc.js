@@ -6,16 +6,17 @@ import {materialThickness} from "three/tsl";
 
 export class npc{
 
-    constructor(npcID,positionObj,pName,io){
+    constructor(npcID,positionObj,pName,io,onDestroy){
         this.io=io;
         this.npcid = npcID;
         this.position= new THREE.Vector3(positionObj.x,positionObj.y,positionObj.z);
         this.zone=0;
         this.name=pName;
         this.health=10;
-        this.attack=0;
+        this.attack=2;
         this.detectionRadius=1000;
         this.detectionsphere= new THREE.Sphere(this.position, this.detectionRadius);
+        this.onDestroy = onDestroy;
 
         this.speed= 2;
         this.attackspeed=3;
@@ -32,6 +33,21 @@ export class npc{
 
     }
     update(delta,players){
+
+        if(this.health<1)
+        {
+            const payload=
+                {
+                    id:this.npcid,
+                    name:this.name,
+
+                }
+            this.io.emit('npc-kill',payload);
+            console.log(this.health);
+            if (this.onDestroy) this.onDestroy(this);
+
+
+        }
         this.aiupdate(delta);
         //this.checkFollow(players)
         this.move(delta);
@@ -111,8 +127,8 @@ export class npc{
 
     }
     takeDamage(pAmount){
-        this.health-=pAmount;
-        this.pNpcID-= pAmount;
+        this.health=this.health-pAmount;
+        console.log(this.health);
         const payload=
             {
                 id:this.npcid,
@@ -120,7 +136,8 @@ export class npc{
                 amount:pAmount
             }
             //console.log("damage taken = "+pAmount);;
-            this.io.emit('npc-takedamage',payload);
+        this.io.emit('npc-takedamage',payload);
+
     }
 
 

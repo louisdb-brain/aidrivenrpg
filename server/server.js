@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import {npc} from "./npc.js";
 import {toVec3} from "./utilities.js"
 import {Chest} from "./chest.js";
+import {loot} from "./loot.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -15,9 +16,9 @@ const io = new Server(server,{cors:{origin:"*",methods:["GET","POST"]}});
 app.use(express.static('public')); // Serve index.html and client.js
 
 const gamestate=new gamestateClass(io);
-
-gamestate.addnpc(new npc("goblin1id",{x:10,y:0,z:0},"goblin_1",io));
-gamestate.addnpc(new npc("goblin2id",{x:20,y:0,z:0},"goblin_2",io));
+const destroynpcmethod=(npcInstance) => gamestate.npcManager.removeNPC(npcInstance.npcid);
+gamestate.addnpc(new npc("goblin1id",{x:10,y:0,z:0},"goblin_1",io,destroynpcmethod));
+gamestate.addnpc(new npc("goblin2id",{x:20,y:0,z:0},"goblin_2",io,destroynpcmethod));
 gamestate.addChest(new Chest({x:10,y:0,z:0},"chest1"))
 gamestate.start();
 //hardcoded temporary npcs
@@ -41,6 +42,10 @@ io.on('connection', (socket) => {
     playermanager.additem(socket.id,"onion");
     playermanager.additem(socket.id,"onion");
     playermanager.additem(socket.id,"onion");
+
+    gamestate.objectManager.addloot(new loot("steakid1","steak",{x:0,y:0,z:0},(event, data) => {
+        io.emit(event, data);
+    }));
 
     //gamestate.emitNpc();
     //gamestate.emitPlayers();
@@ -81,6 +86,9 @@ io.on('connection', (socket) => {
         chest.toggleGrounded(socket.id);
 
 
+    })
+    socket.on('loot',(lootID)=>{
+    gamestate.objectManager.lootDo(lootID,socket.id);
     })
     /*
     socket.on('move',(pos,target)=> {

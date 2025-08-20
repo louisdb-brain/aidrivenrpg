@@ -1,11 +1,24 @@
 export class loot{
-    constructor(itemID,location={x:0,y:0,z:0})
+    constructor(itemID,name,location={x:0,y:0,z:0},emitCallback)
     {
-        this.itemID=item.id;
+        this.itemID=itemID;
+        this.itemID = itemID;
+        this.name = name;
+        this.location = { ...location };
+        this.emit=emitCallback;
+        this.emitloot();
 
-        this.location={x,y,z}
+
     }
+    emitloot(){
+        const payload={
 
+            id:this.itemID,
+            name:this.name,
+            location:this.location
+        }
+        this.emit('newloot',payload);
+    }
     pickup(){
     }
     deteriorate()

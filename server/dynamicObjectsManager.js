@@ -1,11 +1,35 @@
+import {playermanager} from "./playermanager.js";
+
 export class objectManager{
     constructor() {
         this.chests={}
+        this.loot={};
     }
     update(delta) {
         for (const chest of Object.values(this.chests)) {
             chest.update(delta);
         }
+    }
+    addloot(loot,id){
+        let thisId=id;
+        if(!this.loot[thisId])
+        {
+            this.loot[thisId]=loot;
+        }
+
+    }
+    getloot(id){
+        return this.loot[id];
+    }
+    lootDo(id,socketid)
+    {
+        const itemname=this.getloot(id);
+        playermanager.additem(socketid,itemname);
+        this.removeloot(id);
+
+    }
+    removeloot(id){
+        delete this.loot[id];
     }
     addChest(pChest,id) {
         let thisId=id;

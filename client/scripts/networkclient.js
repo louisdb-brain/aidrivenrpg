@@ -1,6 +1,7 @@
 import { io } from 'socket.io-client';
 import * as THREE from 'three';
 import {Player} from "./player";
+import {npc} from "./npc.js";
 
 
 export function toVec3(obj) {
@@ -64,6 +65,12 @@ export class NetworkClient {
                     //console.log("updated " + npc.name);
                 });
             });
+            this.socket.on('npc-kill',(payload)=>
+            {
+
+                delete this.game.npcs[payload.id];
+                //manager.npcs = manager.npcs.filter(n => n !== npc)
+            });
             this.socket.on('npc-takedamage',(payload) => {
                 console.log(payload)
                 if (this.game.npcs[payload.id]) {
@@ -99,8 +106,13 @@ export class NetworkClient {
             });
             this.socket.on('add-item', (data) => {
                 if(this.socket.id === data.id) {
-                    this.game.UI.inventory.addItem(data.name,"./sprites/onion.png");
+                    this.game.UI.inventory.addItem(data.itemName,"./sprites/"+data.name+".png");
                 }
+            })
+            this.socket.on('newloot', (data) => {
+                const pathname="./sprites/"+data.name+".png";
+                console.log(pathname);
+                this.game.levelHandeler.spawnLoot(data.id,data.name,data.location,pathname);
             })
 
         });
@@ -134,6 +146,10 @@ export class NetworkClient {
     }
     getsocket(){
         return this.socket;
+    }
+    loot(lootId)
+    {
+        this.socket.emit('loot',lootId);
     }
 
 

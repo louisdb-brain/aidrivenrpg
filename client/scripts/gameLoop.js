@@ -9,6 +9,7 @@ import { toVec3 } from './networkclient.js';
 import https from 'https';;
 import{UI}from'./uiclient.js';
 import { loadLevel } from '../leveleditor/loadlevel.js';
+import {levelHandler}  from "./levelHandler.js";
 
 export class Game {
     constructor() {
@@ -23,7 +24,7 @@ export class Game {
 
 
         this.localPlayerId=0;
-        this.camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.camera.position.z = 5;
 
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -56,6 +57,7 @@ export class Game {
         this.ctx=this.canvas.getContext('2d');
         this.UI=new UI(this.scene,this.ctx,this.camera,this.canvas);
 
+        this.levelHandeler=new levelHandler(this.scene);
 
         this.players = {};
         this.npcs={};
@@ -110,6 +112,9 @@ export class Game {
         }
 
         const player = this.players[this.localPlayerId];
+
+        this.levelHandeler.playerRef=player;//TODO:change tis
+
         if (player) {
             const offset = new THREE.Vector3(0, 10, -15); // tweak to your taste
             const targetPos = player.position.clone()

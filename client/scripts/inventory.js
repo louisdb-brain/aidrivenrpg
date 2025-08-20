@@ -50,7 +50,7 @@ export class Inventory {
         this.draw();
 
         // Dummy item
-        this.addItem('onion', 'sprites/onion.png', 0);
+        //this.addItem('onion', 'sprites/onion.png', 0);
     }
 
     setupCanvasResolution() {

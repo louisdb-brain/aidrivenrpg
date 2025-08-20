@@ -31,6 +31,7 @@ console.log("TransformControls proto", Object.getPrototypeOf(transformControls))
 console.log("THREE.Object3D proto", THREE.Object3D.prototype);
 console.log("transformControls instanceof THREE.Object3D", transformControls instanceof THREE.Object3D);
 
+
 scene.add(transformControls);
 // Prevent orbit controls when using gizmo
 transformControls.addEventListener('dragging-changed', function (event) {

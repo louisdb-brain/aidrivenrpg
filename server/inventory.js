@@ -14,7 +14,7 @@ export class inventory{
             this.items.push(itemId);
             const payload={
                 id:this.playerid,
-                item:itemId
+                name:itemId
             }
             this.emit('add-item', payload);
         }

@@ -14,8 +14,9 @@ export class gamestateClass{
         this.maps={}        //maplist for later
         this.maps[1]=true;  //later we check if players are on this map
 
-        this.npcManager=new npcManager()
         this.objectManager=new objectManager();
+        this.npcManager=new npcManager(this.objectManager,this.io)
+
 
 
         this.onNpcUpdate = null;
@@ -53,6 +54,13 @@ export class gamestateClass{
         }
 
 
+    }
+    addloot(loot)
+    {
+        this.objectManager.addloot(loot,loot.id);
+    }
+    removeloot(id){
+        this.objectManager.removeloot(id);
     }
     addnpc(pNPC){
         this.npcManager.addNpc(pNPC);
