@@ -67,6 +67,9 @@ export class Game {
 
         //this.loadLevel()
 
+        this.hasStartedLoop = false;
+
+
 
 
 
@@ -119,7 +122,7 @@ export class Game {
             const offset = new THREE.Vector3(0, 10, -15); // tweak to your taste
             const targetPos = player.position.clone()
             //this.controls.target.set(targetPos);
-            this.camera.lookAt(targetPos);
+            //this.camera.lookAt(targetPos);
             //this.camera.position.lerp(targetPos, 0.1);
             /*this.camera.lookAt(player.position);*/
         }
@@ -140,19 +143,17 @@ export class Game {
             //calls the ui to check for hovers
             //this.UI.checkhover(this.clickableObjects);
         }*/
-        this.draw();
+        if (this.hasStartedLoop) return;  // ✅ avoid double loop starts
+        this.hasStartedLoop = true;
 
-        this.update();
+        const loopInternal = () => {
+            this.draw();
+            this.update();
+            this.controls.update();
+            requestAnimationFrame(loopInternal);
+        };
 
-
-        //this.debugmovetarget()
-
-        this.controls.update();
-
-        requestAnimationFrame(() => this.loop());
-
-
-
+        loopInternal(); // 🔁 start the loop
 
     }
 

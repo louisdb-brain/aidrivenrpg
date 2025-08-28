@@ -1,125 +1,67 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { SpriteBillboard } from './animatedbillboard.js'; // Adjust path if needed
 
-//🦝 animal script
-//🎅player script
 export class Player {
-    constructor(scene,position = { x: 0, y: 0, z: 0 }) {
-
+    constructor(scene, position = { x: 0, y: 0, z: 0 }, options = {}) {
         this.scene = scene;
-        this.model=null;
-        this.modelpath = 'models/character.glb';
-        this.mixer = null;
         this.position = new THREE.Vector3(position.x, position.y, position.z);
-        this.locked=false;
-        this.lockedPosition=this.position.clone();
         this.targetPosition = this.position.clone();
-        this.speed = 1;
-        this.angle = null;
+        this.locked = false;
+        this.lockedPosition = this.position.clone();
+        this.speed = options.speed || 1;
 
-        this.wantedlevel=0;
+        this.angle = null; // ← reserved for future use (e.g., facing direction)
 
-        const loader = new GLTFLoader();
-
-        loader.load(this.modelpath, (gltf) => {
-            this.model = gltf.scene;
-            this.model.position.copy(this.position);
-            this.scene.add(this.model);
-
-            if (gltf.animations && gltf.animations.length > 0) {
-                this.mixer = new THREE.AnimationMixer(this.model);
-                const action = this.mixer.clipAction(gltf.animations[0]);
-                this.currentAction = action;
-                this.currentAction.play();
-            }
-        });
+        this.sprite = new SpriteBillboard(
+            scene,
+            options.fps || 8,
+            this.position,
+            options.frameCount || 4,
+            options.animationRow || 0,
+            options.textureUrl || 'sprites/player.png',
+            options.rowCount || 2
+        );
     }
 
+    update(delta, camera) {
+        const target = this.locked ? this.lockedPosition : this.targetPosition;
+        const direction = new THREE.Vector3().subVectors(target, this.position);
+        const distance = direction.length();
+        const moveStep = this.speed * delta;
 
-    update(delta) {
-        if (!this.model) return;
-        var direction=null;
-
-        const movedirection=new THREE.Vector3().subVectors(this.targetPosition,this.position);
-
-        if (this.locked==false) {
-            direction = new THREE.Vector3().subVectors(this.targetPosition, this.position);
-        }
-        else{
-            direction = new THREE.Vector3().subVectors(this.lockedPosition, this.position);
-        }
-        const distance = movedirection.length();
-
-
-        if (distance > 0.1) {
-            movedirection.normalize();
+        if (distance > moveStep) {
             direction.normalize();
-            const moveStep = this.speed * delta;
-            this.position.add(movedirection.clone().multiplyScalar(moveStep));
-
-            const angle = Math.atan2(direction.x, direction.z);
-            this.model.rotation.y = angle;
-
-            if (this.currentAction && !this.currentAction.isRunning()) {
-                this.currentAction.play();
-            }
+            this.position.add(direction.clone().multiplyScalar(moveStep));
+            this.sprite.setTarget(this.position);
+            this.sprite.setFlippedX(direction.x > 0);
+            this.sprite.play();
         } else {
-            // Stop animation when target reached
-            if (this.currentAction) {
-                this.currentAction.stop();
-            }
+            this.position.copy(target);
+            this.sprite.setTarget(this.position);
+            this.sprite.stop();
         }
 
-        // Apply new position to the model
-        this.model.position.copy(this.position);
-
-        // Animate
-        if (this.mixer) this.mixer.update(delta);
-
-    }
-    setTarget(position) {
-        let temppos=position.clone();
-        temppos.y=0;
-        this.targetPosition.copy(temppos); // store destination
-    }
-    setLockedTarget(position) {
-        let temppos=position.clone();
-        temppos.y=0;
-        this.lockedPosition.copy(temppos); // store destination
-    }
-    playAnimation(animationNumber)
-    {
-
-        if (!gltf.animations || gltf.animations.length <= animationNumber) {
-            console.log("no extra animations")
-            return;
-        }
-
-        // Clean up previous mixer/action if needed
-        if (!this.mixer) {
-            this.mixer = new THREE.AnimationMixer(this.model);
-        }
-
-        const clip = gltf.animations[animationNumber];
-        const action = this.mixer.clipAction(clip);
-
-
-        action.reset();
-        action.setLoop(THREE.LoopOnce);
-        action.clampWhenFinished = true; // Keeps final frame visible
-        //action.setDuration(time); // Optional: force the duration
-        action.play();
-
-        this.currentAction = action;
-
-
+        this.sprite.update(delta, camera);
     }
 
-    getposition()
-    {return this.position.clone();}
+    setTarget(posVec3) {
+        const temppos = posVec3.clone();
+        temppos.y = 0;
+        this.targetPosition.copy(temppos);
+    }
 
+    setLockedTarget(posVec3) {
+        const temppos = posVec3.clone();
+        temppos.y = 0;
+        this.lockedPosition.copy(temppos);
+    }
 
+    getposition() {
+        return this.position.clone();
+    }
 
-
-
+    setAnimationRow(row) {
+        this.sprite.setAnimationRow(row);
+    }
 }
+
