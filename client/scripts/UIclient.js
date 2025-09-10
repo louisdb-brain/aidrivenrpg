@@ -12,6 +12,12 @@ export class UI{
         this.ctx = ctx;
         this.camera=camera;
         this.canvas=canvas;
+        this.activeMenus= {
+            inventory: false,
+            cooking: false,
+            magic: false
+
+        }
         this.inventory=new Inventory(document.getElementById("inventoryCanvas"));
         this.playerInventory=["potion","sword"]
         this.raycaster = new THREE.Raycaster();
@@ -34,10 +40,22 @@ export class UI{
             this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
         });
+        window.addEventListener('keyup', (event) => {
+            if(event.key==='&'){
+                console.log("pressed &")
+                this.activeMenus.cooking=!this.activeMenus.cooking;
+                this.cookinggame?.toggle();
+            }
+            if (event.key === 'i' || event.key === 'I') {
+                this.activeMenus.inventory=!this.activeMenus.inventory;
+                this.inventory?.toggle();
+            }
 
-        //this.cookinggame=new CookingGame(this.canvas);
-        /*this.cookinggame.addIngredient("tomato");
-        this.cookinggame.addIngredient("steak");*/
+        })
+
+        this.cookinggame=new CookingGame(this.canvas);
+        this.cookinggame.addIngredient("tomato");
+        this.cookinggame.addIngredient("steak");
 
 
 
@@ -54,9 +72,13 @@ export class UI{
 
     update()
     {
-        //this.cookinggame.update();
-        //this.cookinggame.draw();
-        this.inventory.draw();
+        this.cookinggame.update();
+        this.cookinggame.draw();
+
+
+
+
+
 
     }
 

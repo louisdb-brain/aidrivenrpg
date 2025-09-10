@@ -37,6 +37,8 @@ export class Inventory {
         this.items = [];
         this.inventory = new Array(cols * rows).fill(null);
         this.draggingItem = null;
+        this.ghostElement = null;
+
         this.dragOffset = { x: 0, y: 0 };
         this.hoverSlotIndex = -1;
 
@@ -65,10 +67,13 @@ export class Inventory {
 
     initEvents() {
         this.canvas.addEventListener('pointerdown', this.onDown.bind(this));
-        this.canvas.addEventListener('pointermove', this.onMove.bind(this));
-        this.canvas.addEventListener('pointerup', this.onUp.bind(this));
-        this.canvas.addEventListener('pointerleave', this.onLeave.bind(this));
+
+        // Global listeners for dragging outside the canvas
+        window.addEventListener('pointermove', this.onMove.bind(this));
+        window.addEventListener('pointerup', this.onUp.bind(this));
+        window.addEventListener('pointerleave', this.onLeave.bind(this));
     }
+
 
     addItem(name, imagePath, slotIndex = null) {
         const item = new Item(name, imagePath, this.slotSize, () => this.draw());
@@ -108,6 +113,8 @@ export class Inventory {
     }
 
     onDown(e) {
+
+
         this.canvas.setPointerCapture(e.pointerId);
         const { x, y } = this.pointerPos(e);
 
@@ -123,6 +130,7 @@ export class Inventory {
                     this.inventory[item.slotIndex] = null;
                     item.slotIndex = null;
                 }
+                this.createGhost(item);
                 break;
             }
         }
@@ -138,29 +146,62 @@ export class Inventory {
             this.draggingItem.y = y - this.dragOffset.y;
         }
         this.hoverSlotIndex = this.slotIndexFromPos(x, y);
+        if (this.ghostElement) {
+            this.ghostElement.style.left = `${e.clientX - this.dragOffset.x}px`;
+            this.ghostElement.style.top = `${e.clientY - this.dragOffset.y}px`;
+        }
+
         this.draw();
     }
 
     onUp(e) {
         const { x, y } = this.pointerPos(e);
+        const rect = this.canvas.getBoundingClientRect();
+
+        const isOutside =
+            e.clientX < rect.left ||
+            e.clientX > rect.right ||
+            e.clientY < rect.top ||
+            e.clientY > rect.bottom;
+
         if (this.draggingItem) {
-            const target = this.slotIndexFromPos(x, y);
-            if (target !== -1) {
-                const occupying = this.inventory[target];
-                if (occupying) {
-                    const oldIndex = occupying.slotIndex;
-                    this.placeItemInSlot(this.draggingItem, target);
-                    if (oldIndex !== null) this.placeItemInSlot(occupying, oldIndex);
-                } else {
-                    this.placeItemInSlot(this.draggingItem, target);
+            if (isOutside) {
+                // 🛸 Dropped outside inventory
+                dispatchEvent(new CustomEvent("inventoryDrop", {
+                    detail: {
+                        name: this.draggingItem.name,
+                        x: e.clientX,
+                        y: e.clientY
+                    }
+                }));
+
+                // OPTIONAL: if you want to fully remove the item
+                // this.items = this.items.filter(i => i !== this.draggingItem);
+
+            } else {
+                // ✅ Normal in-inventory drop logic
+                const target = this.slotIndexFromPos(x, y);
+                if (target !== -1) {
+                    const occupying = this.inventory[target];
+                    if (occupying) {
+                        const oldIndex = occupying.slotIndex;
+                        this.placeItemInSlot(this.draggingItem, target);
+                        if (oldIndex !== null) this.placeItemInSlot(occupying, oldIndex);
+                    } else {
+                        this.placeItemInSlot(this.draggingItem, target);
+                    }
                 }
             }
         }
+
         this.draggingItem = null;
         this.hoverSlotIndex = -1;
         this.canvas.releasePointerCapture(e.pointerId);
+        this.removeGhost();
+
         this.draw();
     }
+
 
     onLeave() {
         this.draggingItem = null;
@@ -180,6 +221,44 @@ export class Inventory {
             item.draw(ctx);
         }
     }
+    toggle() {
+        this.canvas.style.display = this.canvas.style.display === 'none' ? 'block' : 'none';
+    }
+
+    show() {
+        this.canvas.style.display = 'block';
+    }
+
+    hide() {
+        this.canvas.style.display = 'none';
+    }
+    createGhost(item) {
+        // Remove any previous ghost
+        this.removeGhost();
+
+        const ghost = document.createElement('img');
+        ghost.src = item.image.src;
+        ghost.alt = item.name;
+        ghost.style.position = 'fixed';
+        ghost.style.pointerEvents = 'none';
+        ghost.style.width = `${item.size}px`;
+        ghost.style.height = `${item.size}px`;
+        ghost.style.opacity = '0.6';
+        ghost.style.zIndex = 9999;
+        ghost.style.transition = 'none';
+
+        this.ghostElement = ghost;
+        document.body.appendChild(ghost);
+    }
+    removeGhost() {
+        if (this.ghostElement) {
+            this.ghostElement.remove();
+            this.ghostElement = null;
+        }
+    }
+
+
+
 }
 
 class Slot {

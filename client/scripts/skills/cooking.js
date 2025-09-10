@@ -25,9 +25,9 @@ export class CookingGame {
             DONE: "DONE",
             BURNED: "BURNED",
         };
-    this.itemLibrary = {};
+        this.itemLibrary = {};
         this.pot = { x: 600, y: 400, w: 150, h: 100 };
-
+        this.ingredientsReady = false;
         fetch('scripts/skills/ingredients.json')
             .then(res => res.json())
             .then(data => {
@@ -35,6 +35,7 @@ export class CookingGame {
                     this.itemLibrary[item.id] = item;
                     //console.log(this.itemLibrary);
                 });
+                this.ingredientsReady = true;
 
                 this.addIngredient("steak");
                 this.addIngredient("onion");
@@ -58,25 +59,37 @@ export class CookingGame {
         this.sizzleSound=new Audio("sounds/cooking_longsizzle.mp3");
         this.shortSizzleSound=new Audio("sounds/cooking_sizzle.mp3");
         this.playsizzle=false;
+
+        this.initializeDropListener();
+
     }
 
 
 
 
     addIngredient(name) {
+        const info = this.itemLibrary[name];
 
-        const y = 50+this.activeIngredients.length * 120;
+        if (!info) {
+            console.warn(`Ingredient "${name}" not found`);
+            return;
+        }
 
-        const jsonobject=this.itemLibrary[name];
-        const imagepath=jsonobject.image;
+        const y = 50 + this.activeIngredients.length * 120;
+        const imagePath = info.image;
 
-
-
-        const ing = new Ingredient(200, y, name, this.ingredientPhase,imagepath,this.shortSizzleSound);
-
+        const ing = new Ingredient(
+            200, y,
+            name,
+            this.ingredientPhase,
+            imagePath,
+            this.shortSizzleSound
+        );
 
         this.activeIngredients.push(ing);
+        console.log("Spawned ingredient:", name, ing);
     }
+
     handleMouseDown(e) {
         const { offsetX, offsetY } = e;
         for (const ing of this.activeIngredients) {
@@ -201,6 +214,40 @@ export class CookingGame {
 
         requestAnimationFrame(() => this.draw());
     }
+    toggle() {
+        this.canvas.style.display = this.canvas.style.display === 'none' ? 'block' : 'none';
+    }
+
+    show() {
+        this.canvas.style.display = 'block';
+    }
+
+    hide() {
+        this.canvas.style.display = 'none';
+    }
+    initializeDropListener() {
+        window.addEventListener("inventoryDrop", (e) => {
+            if (!this.ingredientsReady || this.canvas.style.display === 'none') return;
+
+            const { name, x, y } = e.detail;
+
+            // Check if drop was inside cooking canvas bounds
+            const bounds = this.canvas.getBoundingClientRect();
+            const isInside =
+                x >= bounds.left &&
+                x <= bounds.right &&
+                y >= bounds.top &&
+                y <= bounds.bottom;
+
+            if (isInside) {
+                console.log(`🍳 Dropped '${name}' into cooking menu at (${x}, ${y})`);
+                this.addIngredient(name);
+            } else {
+                console.log(`❌ Drop ignored (outside cooking canvas): '${name}'`);
+            }
+        });
+    }
+
 
 
 }
