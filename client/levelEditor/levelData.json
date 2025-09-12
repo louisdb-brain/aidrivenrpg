@@ -7,5 +7,11 @@
       "y": -1.049999999999997,
       "z": -14.363137958952983
     }
+  },
+  {
+    "type": "decal",
+    "texture": "sprites/rocks/rock1.png",
+    "position": { "x":0,"y":0,"z":0 }
   }
+
 ]

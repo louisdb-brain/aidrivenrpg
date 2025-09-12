@@ -13,7 +13,7 @@ export class player {
         this.targetPosition = this.position.clone();
         this.lockedPosition= this.position.clone();
         this.locked=false;
-        this.speed = 1;
+        this.speed = 5;
         this.angle=null;
         this.maxcooldown=150;
         this.cooldown=50;

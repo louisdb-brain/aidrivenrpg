@@ -8,7 +8,7 @@ export class Player {
         this.targetPosition = this.position.clone();
         this.locked = false;
         this.lockedPosition = this.position.clone();
-        this.speed = options.speed || 1;
+        this.speed =  options.speed||5;
 
         this.angle = null; // ← reserved for future use (e.g., facing direction)
 
@@ -18,7 +18,7 @@ export class Player {
             this.position,
             options.frameCount || 4,
             options.animationRow || 0,
-            options.textureUrl || 'sprites/player.png',
+            options.textureUrl || '/sprites/player.png',
             options.rowCount || 2
         );
     }

@@ -181,7 +181,7 @@ function placeObject(position) {
     // Place Sprite
     else if (value.endsWith('.png') || value.endsWith('.jpg') || value.endsWith('.jpeg')) {
         const textureLoader = new THREE.TextureLoader();
-        textureLoader.load('/sprites/environment/' + value, (texture) => {
+        textureLoader.load('/sprites/' + value, (texture) => {
             const imgW = texture.image.width;
             const imgH = texture.image.height;
             const planeW = imgW / SPRITE_SCALE_DIVISOR;

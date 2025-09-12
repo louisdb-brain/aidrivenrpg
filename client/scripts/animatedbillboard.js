@@ -11,35 +11,51 @@ export class SpriteBillboard {
         this.timer = 0;
         this.isAnimating = false;
         this.flipped = false;
-
         this.position = new THREE.Vector3(position.x, position.y, position.z);
 
-        const loader = new THREE.TextureLoader();
-        this.texture = loader.load(textureUrl, (tex) => {
-            tex.minFilter = THREE.NearestFilter;
-            tex.magFilter = THREE.NearestFilter;
-            tex.wrapS = THREE.RepeatWrapping;
-            tex.wrapT = THREE.RepeatWrapping;
-            tex.repeat.set(1 / this.frameCount, 1 / this.rowCount);
-
-            // Fix correct aspect ratio based on actual pixel dimensions
-            const framePixelWidth = tex.image.width / this.frameCount;
-            const framePixelHeight = tex.image.height / this.rowCount;
-            const aspect = framePixelHeight / framePixelWidth;
-
-            this.sprite.scale.set(1, aspect, 1); // final scale
-            this.setFrame(this.frame);
-        });
-
-        const material = new THREE.SpriteMaterial({ map: this.texture, transparent: true });
-        this.sprite = new THREE.Sprite(material);
-        this.sprite.center.set(0.5, 0.0); // origin at feet
-        this.sprite.scale.set(1, 1, 1); // temporary scale until texture loads
+        // 🔹 Create a placeholder material with no map yet
+        const placeholderMat = new THREE.SpriteMaterial({ transparent: true });
+        this.sprite = new THREE.Sprite(placeholderMat);
+        this.sprite.center.set(0.5, 0.0); // Anchor at feet
         this.sprite.position.copy(this.position);
-        this.scene.add(this.sprite);
-        if (this.flipped) {
-            this.sprite.scale.x *= -1;
-        }
+        this.sprite.scale.set(1, 1, 1); // Temporary scale until texture loads
+        scene.add(this.sprite);
+
+        // 🔹 Now start loading the texture
+        const loader = new THREE.TextureLoader();
+        loader.load(
+            textureUrl,
+            (tex) => {
+                tex.minFilter = THREE.NearestFilter;
+                tex.magFilter = THREE.NearestFilter;
+                tex.wrapS = THREE.RepeatWrapping;
+                tex.wrapT = THREE.RepeatWrapping;
+                tex.repeat.set(1 / this.frameCount, 1 / this.rowCount);
+                tex.encoding = THREE.sRGBEncoding; // 🔹 preserve original colors
+
+                // 🔹 Update the existing sprite’s material
+                this.sprite.material.map = tex;
+
+                // ✅ Add these lines for subtle lighting but original look
+                this.sprite.material.toneMapped = false;
+                this.sprite.material.color.setScalar(0.9); // adjust brightness (0.8–1.0)
+
+                this.sprite.material.needsUpdate = true;
+
+                // Scale the sprite based on texture dimensions
+                const framePixelWidth = tex.image.width / this.frameCount;
+                const framePixelHeight = tex.image.height / this.rowCount;
+                const aspect = framePixelHeight / framePixelWidth;
+                this.sprite.scale.set(1, aspect, 1);
+
+                this.texture = tex;
+                this.setFrame(this.frame);
+            },
+            undefined,
+            (err) => {
+                console.error('Failed to load texture:', textureUrl, err);
+            }
+        );
     }
 
     update(delta, camera) {
@@ -48,24 +64,20 @@ export class SpriteBillboard {
         if (this.isAnimating) {
             this.timer += delta;
             const frameDuration = 1 / this.fps;
-
             if (this.timer >= frameDuration) {
                 this.timer -= frameDuration;
                 this.frame = (this.frame + 1) % this.frameCount;
                 this.setFrame(this.frame);
             }
-        } else {
-            if (this.frame !== 0) {
-                this.frame = 0;
-                this.setFrame(0);
-            }
+        } else if (this.frame !== 0) {
+            this.frame = 0;
+            this.setFrame(0);
         }
     }
 
     setFrame(frame) {
         this.frame = frame % this.frameCount;
         if (!this.texture) return;
-
         const offsetX = this.frame / this.frameCount;
         const offsetY = (this.rowCount - 1 - this.animationRow) / this.rowCount;
         this.texture.offset.set(offsetX, offsetY);
@@ -77,14 +89,10 @@ export class SpriteBillboard {
     }
 
     setFlippedX(flipped) {
-        if (this.flipped === flipped) return; // no change needed
-
+        if (this.flipped === flipped) return;
         this.flipped = flipped;
-        if (this.sprite) {
-            this.sprite.scale.x = Math.abs(this.sprite.scale.x) * (flipped ? -1 : 1);
-        }
+        this.sprite.scale.x = Math.abs(this.sprite.scale.x) * (flipped ? -1 : 1);
     }
-
 
     setTarget(posVec3) {
         this.sprite.position.copy(posVec3);
@@ -95,11 +103,6 @@ export class SpriteBillboard {
         return this.position.clone();
     }
 
-    play() {
-        this.isAnimating = true;
-    }
-
-    stop() {
-        this.isAnimating = false;
-    }
+    play() { this.isAnimating = true; }
+    stop() { this.isAnimating = false; }
 }
