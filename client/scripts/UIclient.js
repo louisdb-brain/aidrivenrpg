@@ -3,11 +3,13 @@ import * as THREE from 'three';
 
 import {spriteHandeler}from './spriteHandeler.js';
 import {CookingGame} from "./skills/cooking.js";
+import{magicSystem} from "./skills/magic.js";
 
 import{Inventory} from "./inventory.js";
 
 export class UI{
-    constructor(scene,ctx,camera,canvas) {
+    constructor(scene,ctx,camera,canvas,groundplane) {
+        this.groundplane = groundplane;
         this.scene = scene;
         this.ctx = ctx;
         this.camera=camera;
@@ -35,6 +37,12 @@ export class UI{
                     //console.log(this.itemLibrary);
                 });
             });
+        this.cookinggame=new CookingGame(this.canvas);
+        this.cookinggame.addIngredient("tomato");
+        this.cookinggame.addIngredient("steak");
+        this.spellmenu=new magicSystem(this.canvas);
+
+
 
         window.addEventListener('mousemove', (event) => {
             this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -50,12 +58,13 @@ export class UI{
                 this.activeMenus.inventory=!this.activeMenus.inventory;
                 this.inventory?.toggle();
             }
+            if (event.key === 's' || event.key === 'S') {
+                this.activeMenus.magic = !this.activeMenus.magic;
+                this.spellmenu?.toggle();
+            }
 
         })
 
-        this.cookinggame=new CookingGame(this.canvas);
-        this.cookinggame.addIngredient("tomato");
-        this.cookinggame.addIngredient("steak");
 
 
 
@@ -74,81 +83,12 @@ export class UI{
     {
         this.cookinggame.update();
         this.cookinggame.draw();
-
-
-
-
+        this.spellmenu.updateAOEMarker(this.mouse, this.camera, this.raycaster, this.groundplane);
 
 
     }
 
-    /*drawInventoryBag(slotCount = 6) {
-        // Create inventory container
-        const inventory = document.createElement('div');
-        inventory.className = 'inventory-bag';
 
-        // Create close button
-        const closeBtn = document.createElement('div');
-        closeBtn.className = 'close-button';
-        closeBtn.textContent = '✖';
-        closeBtn.onclick = () => inventory.remove();
-        inventory.appendChild(closeBtn);
-
-        // Create slots
-        this.playerInventory.forEach((item, index) => {
-            const slot = document.createElement('div');
-            slot.className = 'bag-slot';
-            slot.dataset.slotIndex = index; // for drop tracking
-
-            // Allow dropping into this slot
-            slot.addEventListener('dragover', (e) => e.preventDefault());
-
-            slot.addEventListener('drop', (e) => {
-                e.preventDefault();
-                const draggedItemId = e.dataTransfer.getData('text/plain');
-                const draggedImg = document.querySelector(`img[data-item-id="${draggedItemId}"]`);
-
-                if (draggedImg && slot !== draggedImg.parentElement) {
-                    // Remove from old slot
-                    const oldSlot = draggedImg.parentElement;
-                    oldSlot.innerHTML = '';
-
-                    // Move to new slot
-                    slot.innerHTML = '';
-                    slot.appendChild(draggedImg);
-
-                    // Update playerInventory structure
-                    const fromIndex = parseInt(oldSlot.dataset.slotIndex);
-                    const toIndex = parseInt(slot.dataset.slotIndex);
-
-                    const temp = playerInventory[fromIndex];
-                    playerInventory[fromIndex] = playerInventory[toIndex];
-                    playerInventory[toIndex] = temp;
-                }
-            });
-
-            if (item) {
-                const itemData = this.itemLibrary[item];
-                const img = document.createElement('img');
-                img.src = itemData.image;
-                img.alt = itemData.name;
-                img.title = itemData.name;
-                img.draggable = true;
-                img.dataset.itemId = item.id;
-
-                // Drag start logic
-                img.addEventListener('dragstart', (e) => {
-                    e.dataTransfer.setData('text/plain', item.id);
-                    e.dataTransfer.effectAllowed = 'move';
-                });
-
-                slot.appendChild(img);
-            }
-
-            inventory.appendChild(slot);
-        });
-
-    }*/
 
     drawchat(position,text)
     {

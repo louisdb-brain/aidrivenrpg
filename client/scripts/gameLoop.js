@@ -64,8 +64,7 @@ export class Game {
         this.clock = new THREE.Clock();
         this.canvas = document.createElement('canvas');
         this.ctx = this.canvas.getContext('2d');
-        this.UI = new UI(this.scene, this.ctx, this.camera, this.canvas);
-        this.levelHandeler = new levelHandler(this.scene);
+
 
         this.players = {};
         this.npcs = {};
@@ -80,7 +79,9 @@ export class Game {
         this.ground.rotation.x = -Math.PI / 2;
         this.ground.position.y = -1.05;
         this.scene.add(this.ground);
-        this.UI.update();
+
+        this.UI = new UI(this.scene, this.ctx, this.camera, this.canvas,this.ground);
+        this.levelHandeler = new levelHandler(this.scene);
 
         fetch('/levels/level1.json')
             .then(res => res.json())

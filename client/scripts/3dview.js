@@ -53,6 +53,14 @@ const mouse = new THREE.Vector2();
 window.addEventListener('pointerup', (event) => {
     if (isDragging || orbiting) return; // Ignore camera movements
 
+    /*const clickedSpellMenu   = thisgame.UI.activeMenus.magic     && e.target.closest('#spellMenu');
+    const clickedCookingMenu = thisgame.UI.activeMenus.cooking   && e.target.closest('#cookingMenu');
+    const clickedInventory   = thisgame.UI.activeMenus.inventory && e.target.closest('#inventoryCanvas');
+
+    if (clickedSpellMenu || clickedCookingMenu || clickedInventory) {
+        //return; // Prevent moving player
+    }*/
+
     const rect = thisgame.renderer.domElement.getBoundingClientRect();
     const mouse = new THREE.Vector2(
         ((event.clientX - rect.left) / rect.width) * 2 - 1,
