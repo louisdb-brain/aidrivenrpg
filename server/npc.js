@@ -106,7 +106,7 @@ export class npc{
 
             );
             const targetpos=randomVec.clone().add(this.position);
-            console.log(targetpos)
+            //console.log(targetpos)
             this.setTarget(targetpos);
 
         }

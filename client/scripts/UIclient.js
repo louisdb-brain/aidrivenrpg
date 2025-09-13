@@ -8,7 +8,8 @@ import{magicSystem} from "./skills/magic.js";
 import{Inventory} from "./inventory.js";
 
 export class UI{
-    constructor(scene,ctx,camera,canvas,groundplane) {
+    constructor(scene,ctx,camera,canvas,groundplane,handlers) {
+        this.networkhandlers=handlers;
         this.groundplane = groundplane;
         this.scene = scene;
         this.ctx = ctx;
@@ -40,7 +41,7 @@ export class UI{
         this.cookinggame=new CookingGame(this.canvas);
         this.cookinggame.addIngredient("tomato");
         this.cookinggame.addIngredient("steak");
-        this.spellmenu=new magicSystem(this.canvas);
+        this.spellmenu=new magicSystem(this.canvas,this.scene,this.networkhandlers);
 
 
 
@@ -83,7 +84,6 @@ export class UI{
     {
         this.cookinggame.update();
         this.cookinggame.draw();
-        this.spellmenu.updateAOEMarker(this.mouse, this.camera, this.raycaster, this.groundplane);
 
 
     }

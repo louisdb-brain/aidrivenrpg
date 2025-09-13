@@ -114,6 +114,11 @@ export class NetworkClient {
                 console.log(pathname);
                 this.game.levelHandeler.spawnLoot(data.id,data.name,data.location,pathname);
             })
+            this.socket.on("spellcast",(data)=>
+            {
+                console.log("spell received from server "+data.name)
+                this.game.spawnSpell(data);
+            })
 
         });
     }
@@ -150,6 +155,16 @@ export class NetworkClient {
     loot(lootId)
     {
         this.socket.emit('loot',lootId);
+    }
+    castSpell(spellData) {
+        // Send a spellcast message to the server
+        this.socket.emit('spellcast', {
+            id: this.localPlayerId,
+            name: spellData.name,
+            sprite:spellData.spellSprite,
+            position: spellData.position
+        });
+        console.log(`Spellcast emitted:`, spellData);
     }
 
 

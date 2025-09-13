@@ -1,0 +1,5 @@
+{
+  "onSpellcast": "castSpell",
+  "onPlayerMove": "sendPlayerMove",
+  "onInventoryChange": "sendInventoryChange"
+}

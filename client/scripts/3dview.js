@@ -1,15 +1,26 @@
 import * as THREE from 'three';
-
+import handlersConfig from './networkevents.json' assert { type: 'json' };
 import { NetworkClient } from "./networkclient.js";
 import { Game } from "./gameLoop";
 
-const thisgame = new Game();
+
+const handlers = {};
+const thisgame = new Game(handlers);
 const networkHandler = new NetworkClient("chatLog", thisgame);
 
+for (const [key, methodName] of Object.entries(handlersConfig)) {
+    if (typeof networkHandler[methodName] === 'function') {
+        handlers[key] = (...args) => networkHandler[methodName](...args);
+    } else {
+        console.warn(`Method '${methodName}' not found on NetworkClient`);
+    }
+}
 networkHandler.onPlayerReady(() => {
     thisgame.localPlayerId = networkHandler.getsocket().id;
     thisgame.loop();
 });
+
+
 
 let isDragging = false;
 let dragStart = { x: 0, y: 0 };
@@ -27,10 +38,35 @@ window.addEventListener('pointerdown', (e) => {
 });
 
 // Track drag move
+
 window.addEventListener('pointermove', (e) => {
     const dx = Math.abs(e.clientX - dragStart.x);
     const dy = Math.abs(e.clientY - dragStart.y);
     if (dx > 3 || dy > 3) isDragging = true;
+
+    if(thisgame.UI.spellmenu.activeSpell)
+    {
+        const rect = thisgame.renderer.domElement.getBoundingClientRect();
+        const mouse = new THREE.Vector2(
+            ((event.clientX - rect.left) / rect.width) * 2 - 1,
+            -((event.clientY - rect.top) / rect.height) * 2 + 1
+        );
+
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(mouse, thisgame.camera);
+        raycaster.far = 100000;
+        if(!thisgame.ground)return;
+
+
+        const position = thisgame.UI.spellmenu.getMousePositionToGround(
+            mouse, thisgame.camera, raycaster, thisgame.ground
+        );
+        if (!position) return;
+        //thisgame.VFX.spawn('/icons/magiccircle.png', new THREE.Vector3(0, 0, 0), 'billboard', 20, 5000);
+
+        thisgame.VFX.spawn('/icons/magiccircle.png', position, 'flat', 10, 50);
+
+    }
 });
 
 // Chat functionality
@@ -66,14 +102,24 @@ window.addEventListener('pointerup', (event) => {
         ((event.clientX - rect.left) / rect.width) * 2 - 1,
         -((event.clientY - rect.top) / rect.height) * 2 + 1
     );
-
     const raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mouse, thisgame.camera);
     raycaster.far = 100000;
 
+    if(thisgame.UI.spellmenu.activeSpell) {
+
+        const position = thisgame.UI.spellmenu.getMousePositionToGround(mouse, thisgame.camera, raycaster, thisgame.ground);
+        if (position) {
+            thisgame.UI.spellmenu.castSpell(position);
+        }
+    }
+
     // 1. Check NPCs (deep match against child meshes)
+    // Remove null/undefined items
     const npcModels = Object.values(thisgame.npcs).map(npc => npc.model);
-    const npcIntersects = raycaster.intersectObjects(npcModels, true); // deep = true
+    const validNpcModels = npcModels.filter(obj => obj instanceof THREE.Object3D);
+
+    const npcIntersects = raycaster.intersectObjects(validNpcModels, true); // deep = true
 
     if (npcIntersects.length > 0) {
         const hitObject = npcIntersects[0].object;

@@ -7,9 +7,11 @@ import { toVec3 } from './networkclient.js';
 import { UI } from './uiclient.js';
 import { loadLevel } from '../leveleditor/loadlevel.js';
 import { levelHandler } from './levelHandler.js';
+import {vfxHandler} from "./vfxHandeler.js";
 
 export class Game {
-    constructor() {
+    constructor(handlers) {
+        this.handlers = handlers;
         this.scene = new THREE.Scene();
         this.scene.fog = new THREE.FogExp2(0x99ffcc, 0.004);
         this.scene.background = new THREE.Color(0x99ffcc);
@@ -80,9 +82,9 @@ export class Game {
         this.ground.position.y = -1.05;
         this.scene.add(this.ground);
 
-        this.UI = new UI(this.scene, this.ctx, this.camera, this.canvas,this.ground);
+        this.UI = new UI(this.scene, this.ctx, this.camera, this.canvas,this.ground,this.handlers);
         this.levelHandeler = new levelHandler(this.scene);
-
+        this.VFX=new vfxHandler(this.scene, this.camera);
         fetch('/levels/level1.json')
             .then(res => res.json())
             .then(data => loadLevel(data, this.scene));
@@ -112,6 +114,9 @@ export class Game {
             else this.controls.update();
 
             this.update();
+            if (this.VFX) {
+                this.VFX.update();  // Update your VfxHandler each frame
+            }
             this.draw();
             requestAnimationFrame(loopInternal);
         };
@@ -237,5 +242,12 @@ export class Game {
         this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
         this.raycaster.setFromCamera(this.mouse, this.camera);
+    }
+    spawnSpell(spelldata) {
+        console.log("spawning spell at "+spelldata.position.x)
+        const pos=new THREE.Vector3(spelldata.position.x,spelldata.position.y+0.1, spelldata.position.z);
+        this.VFX.spawn('/icons/fireball.png', pos, 'flat', 10, 500);
+
+
     }
 }

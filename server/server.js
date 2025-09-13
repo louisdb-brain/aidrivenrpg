@@ -49,7 +49,11 @@ io.on('connection', (socket) => {
 
     //gamestate.emitNpc();
     //gamestate.emitPlayers();
-
+    socket.on('spellcast',(data)=>
+    {
+        gamestate.castSpell(data);
+        console.log(data)
+    })
     //console.log('Sending existing players:', playermanager.getAllPlayers());
     socket.on('login',(playerID=>
     {

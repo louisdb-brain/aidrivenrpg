@@ -143,6 +143,11 @@ export class gamestateClass{
     {
         return {x:pObj.position.x,y:pObj.position.y,z:pObj.position.z};
     }
+    castSpell(data)
+    {
+        //calculate damage later
+        this.io.emit('spellcast',data);
+    }
 
 
 }

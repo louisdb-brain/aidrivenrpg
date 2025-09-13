@@ -1,7 +1,11 @@
 export class magicSystem {
-    constructor() {
+    constructor(canvas,scene,handlers) {
+        this.networkhandlers=handlers;
         // Create canvas for drawing/targeting
         this.canvas = document.createElement('canvas');
+        this.uiCanvas=canvas;
+        this.scene=scene;
+
         this.canvas.id = "spellCanvas";
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
@@ -38,8 +42,8 @@ export class magicSystem {
             })
             .catch(err => console.error(err));
 
-
-        this.canvas.style.background = 'rgba(0,0,255,0.1)';
+        //canvas tester
+        //this.canvas.style.background = 'rgba(0,0,255,0.1)';
 
     }
 
@@ -72,14 +76,14 @@ export class magicSystem {
         this.canvas.style.display = visible ? 'none' : 'block';
         this.menuContainer.style.display = visible ? 'none' : 'block';
     }
-    updateAOEMarker(mouse, camera, raycaster, ground) {
+    updateAOEMarker( raycaster, ground) {
         // Clear previous drawings
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         if (!this.activeSpell||this.activeSpell===null) return;
 
         // Raycast to ground
-        raycaster.setFromCamera(mouse, camera);
+
         const intersects = raycaster.intersectObject(ground);
         if (intersects.length === 0) return;
 
@@ -100,10 +104,36 @@ export class magicSystem {
         this.ctx.fillStyle = 'rgba(255,0,0,0.3)';
         this.ctx.fill();
     }
+    castSpell(position){
+
+        if (!this.activeSpell) {
+            console.warn('No spell selected');
+            return;
+        }
+
+        const pos = { x: position.x, y: position.y, z: position.z };
+        const spellData = {
+            id: this.activeSpell.id,
+            name: this.activeSpell.name,
+
+            radius: this.activeSpell.radius,
+            position: pos
+        };
+
+        // ✅ Check if onSpellcast exists and is callable
+        if (this.networkhandlers && typeof this.networkhandlers.onSpellcast === 'function') {
+            this.networkhandlers.onSpellcast(spellData);
+        } else {
+            console.warn('onSpellcast handler is not defined');
+        }
+        this.activeSpell = null;
+    }
 
     getMousePositionToGround(mouse, camera, raycaster, groundPlane) {
-
-        raycaster.setFromCamera(mouse, camera);
+        if (!groundPlane) {
+            console.error('getMousePositionToGround: groundPlane is undefined');
+            return null;
+        }
         const intersects = raycaster.intersectObject(groundPlane, false);
 
         if (intersects.length > 0) {
