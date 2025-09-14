@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Level Editor</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 10px;
+            font-family: Arial, sans-serif;
+            background: #202020;
+            color: #f0f0f0;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: 200px 1fr 250px;
+            gap: 15px;
+            height: 100vh;
+        }
+        .panel {
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 8px;
+            overflow: auto;
+        }
+        .panel h3 {
+            margin-top: 0;
+            font-size: 1rem;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        input[type="number"], select, button, input[type="file"] {
+            width: 100%;
+            padding: 6px;
+            margin-top: 4px;
+            background: #444;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover { background: #666; }
+        .drag-control { display: flex; align-items: center; gap: 5px; }
+        .drag-control input[type="range"] { flex: 1; }
+
+        /* Center viewport sizing fix */
+        #viewportdiv { display: flex; flex-direction: column; }
+        #viewport {
+            background: #111;
+            border: 1px solid #333;
+            flex: 1;               /* fills the panel height */
+            position: relative;
+            overflow: hidden;
+            min-height: 200px;
+        }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+<div class="grid-container">
+    <!-- Left tools -->
+    <div class="panel">
+        <h3>Tools</h3>
+        <button id="toggleCam">Switch Camera</button>
+        <button id="spriteModeBtn">Mode: Decal</button>
+
+        <label for="modelSelector">Sprite Asset</label>
+        <select id="modelSelector">
+            <!-- value holds the file path so JS can load directly -->
+            <option value="assets/spaceship.png">Spaceship</option>
+            <option value="assets/asteroid.png">Asteroid</option>
+        </select>
+
+        <button id="savebutton">Save Level</button>
+        <input type="file" id="loadInput" accept=".json" style="display:none;">
+        <button id="loadbutton">Load Level</button>
+
+        <h3>Sprite Preview</h3>
+        <img id="spritePreview" src="assets/spaceship.png" alt="Preview" style="max-width:150px;max-height:150px;">
+    </div>
+
+    <!-- Center viewport -->
+    <div id="viewportdiv" class="panel">
+        <h3>Viewport</h3>
+        <div id="viewport"></div>
+        <!-- Just your editor JS; it imports Three from CDN -->
+        <script type="module" src="./levelEditor.js"></script>
+    </div>
+
+    <!-- Right context menu -->
+    <div id="contextMenu" class="panel">
+        <h3>Context Menu</h3>
+
+        <label for="spriteName">Name</label>
+        <input type="text" id="spriteName" placeholder="Enter name">
+
+        <label>Position X</label>
+        <div class="drag-control">
+            <input type="number" id="posX" step="0.01" placeholder="X">
+            <input type="range" id="sliderX" min="-100" max="100" step="0.01">
+        </div>
+
+        <label>Position Y</label>
+        <div class="drag-control">
+            <input type="number" id="posY" step="0.01" placeholder="Y">
+            <input type="range" id="sliderY" min="-100" max="100" step="0.01">
+        </div>
+
+        <label>Position Z</label>
+        <div class="drag-control">
+            <input type="number" id="posZ" step="0.01" placeholder="Z">
+            <input type="range" id="sliderZ" min="-100" max="100" step="0.01">
+        </div>
+
+        <label for="entityType">Entity Type</label>
+        <select id="entityType">
+            <option value="billboard">Billboard</option>
+            <option value="npc">NPC</option>
+            <option value="skill">Skill</option>
+            <option value="drop">Drop</option>
+        </select>
+
+        <button id="updateBtn">Update</button>
+    </div>
+</div>
+
+<script>
+    // Keep the preview in sync with the selector
+    const modelSelector = document.getElementById('modelSelector');
+    const spritePreview = document.getElementById('spritePreview');
+    spritePreview.src = modelSelector.value;
+    modelSelector.addEventListener('change', () => {
+        spritePreview.src = modelSelector.value;
+    });
+</script>
+</body>
+</html>
