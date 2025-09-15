@@ -19,8 +19,11 @@ export class Player {
             options.frameCount || 4,
             options.animationRow || 0,
             options.textureUrl || '/sprites/player.png',
-            options.rowCount || 2
+            options.rowCount || 2,
+            3
         );
+
+
     }
 
     update(delta, camera) {

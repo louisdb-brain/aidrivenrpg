@@ -1,7 +1,8 @@
-// levelEditor.js
-import * as THREE from 'https://unpkg.com/three@0.165.0/build/three.module.js';
-import { OrbitControls } from 'https://unpkg.com/three@0.165.0/examples/jsm/controls/OrbitControls.js';
-import { TransformControls } from 'https://unpkg.com/three@0.165.0/examples/jsm/controls/TransformControls.js';
+import * as THREE from 'three';
+import {loadLevel} from "./loadlevel.js";
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 /* ---------- DOM ---------- */
 const viewport       = document.getElementById('viewport');
@@ -205,15 +206,15 @@ function deselect() {
 
 /* ---------- Place New ---------- */
 async function placeSprite(atPoint) {
-    const asset = modelSelector.value;
+    // Prepend the public path so Vite serves it correctly
+    const asset = "/sprites/" + modelSelector.value;
     try {
         const { mesh } = await createSpriteMesh(asset, placementMode, atPoint);
         scene.add(mesh);
         const entry = {
             id: mesh.uuid,
             type: 'sprite',
-            asset,
-            name: (asset.split('/').pop() || 'Sprite'),
+            name: modelSelector.value,
             spriteMode: placementMode,      // decal or billboard
             entityType: 'billboard',        // default; editable in panel
             mesh
@@ -382,40 +383,6 @@ function clearPlaced() {
     deselect();
 }
 
-/* Load level */
-async function loadLevel(data) {
-    clearPlaced();
-    const tasks = (Array.isArray(data) ? data : []).map(async (e) => {
-        if (e.type === 'sprite' && e.asset) {
-            // Recreate sprite
-            const pos = new THREE.Vector3(...(e.transform?.position || [0,0,0]));
-            const mode = e.spriteMode === 'billboard' ? 'billboard' : 'decal';
-            const { mesh } = await createSpriteMesh(e.asset, mode, pos);
-
-            // Apply saved transform (after mesh creation defaults)
-            if (e.transform?.scale)    mesh.scale.fromArray(e.transform.scale);
-            if (e.transform?.rotation) mesh.rotation.set(e.transform.rotation[0]||0, e.transform.rotation[1]||0, e.transform.rotation[2]||0, e.transform.rotation[3]||'XYZ');
-
-            // If billboard, ensure billboarding is active
-            if (mode === 'billboard') makeBillboard(mesh);
-            else clearBillboard(mesh);
-
-            mesh.name = e.name || mesh.name;
-            scene.add(mesh);
-
-            placed.push({
-                id: mesh.uuid,
-                type: 'sprite',
-                asset: e.asset,
-                name: e.name || 'Sprite',
-                spriteMode: mode,
-                entityType: e.entityType || 'billboard',
-                mesh
-            });
-        }
-    });
-    await Promise.all(tasks);
-}
 
 /* ---------- Camera Toggle ---------- */
 toggleCamBtn.addEventListener('click', () => {

@@ -1,89 +1,98 @@
 import * as THREE from "three";
+import { iccColorPreloader } from './iccColorPreload.js';
 
 const placedObjects = [];
+const SPRITE_SCALE_DIVISOR = 100;
 
+/**
+ * Wraps ICC preloader output and applies sRGB encoding + orientation fixes.
+ */
+async function loadSpriteMaterial(path) {
+    const texture = await iccColorPreloader.load(path);
 
-export function loadLevel(data, pScene) {
-    const SPRITE_SCALE_DIVISOR = 100;
-    const textureLoader = new THREE.TextureLoader();
+    // ✅ Apply proper encoding and orientation
+    texture.encoding = THREE.LinearEncoding;
+    texture.flipY = true;                 // Prevent upside-down sprites (try true if still flipped)
+    texture.needsUpdate = true;
 
-    data.forEach(objData => {
+    return new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true,
+        toneMapped: false // Keep tone mapping off for exact PNG colors
+    });
+}
+
+export async function loadLevel(data, pScene) {
+    for (const objData of data) {
         if (objData.type === "sprite" && objData.name) {
-            // Use relative path unless your server serves /sprites at root
             const texturePath = `/sprites/${objData.texture || objData.name}`;
+            const texture = await iccColorPreloader.load(texturePath);
 
-            textureLoader.load(
-                texturePath,
-                texture => {
-                    // ✅ Validate the texture
-                    if (!texture.image || texture.image.width === 0 || texture.image.height === 0) {
-                        console.warn(`[LevelLoader] Invalid texture dimensions: ${texturePath}`);
-                        return;
-                    }
+            texture.encoding = THREE.LinearEncoding;
+            texture.flipY = true;
+            texture.magFilter = THREE.NearestFilter;
+            texture.minFilter = THREE.NearestFilter;
+            texture.needsUpdate = true;
 
-                    // ✅ Configure texture for crisp pixels
-                    texture.encoding = THREE.sRGBEncoding;
-                    texture.magFilter = THREE.NearestFilter;
-                    texture.minFilter = THREE.NearestFilter;
+            const img = texture.image;
+            const imgW = img.width;
+            const imgH = img.height;
+            const planeW = imgW / SPRITE_SCALE_DIVISOR;
+            const planeH = imgH / SPRITE_SCALE_DIVISOR;
 
-                    const imgW = texture.image.width;
-                    const imgH = texture.image.height;
-                    const planeW = imgW / SPRITE_SCALE_DIVISOR;
-                    const planeH = imgH / SPRITE_SCALE_DIVISOR;
+            const geometry = new THREE.PlaneGeometry(planeW, planeH);
+            const material = new THREE.MeshBasicMaterial({
+                map: texture,
+                transparent: true,
+                toneMapped: false,
+                depthWrite: false // Optional: no z-fighting
+            });
 
-                    // Billboard sprite
-                    const material = new THREE.SpriteMaterial({
-                        map: texture,
-                        transparent: true,
-                        depthWrite: false,
-                        sizeAttenuation: true
-                    });
-
-
-                    material.toneMapped = false;
-                    material.color.setScalar(0.7); // tweak brightness
-
-                    const billboard = new THREE.Sprite(material);
-
-
-                    billboard.scale.set(planeW, planeH, 1);
-                    billboard.position.set(
-                        objData.position.x,
-                        objData.position.y + planeH / 2,
-                        objData.position.z
-                    );
-
-                    pScene.add(billboard);
-
-                    placedObjects.push({
-                        type: "billboard",
-                        name: objData.name,
-                        position: objData.position,
-                        spriteScale: { w: planeW, h: planeH },
-                        mesh: billboard
-                    });
-                },
-                undefined,
-                error => {
-                    console.error(`[LevelLoader] Failed to load texture: ${texturePath}`, error);
-                }
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(
+                objData.position.x,
+                objData.position.y + planeH / 2,
+                objData.position.z
             );
+
+            // Add tag for later camera-facing
+            mesh.userData.faceCamera = true;
+
+            pScene.add(mesh);
+
+            placedObjects.push({
+                type: "facingMesh",
+                name: objData.name,
+                position: objData.position,
+                spriteScale: { w: planeW, h: planeH },
+                mesh: mesh
+            });
         }
-        else if (objData.type === 'decal') {
-            const tex = textureLoader.load('/sprites/' + objData.texture);
+
+
+     else if (objData.type === 'decal') {
+            const tex = new THREE.TextureLoader().load('/sprites/' + objData.texture);
             tex.magFilter = THREE.NearestFilter;
             tex.minFilter = THREE.NearestFilter;
+            tex.encoding = THREE.sRGBEncoding; // Also mark decals as sRGB
+            tex.flipY = false;
+            tex.needsUpdate = true;
+
             const geo = new THREE.PlaneGeometry(1, 1);
-            const mat = new THREE.MeshStandardMaterial({
-                map: tex,
-                transparent: true,
-                side: THREE.DoubleSide
-            });
+            const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true });
             const decal = new THREE.Mesh(geo, mat);
             decal.position.set(objData.position.x, objData.position.y, objData.position.z);
-            // Unlike billboards, do NOT copy camera quaternion each frame.
             pScene.add(decal);
             placedObjects.push({ type: 'decal', name: objData.texture, mesh: decal });
         }
-    });
+    }
+
 }
+export function faceAllToCamera(camera) {
+    for (const obj of placedObjects) {
+        if (obj.mesh && obj.mesh.lookAt) {
+            obj.mesh.lookAt(camera.position);
+        }
+    }
+}
+

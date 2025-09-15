@@ -16,6 +16,8 @@ export class Game {
         this.scene.fog = new THREE.FogExp2(0x99ffcc, 0.004);
         this.scene.background = new THREE.Color(0x99ffcc);
 
+
+
         const aspect = window.innerWidth / window.innerHeight;
         const frustumSize = 30;
         this.camera = new THREE.OrthographicCamera(
@@ -30,9 +32,12 @@ export class Game {
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         document.getElementById('game-container').appendChild(this.renderer.domElement);
-        this.renderer.outputEncoding = THREE.sRGBEncoding;
-        this.renderer.toneMapping = THREE.LinearToneMapping;
-        this.renderer.toneMappingExposure = 0.9;
+        this.renderer.outputEncoding = THREE.LinearEncoding;
+        this.renderer.toneMapping = THREE.NoToneMapping;
+        this.renderer.toneMappingExposure = 1.0;
+
+        this.renderer.physicallyCorrectLights = false;
+
 
         window.addEventListener('resize', () => {
             this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -51,11 +56,13 @@ export class Game {
             if (e.key.toLowerCase() === 'f') this.toggleCameraFocus();
         });
 
+
+
         const hemi = new THREE.HemisphereLight(0xF0B05B, 0xA1A1A1);
         hemi.position.set(0, 200, 0);
         this.scene.add(hemi);
 
-        const ambient = new THREE.AmbientLight(0xffffff, 1.2);
+        const ambient = new THREE.AmbientLight(0xffffff, 0.8);
         this.scene.add(ambient);
 
         const pointlight = new THREE.PointLight(0xffffff, 1.2, 800);
@@ -87,7 +94,9 @@ export class Game {
         this.VFX=new vfxHandler(this.scene, this.camera);
         fetch('/levels/level1.json')
             .then(res => res.json())
-            .then(data => loadLevel(data, this.scene));
+            .then(async data => {
+                await loadLevel(data, this.scene);
+            });
     }
 
     update() {

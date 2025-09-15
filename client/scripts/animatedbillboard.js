@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 export class SpriteBillboard {
-    constructor(scene, fps, position = { x: 0, y: 0, z: 0 }, frameCount, animationRow, textureUrl, rowCount = 1) {
+    constructor(scene, fps, position = { x: 0, y: 0, z: 0 }, frameCount, animationRow, textureUrl, rowCount = 1,size=1) {
         this.scene = scene;
         this.frame = 0;
         this.frameCount = frameCount;
@@ -18,7 +18,7 @@ export class SpriteBillboard {
         this.sprite = new THREE.Sprite(placeholderMat);
         this.sprite.center.set(0.5, 0.0); // Anchor at feet
         this.sprite.position.copy(this.position);
-        this.sprite.scale.set(1, 1, 1); // Temporary scale until texture loads
+        this.sprite.scale.set(10, 10, 10); // Temporary scale until texture loads
         scene.add(this.sprite);
 
         // 🔹 Now start loading the texture
@@ -46,7 +46,8 @@ export class SpriteBillboard {
                 const framePixelWidth = tex.image.width / this.frameCount;
                 const framePixelHeight = tex.image.height / this.rowCount;
                 const aspect = framePixelHeight / framePixelWidth;
-                this.sprite.scale.set(1, aspect, 1);
+                this.size=size;
+                this.sprite.scale.set(1*this.size,aspect*this.size, 1*this.size);
 
                 this.texture = tex;
                 this.setFrame(this.frame);
