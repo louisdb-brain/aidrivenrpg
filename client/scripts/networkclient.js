@@ -166,6 +166,10 @@ export class NetworkClient {
         });
         console.log(`Spellcast emitted:`, spellData);
     }
+    spawnInteractiveNode(data)
+    {
+
+    }
 
 
 }

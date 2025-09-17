@@ -1,8 +1,11 @@
 import * as THREE from 'three';
 import {loadLevel} from "./loadlevel.js";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
+import { TransformControls } from 'three/addons/controls/TransformControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+console.log('Three revision:', THREE.REVISION);
+console.log('TransformControls prototype chain:',
+    Object.getPrototypeOf(TransformControls.prototype));
 
 /* ---------- DOM ---------- */
 const viewport       = document.getElementById('viewport');
@@ -81,8 +84,8 @@ function setPointerFromEvent(e) {
     pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
 }
 
-/* ---------- Placement Mode (Decal/Billboard) ---------- */
-let placementMode = 'decal'; // 'decal' | 'billboard'
+/* ---------- Placement Mode (Decal/Billboard/npc/interactivenode) ---------- */
+let placementMode = 'sprite'; // 'decal' | 'billboard'
 function togglePlacementMode() {
     placementMode = (placementMode === 'decal') ? 'billboard' : 'decal';
     spriteModeBtn.textContent = `Mode: ${placementMode === 'decal' ? 'Decal' : 'Billboard'}`;
@@ -205,7 +208,7 @@ function deselect() {
 }
 
 /* ---------- Place New ---------- */
-async function placeSprite(atPoint) {
+async function placeObject(atPoint) {
     // Prepend the public path so Vite serves it correctly
     const asset = "/sprites/" + modelSelector.value;
     try {
@@ -213,10 +216,8 @@ async function placeSprite(atPoint) {
         scene.add(mesh);
         const entry = {
             id: mesh.uuid,
-            type: 'sprite',
+            type: placementMode,
             name: modelSelector.value,
-            spriteMode: placementMode,      // decal or billboard
-            entityType: 'billboard',        // default; editable in panel
             mesh
         };
         placed.push(entry);
@@ -271,7 +272,8 @@ renderer.domElement.addEventListener('pointerup', async e => {
     // Otherwise, try placing on ground
     const groundHit = raycaster.intersectObject(ground, false);
     if (groundHit.length) {
-        await placeSprite(groundHit[0].point);
+        console.log('place object ');
+        await placeObject(groundHit[0].point);
     } else {
         deselect();
     }
