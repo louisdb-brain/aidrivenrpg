@@ -15,6 +15,7 @@ export class player {
         this.locked=false;
         this.speed = 5;
         this.angle=null;
+        this.interactionRadius=0.8;
         this.maxcooldown=150;
         this.cooldown=50;
 
@@ -57,7 +58,7 @@ export class player {
         }
         const distance = movedirection.length();
 
-        if (distance > 0.1) {
+        if (distance > 0.2+this.interactionRadius) {
             movedirection.normalize();
             angledirection.normalize();
             const moveStep = this.speed * delta;
@@ -76,7 +77,7 @@ export class player {
 
         if(this.followTarget=="" )
         {
-            //console.log("error doing combat logic ,no follow target");
+            console.log("error doing combat logic ,no follow target");
 
             return;
         }
@@ -111,6 +112,9 @@ export class player {
         //set cooldown
     }
     setTarget(position) {
+    //if(this.targetObject!=""||this.targetObject!=null){
+      //      this.targetObject="";
+        //}
         let temppos=position.clone();
         temppos.y=0;
         this.targetPosition.copy(temppos); // store destination

@@ -51,11 +51,11 @@ let activeCamera = perspCam;
 const controls = new OrbitControls(activeCamera, renderer.domElement);
 controls.enableDamping = true;
 controls.target.set(0, 0, 0);
-
+/*
 const transformControls = new TransformControls(activeCamera, renderer.domElement);
 scene.add(transformControls);
 transformControls.addEventListener('dragging-changed', e => controls.enabled = !e.value);
-
+*/
 /* ---------- Lights / Ground / Helpers ---------- */
 scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1));
 const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);

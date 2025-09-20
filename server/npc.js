@@ -1,7 +1,6 @@
 //SERVER NPC//
 import {toVec3} from "./utilities.js"
 import * as THREE from 'three';
-import {materialThickness} from "three/tsl";
 
 
 export class npc{

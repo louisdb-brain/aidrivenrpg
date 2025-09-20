@@ -255,7 +255,7 @@ export class Game {
     spawnSpell(spelldata) {
         console.log("spawning spell at "+spelldata.position.x)
         const pos=new THREE.Vector3(spelldata.position.x,spelldata.position.y+0.1, spelldata.position.z);
-        this.VFX.spawn('/icons/fireball.png', pos, 'flat', 10, 500);
+        this.VFX.spawn('/icons/fireball.png', pos, 'flat', 10, spelldata.lifetime);
 
 
     }

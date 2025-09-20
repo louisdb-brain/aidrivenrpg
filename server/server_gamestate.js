@@ -3,6 +3,7 @@ import {npcManager} from "./npcmanager.js";
 import * as THREE from 'three';
 import {playermanager} from "./playermanager.js";
 import {objectManager} from "./dynamicObjectsManager.js";
+import {SpellManager} from "./spellmanager.js";
 
 export class gamestateClass{
     constructor(pIO) {
@@ -16,7 +17,7 @@ export class gamestateClass{
 
         this.objectManager=new objectManager();
         this.npcManager=new npcManager(this.objectManager,this.io)
-
+        this.spellManager=new SpellManager(this.npcManager,"placeholderthispplayermanager","placeholdersocketid");
 
 
         this.onNpcUpdate = null;
@@ -50,6 +51,7 @@ export class gamestateClass{
            this.emitPlayers();
            this.objectManager.update(delta);
            this.emitChests();
+           this.spellManager.update();
 
         }
 
@@ -145,9 +147,12 @@ export class gamestateClass{
     }
     castSpell(data)
     {
+        this.spellManager.castSpell("placeholder",data);
         //calculate damage later
         this.io.emit('spellcast',data);
+
     }
+
 
 
 }

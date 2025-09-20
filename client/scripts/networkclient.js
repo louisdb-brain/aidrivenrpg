@@ -162,7 +162,8 @@ export class NetworkClient {
             id: this.localPlayerId,
             name: spellData.name,
             sprite:spellData.spellSprite,
-            position: spellData.position
+            position: spellData.position,
+            lifetime:spellData.lifetime
         });
         console.log(`Spellcast emitted:`, spellData);
     }

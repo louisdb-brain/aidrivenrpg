@@ -39,6 +39,9 @@ export const playermanager = {
             else players[id].locked = false;
         }
         else{
+
+            players[id].locked = false;
+
             players[id].targetPosition = pTarget;
         }
     },
