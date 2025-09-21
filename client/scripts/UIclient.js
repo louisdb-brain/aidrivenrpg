@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 
-import {spriteHandeler}from './spriteHandeler.js';
+
 import {CookingGame} from "./skills/cooking.js";
 import{magicSystem} from "./skills/magic.js";
 
