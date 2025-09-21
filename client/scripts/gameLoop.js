@@ -5,7 +5,7 @@ import { npc } from './npc.js';
 import { Chest } from './chest.js';
 import { toVec3 } from './networkclient.js';
 import { UI } from './UIclient.js';
-import { loadLevel } from '../leveleditor/loadlevel.js';
+import { loadLevel } from '../levelEditor/loadlevel.js';
 import { levelHandler } from './levelHandler.js';
 import {vfxHandler} from "./vfxHandeler.js";
 
