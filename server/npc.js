@@ -41,9 +41,9 @@ export class npc{
                     name:this.name,
 
                 }
-            this.io.emit('npc-kill',payload);
+            //this.io.emit('npc-kill',payload);
             console.log(this.health);
-            if (this.onDestroy) this.onDestroy(this);
+            //if (this.onDestroy) this.onDestroy(this);
 
 
         }

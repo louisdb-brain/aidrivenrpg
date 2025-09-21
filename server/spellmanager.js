@@ -1,9 +1,10 @@
 
 import {Spell} from "./spell.js";
 
+
 export class SpellManager {
-    constructor( npcManager, playerManager,socket) {
-       // this.io = io;
+    constructor( npcManager, playerManager,socket,io) {
+        this.io = io;
         this.npcManager = npcManager;
         this.playerManager = playerManager;
         this.activeSpells = []; // {id, casterId, position, velocity, radius, ttl}
@@ -11,13 +12,16 @@ export class SpellManager {
     }
 
     castSpell(casterId, spellData) {
-        const spell = new Spell(spellData.id,casterId,spellData.radius,spellData.damage,spellData.lifetime);
+
+        const spell = new Spell(spellData.id,casterId,spellData.radius,spellData.damage,spellData.lifetime,spellData.position);
         this.activeSpells.push(spell);
     }
 
     update() {
-        for(const spell in this.activeSpells) {
-        this.checkCollisions(spell);
+        this.activeSpells.forEach(spell => this.checkCollisions(spell));
+        //this.activeSpells.forEach(spell => this.activeSpells[spell].tick());
+
+
         /*if (spell.velocity!=0) {
 
 
@@ -31,35 +35,39 @@ export class SpellManager {
 
             }*/
 
-        }
+
     }
 
     checkCollisions(spell) {
+        if(spell.dealtdame){return};
         // NPC collisions
         for (const npcId in this.npcManager.npcs) {
             const npc = this.npcManager.npcs[npcId];
-            const dist = spell.position.distanceTo(npc.position);
-            if (dist <= spell.radius + npc.hitRadius) {
+
+            const dx = spell.position.x - npc.position.x;
+            const dz = spell.position.z - npc.position.z; // or .y if you’re using y
+            const dist = Math.sqrt(dx * dx + dz * dz);
+
+            if (dist <= spell.radius ) {
                 npc.takeDamage(spell.damage);
                 this.io.emit('npc-takedamage', { id: npcId, amount: spell.damage });
-                // Remove spell on first hit (optional)
-                //spell.ttl = 0;
-                return;
+                
             }
         }
 
         // Player collisions (PvP or friendly fire)
         const players = this.playerManager.getAllPlayers();
-        for (const playerId in players) {
-            if (playerId === spell.casterId) continue;
-            const pl = players[playerId];
-            const dist = spell.position.distanceTo(pl.position);
+        for (const player of Object.values(players)) {
+
+            const dx = spell.position.x - player.position.x;
+            const dz = spell.position.z - player.position.z; // or .y if you’re using y
+            const dist = Math.sqrt(dx * dx + dz * dz);
             if (dist <= spell.radius + 0.5) {
                 // apply damage or effect
-                this.io.emit('player-hit', { id: playerId, amount: spell.damage });
-                spell.ttl = 0;
-                return;
+                this.io.emit('player-takedamage', { id: player.id, amount: spell.damage });
+
             }
         }
+        spell.dealtdame = true;
     }
 }

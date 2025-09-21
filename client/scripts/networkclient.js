@@ -72,18 +72,29 @@ export class NetworkClient {
                 //manager.npcs = manager.npcs.filter(n => n !== npc)
             });
             this.socket.on('npc-takedamage',(payload) => {
-                console.log(payload)
+                //console.log(payload.amount);
                 if (this.game.npcs[payload.id]) {
                     const npc=this.game.npcs[payload.id];
                     npc.takedamage(payload.amount);
                     this.game.UI.drawHit(npc.position.clone(),payload.amount);
-                    this.game.players[this.socket.id].playAnimation(1);
+                    //this.game.players[this.socket.id].playAnimation(1);
                 }
                 else
                 {
                     console.log("no npc with id " + this.game.npcs[payload.id]);
                 }
             })
+            this.socket.on("player-takedamage",(payload) => {
+                //console.log(payload);
+                if(this.game.players[payload.id])
+                {
+                    const player=this.game.players[payload.id];
+                    player.takedamage(payload.amount);
+                    this.game.UI.drawHit(player.position.clone(),payload.amount);
+                }
+
+                console.log(payload);
+            });
             /*this.socket.on('chest-position-update',(chests)=>{
                 chests.forEach(chest => {
                     if(!this.game.chests[chest.id])
@@ -157,13 +168,17 @@ export class NetworkClient {
         this.socket.emit('loot',lootId);
     }
     castSpell(spellData) {
+        console.log(spellData);
         // Send a spellcast message to the server
         this.socket.emit('spellcast', {
             id: this.localPlayerId,
             name: spellData.name,
             sprite:spellData.spellSprite,
             position: spellData.position,
-            lifetime:spellData.lifetime
+            lifetime:spellData.lifetime,
+            damage:spellData.damage,
+            radius:spellData.radius
+
         });
         console.log(`Spellcast emitted:`, spellData);
     }

@@ -76,5 +76,9 @@ export class Player {
     setAnimationRow(row) {
         this.sprite.setAnimationRow(row);
     }
+    takedamage(amount)
+    {
+        console.log(amount+" damage taken only console log");
+    }
 }
 

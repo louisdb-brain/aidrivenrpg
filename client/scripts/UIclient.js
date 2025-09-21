@@ -169,7 +169,7 @@ export class UI{
             const sprite = new THREE.Sprite(material);
 
 
-            sprite.scale.set(0.7, 0.7, 0);
+            sprite.scale.set(5 , 5, 0);
             sprite.position.copy(position.clone().add(new THREE.Vector3(0, 1.5, 0)));
             this.scene.add(sprite);
 

@@ -1,24 +1,27 @@
 import * as THREE from 'three';
 export class Spell {
-    constructor(id,caster,radius,damage,time) {
+    constructor(id,caster,radius,damage,time,position) {
         this.id = id;
         this.manager = "" ; // reference to manager holds all active spells
         this.caster=caster;
-        this.position = new THREE.Vector3();
+        this.position = position;
+        console.log(this.position);
         this.velocity = new THREE.Vector3();
         this.radius=radius;
         this.damage=damage;
         this.time=time;
+        this.dealtdamage = false;
 
 
     }
 
     tick() {
-        this.time--;
+        this.dealtdamage = true;
+       /* this.time--;
         if(this.time<0)
         {
             //destroy this
-        }
+        }*/
 
     }
 

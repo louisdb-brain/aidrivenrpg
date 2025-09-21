@@ -17,7 +17,7 @@ export class gamestateClass{
 
         this.objectManager=new objectManager();
         this.npcManager=new npcManager(this.objectManager,this.io)
-        this.spellManager=new SpellManager(this.npcManager,"placeholderthispplayermanager","placeholdersocketid");
+        this.spellManager=new SpellManager(this.npcManager,playermanager,"placeholdersocketid",this.io);
 
 
         this.onNpcUpdate = null;
@@ -147,7 +147,7 @@ export class gamestateClass{
     }
     castSpell(data)
     {
-        this.spellManager.castSpell("placeholder",data);
+        this.spellManager.castSpell("noid",data);
         //calculate damage later
         this.io.emit('spellcast',data);
 

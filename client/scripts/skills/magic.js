@@ -115,7 +115,7 @@ export class magicSystem {
         const spellData = {
             id: this.activeSpell.id,
             name: this.activeSpell.name,
-
+            damage:this.activeSpell.damage,
             radius: this.activeSpell.radius,
             position: pos
         };

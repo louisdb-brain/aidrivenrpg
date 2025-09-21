@@ -45,7 +45,7 @@ export class player {
             }
             else
             {
-                console.log("tried to attack but followtarget not given")
+               // console.log("tried to attack but followtarget not given")
             }
         }
         var angledirection= null;
@@ -77,13 +77,13 @@ export class player {
 
         if(this.followTarget=="" )
         {
-            console.log("error doing combat logic ,no follow target");
+            //console.log("error doing combat logic ,no follow target");
 
             return;
         }
         console.log("combatlogic: attacking "+this.followTarget);
 
-        console.log(this.followTarget);
+        //console.log(this.followTarget);
 
 
         this.targetPosition= this.targetObject.position.clone();
