@@ -1,0 +1,15 @@
+[
+  {
+    "id": "fireball",
+    "name": "Fireball",
+    "icon": "icons/fireball.png",
+    "targetSprite": "icons/spellcircle.png",
+    "spellSprite":"vfx/firecircle.png",
+    "secondary": "icons/fireball.png",
+    "secondaryamount": 7,
+    "radius": 10,
+    "speed": 12,
+    "damage": 50,
+    "lifetime": 500
+  }
+]

@@ -30,7 +30,7 @@ export class magicSystem {
         document.body.appendChild(this.menuContainer);
 
         // ✅ Fetch spells and build buttons dynamically
-        fetch('scripts/skills/spells.json')
+        fetch('/spells.json')
             .then(res => {
                 if (!res.ok) throw new Error('spells.json not found');
                 return res.json();

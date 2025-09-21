@@ -1,0 +1,51 @@
+[
+  {
+
+    "id":"ore_copper",
+    "skill": "mining",
+    "sprite": "sprites/ore_copper.png",
+    "requiredlevel": 0
+  },
+  {
+
+    "id":"ore_gold",
+    "skill": "mining",
+    "sprite": "sprites/ore_gold.png",
+    "requiredlevel": 20
+  },
+  {
+    "id": "cookingstove1",
+    "skill": "cooking",
+    "sprite": "sprites/cookingstove1.png",
+    "requiredlevel": 0
+  },
+  {
+    "id": "fishingspot_net",
+    "skill": "fishing",
+    "sprite": "sprites/fishingspot1.png",
+    "requiredlevel": 0
+  },
+  {
+    "id": "craftingtable1",
+    "skill": "crafting",
+    "sprite": "sprites/craftingtable1.png",
+    "requiredlevel": 0
+
+  },
+  {
+    "id": "door1",
+    "skill": "generic",
+    "sprite": "sprites/door.png",
+    "requiredlevel": 0
+
+  },
+  {
+    "id": "quest1",
+    "skill": "quest",
+    "sprite": "sprites/questmarker.png",
+    "requiredlevel": 0
+
+  }
+
+
+]

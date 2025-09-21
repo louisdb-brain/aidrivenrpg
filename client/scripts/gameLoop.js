@@ -92,7 +92,7 @@ export class Game {
         this.UI = new UI(this.scene, this.ctx, this.camera, this.canvas,this.ground,this.handlers);
         this.levelHandeler = new levelHandler(this.scene);
         this.VFX=new vfxHandler(this.scene, this.camera);
-        fetch('/levels/level1.json')
+        fetch('/level1.json')
             .then(res => res.json())
             .then(async data => {
                 await loadLevel(data, this.scene);

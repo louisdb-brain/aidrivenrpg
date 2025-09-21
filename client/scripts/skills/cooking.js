@@ -28,7 +28,7 @@ export class CookingGame {
         this.itemLibrary = {};
         this.pot = { x: 600, y: 400, w: 150, h: 100 };
         this.ingredientsReady = false;
-        fetch('scripts/skills/ingredients.json')
+        fetch('/ingredients.json')
             .then(res => res.json())
             .then(data => {
                 data.forEach(item => {
