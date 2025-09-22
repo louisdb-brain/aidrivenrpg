@@ -83,7 +83,7 @@ export class Game {
         this.hasStartedLoop = false;
 
         const groundGeometry = new THREE.PlaneGeometry(100, 100);
-        const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x555555, side: THREE.DoubleSide });
+        const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x306844, side: THREE.DoubleSide });
         this.ground = new THREE.Mesh(groundGeometry, groundMaterial);
         this.ground.rotation.x = -Math.PI / 2;
         this.ground.position.y = -1.05;
