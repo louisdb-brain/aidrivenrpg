@@ -97,6 +97,10 @@ export class Game {
             .then(async data => {
                 await loadLevel(data, this.scene);
             });
+        //turns off all the inventories and attaches the camera to orthographic
+        this.toggleCameraFocus();
+        this.UI.cookinggame.toggle();
+        this.UI.inventory.toggle();
     }
 
     update() {
