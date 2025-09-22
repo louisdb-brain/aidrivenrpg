@@ -37,6 +37,7 @@ io.on('connection', (socket) => {
     playermanager.addPlayer(socket.id,(event, data) => {
         io.to(socket.id).emit(event, data);//callback function for events
     });
+    io.emit('chat-message',{id:socket.id,message:"welcome to the game press F to fix camera, press I ,S and 1 for overlays"});
     //socket.emit('session-token', sessionToken);
 
 
