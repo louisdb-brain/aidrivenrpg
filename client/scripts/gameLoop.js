@@ -154,7 +154,7 @@ export class Game {
             }
             this.draw();
             requestAnimationFrame(loopInternal);
-            //this.composer.render();
+            this.composer.render();
         };
 
         loopInternal();

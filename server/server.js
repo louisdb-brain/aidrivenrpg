@@ -13,11 +13,11 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server,{cors:{origin:"*",methods:["GET","POST"]}});
 //BUILD
-/*
+
 const port = process.env.PORT || 3000;
 server.listen(port, () => console.log(`Server running on ${port}`));
 app.use(express.static('dist'));
-*/
+
 
 
 app.use(express.static('public')); // Serve index.html and client.js
@@ -123,8 +123,8 @@ io.on('connection', (socket) => {
 
 
 });
-
+/*
 server.listen(3000, () => {
     console.log('Socket.IO server running at http://localhost:3000');
-});
+});*/
 

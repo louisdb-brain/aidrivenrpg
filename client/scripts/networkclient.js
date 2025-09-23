@@ -12,9 +12,9 @@ export class NetworkClient {
         this.game=pGame;
         this.spriteHandeler=pGame.spriteHandeler;
         // ✅ Works locally and on Render
-       // this.socket = io(); // Uses same origin as page
+        this.socket = io(); // Uses same origin as page
 
-        this.socket = io('http://localhost:3000');
+        //this.socket = io('http://localhost:3000');
         window.addEventListener('DOMContentLoaded', () => {
             //socket token
             /*socket.on('session-token', (token) => {
