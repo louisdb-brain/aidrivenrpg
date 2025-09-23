@@ -8,6 +8,10 @@ import { UI } from './UIclient.js';
 import { loadLevel } from '../levelEditor/loadlevel.js';
 import { levelHandler } from './levelHandler.js';
 import {vfxHandler} from "./vfxHandeler.js";
+import { iccColorPreloader } from '../levelEditor/iccColorPreload.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { BokehPass } from 'three/examples/jsm/postprocessing/BokehPass.js';
 
 export class Game {
     constructor(handlers) {
@@ -28,7 +32,6 @@ export class Game {
             0.1,
             2000
         );
-
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         document.getElementById('game-container').appendChild(this.renderer.domElement);
@@ -65,8 +68,8 @@ export class Game {
         const ambient = new THREE.AmbientLight(0xffffff, 0.8);
         this.scene.add(ambient);
 
-        const pointlight = new THREE.PointLight(0xffffff, 1.2, 800);
-        pointlight.position.set(5, 0, -4);
+        const pointlight = new THREE.PointLight(0xE0B746, 800, 8000);
+        pointlight.position.set(5, 10, 4);
         this.scene.add(pointlight);
         this.scene.add(new THREE.PointLightHelper(pointlight, 0.3));
 
@@ -83,7 +86,7 @@ export class Game {
         this.hasStartedLoop = false;
 
         const groundGeometry = new THREE.PlaneGeometry(100, 100);
-        const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x306844, side: THREE.DoubleSide });
+        const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x80995D, side: THREE.DoubleSide });
         this.ground = new THREE.Mesh(groundGeometry, groundMaterial);
         this.ground.rotation.x = -Math.PI / 2;
         this.ground.position.y = -1.05;
@@ -97,6 +100,24 @@ export class Game {
             .then(async data => {
                 await loadLevel(data, this.scene);
             });
+        //blur
+
+        this.composer=new EffectComposer(this.renderer);
+        this.composer.renderTarget1.texture.encoding = THREE.sRGBEncoding;
+        this.composer.renderTarget2.texture.encoding = THREE.sRGBEncoding;
+        this.renderPass=new RenderPass(this.scene,this.camera)
+        this.composer.addPass(this.renderPass)
+        this.bokehPass=new BokehPass(this.scene,this.camera, {
+            focus: 29.1,       // focus distance
+            aperture:  0.0005,   // smaller = sharper, larger = blurrier
+            maxblur: 0.001,     // max blur size
+        });
+        this.composer.addPass(this.bokehPass);
+
+        this.raycaster = new THREE.Raycaster();
+        this.mouse = new THREE.Vector2();
+        window.addEventListener("click", (e) => this.handleClick(e));
+
         //turns off all the inventories and attaches the camera to orthographic
         this.toggleCameraFocus();
         this.UI.cookinggame.toggle();
@@ -119,6 +140,7 @@ export class Game {
     }
 
     loop() {
+
         if (this.hasStartedLoop) return;
         this.hasStartedLoop = true;
 
@@ -132,6 +154,7 @@ export class Game {
             }
             this.draw();
             requestAnimationFrame(loopInternal);
+            //this.composer.render();
         };
 
         loopInternal();
@@ -173,11 +196,21 @@ export class Game {
         this.controls.update();
     }
 
-    addPlayer(id, position = { x: 0, y: 0, z: 0 }) {
+    async addPlayer(id, position = { x: 0, y: 0, z: 0 }) {
+        // Somewhere else in your code
+        const tex = await iccColorPreloader.load('/sprites/player.png');
+        tex.encoding = THREE.LinearEncoding;
+        tex.flipY = true;
+        tex.magFilter = THREE.NearestFilter;
+        tex.minFilter = THREE.NearestFilter;
+        tex.needsUpdate = true;
+
+
         if (this.players[id]) return;
-        const player = new Player(this.scene, position);
+        const player = new Player(this.scene,position,tex);
         this.players[id] = player;
     }
+
 
     addNpc(id, position = { x: 0, y: 0, z: 0 }, npcid) {
         const thisnpc = new npc(this.scene, position, npcid, (npcInstance) => {
@@ -255,6 +288,13 @@ export class Game {
         this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
         this.raycaster.setFromCamera(this.mouse, this.camera);
+
+        const hits = this.raycaster.intersectObject(this.ground);
+        if (hits.length > 0) {
+            const point = hits[0].point;
+            const dist = this.camera.position.distanceTo(point);
+            console.log(`Clicked at: ${point.toArray().map(v => v.toFixed(2))}, distance = ${dist.toFixed(2)}`);
+        }
     }
     spawnSpell(spelldata) {
         console.log("spawning spell at "+spelldata.position.x)

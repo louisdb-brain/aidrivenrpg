@@ -26,7 +26,25 @@ export class CookingGame {
             BURNED: "BURNED",
         };
         this.itemLibrary = {};
+
         this.pot = { x: 600, y: 400, w: 150, h: 100 };
+        this.potImage = new Image();
+        this.potImage.src = '/sprites/pan.png';
+        this.boardImage=new Image();
+        this.boardImage.src='/sprites/cuttingboard.jpg'
+
+        this.boardImage.onload = () => {
+            console.log('Image loaded!');
+            this.ctx.drawImage(this.boardImage, 30, 30, 400, 200);
+        };
+        this.boardImage.onerror = () => console.error('Failed to load image!');
+
+        this.potImage.onload = () => {
+            console.log('Image loaded!');
+            this.ctx.drawImage(this.potImage, this.pot.x, this.pot.y, this.pot.w, this.pot.h);
+        };
+        this.potImage.onerror = () => console.error('Failed to load image!');
+
         this.ingredientsReady = false;
         fetch('/ingredients.json')
             .then(res => res.json())
@@ -205,7 +223,9 @@ export class CookingGame {
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.fillStyle = "#654321";
-        const potrect=this.ctx.fillRect(this.pot.x, this.pot.y, this.pot.w, this.pot.h);
+        this.ctx.drawImage(this.potImage, this.pot.x, this.pot.y, this.pot.w, this.pot.h);
+        this.ctx.drawImage(this.boardImage, 30, 30, 400, 500);
+        //const potrect=this.ctx.fillRect(this.pot.x, this.pot.y, this.pot.w, this.pot.h);
 
 
         for (let ing of this.activeIngredients) {

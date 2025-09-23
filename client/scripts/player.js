@@ -1,8 +1,9 @@
 import * as THREE from 'three';
-import { SpriteBillboard } from './animatedbillboard.js'; // Adjust path if needed
+import { SpriteBillboard } from './animatedbillboard.js';
+import {iccColorPreloader} from "../levelEditor/iccColorPreload"; // Adjust path if needed
 
 export class Player {
-    constructor(scene, position = { x: 0, y: 0, z: 0 }, options = {}) {
+    constructor(scene, position = { x: 0, y: 0, z: 0 },texture, options = {}) {
         this.scene = scene;
         this.position = new THREE.Vector3(position.x, position.y, position.z);
         this.targetPosition = this.position.clone();
@@ -19,7 +20,7 @@ export class Player {
             this.position,
             options.frameCount || 4,
             options.animationRow || 0,
-            options.textureUrl || '/sprites/player.png',
+            texture,
             options.rowCount || 2,
             3
         );

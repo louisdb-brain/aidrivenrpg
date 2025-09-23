@@ -1,7 +1,16 @@
 import * as THREE from 'three';
 
 export class SpriteBillboard {
-    constructor(scene, fps, position = { x: 0, y: 0, z: 0 }, frameCount, animationRow, textureUrl, rowCount = 1,size=1) {
+    constructor(
+        scene,
+        fps,
+        position = { x: 0, y: 0, z: 0 },
+        frameCount,
+        animationRow,
+        textureInput,          // Can be URL string or preloaded THREE.Texture
+        rowCount = 1,
+        size = 1
+    ) {
         this.scene = scene;
         this.frame = 0;
         this.frameCount = frameCount;
@@ -13,50 +22,57 @@ export class SpriteBillboard {
         this.flipped = false;
         this.position = new THREE.Vector3(position.x, position.y, position.z);
 
-        // 🔹 Create a placeholder material with no map yet
+        // Placeholder sprite while texture loads
         const placeholderMat = new THREE.SpriteMaterial({ transparent: true });
         this.sprite = new THREE.Sprite(placeholderMat);
         this.sprite.center.set(0.5, 0.0); // Anchor at feet
         this.sprite.position.copy(this.position);
-        this.sprite.scale.set(10, 10, 10); // Temporary scale until texture loads
+        this.sprite.scale.set(10, 10, 10);
         scene.add(this.sprite);
 
-        // 🔹 Now start loading the texture
+        // Handle both URL strings and preloaded textures
         const loader = new THREE.TextureLoader();
-        loader.load(
-            textureUrl,
-            (tex) => {
-                tex.minFilter = THREE.NearestFilter;
-                tex.magFilter = THREE.NearestFilter;
-                tex.wrapS = THREE.RepeatWrapping;
-                tex.wrapT = THREE.RepeatWrapping;
-                tex.repeat.set(1 / this.frameCount, 1 / this.rowCount);
-                tex.encoding = THREE.sRGBEncoding; // 🔹 preserve original colors
 
-                // 🔹 Update the existing sprite’s material
-                this.sprite.material.map = tex;
+        if (typeof textureInput === 'string') {
+            // URL string → load texture
+            loader.load(
+                textureInput,
+                (tex) => this._onTextureLoaded(tex, size),
+                undefined,
+                (err) => console.error('Failed to load texture:', textureInput, err)
+            );
+        } else if (textureInput && textureInput.isTexture) {
+            // Preloaded THREE.Texture or DataTexture → use directly
+            this._onTextureLoaded(textureInput, size);
+        } else {
+            console.error('Invalid texture input for SpriteBillboard:', textureInput);
+        }
+    }
 
-                // ✅ Add these lines for subtle lighting but original look
-                this.sprite.material.toneMapped = false;
-                this.sprite.material.color.setScalar(0.9); // adjust brightness (0.8–1.0)
+    /**
+     * Private helper to configure the sprite once the texture is ready.
+     */
+    _onTextureLoaded(tex, size) {
+        tex.minFilter = THREE.NearestFilter;
+        tex.magFilter = THREE.NearestFilter;
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(1 / this.frameCount, 1 / this.rowCount);
+        tex.encoding = THREE.sRGBEncoding;
 
-                this.sprite.material.needsUpdate = true;
+        this.sprite.material.map = tex;
+        this.sprite.material.toneMapped = false;
+        this.sprite.material.color.setScalar(0.9);
+        this.sprite.material.needsUpdate = true;
 
-                // Scale the sprite based on texture dimensions
-                const framePixelWidth = tex.image.width / this.frameCount;
-                const framePixelHeight = tex.image.height / this.rowCount;
-                const aspect = framePixelHeight / framePixelWidth;
-                this.size=size;
-                this.sprite.scale.set(1*this.size,aspect*this.size, 1*this.size);
+        const framePixelWidth = tex.image.width / this.frameCount;
+        const framePixelHeight = tex.image.height / this.rowCount;
+        const aspect = framePixelHeight / framePixelWidth;
+        this.size = size;
+        this.sprite.scale.set(this.size, aspect * this.size, this.size);
 
-                this.texture = tex;
-                this.setFrame(this.frame);
-            },
-            undefined,
-            (err) => {
-                console.error('Failed to load texture:', textureUrl, err);
-            }
-        );
+        this.texture = tex;
+        this.setFrame(this.frame);
     }
 
     update(delta, camera) {

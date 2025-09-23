@@ -4,6 +4,7 @@ import { NetworkClient } from "./networkclient.js";
 import { Game } from "./gameLoop";
 
 
+
 const handlers = {};
 const thisgame = new Game(handlers);
 const networkHandler = new NetworkClient("chatLog", thisgame);

@@ -12,9 +12,9 @@ export class NetworkClient {
         this.game=pGame;
         this.spriteHandeler=pGame.spriteHandeler;
         // ✅ Works locally and on Render
-        this.socket = io(); // Uses same origin as page
+       // this.socket = io(); // Uses same origin as page
 
-        //this.socket = io('http://localhost:3000');
+        this.socket = io('http://localhost:3000');
         window.addEventListener('DOMContentLoaded', () => {
             //socket token
             /*socket.on('session-token', (token) => {
@@ -28,8 +28,11 @@ export class NetworkClient {
                 entry.textContent = `[${msg.id.slice(0, 5)}]: ${msg.message}`;
                 log.appendChild(entry);
                 log.scrollTop=log.scrollHeight;
-                const npc=this.game.players[msg.id];
-                this.game.UI.drawchat(npc.position.clone(),msg.message)
+                if (npc && npc.position) {
+                    this.game.UI.drawchat(npc.position.clone(), msg.message);
+                } else {
+                    console.warn(`Chat received for unknown player: ${msg.id}`);
+                }
             });
             //PLAYER LEAVE
             this.socket.on('player-left', (id) => {
@@ -37,11 +40,11 @@ export class NetworkClient {
                 console.log(id+ " player left");
             });
             //PLAYER JOIN
-            this.socket.on('playerjoin',(data)=>
+            this.socket.on('playerjoin',async (data)=>
             {
                 //🎅making other players on client
                 if (data.id !== this.socket.id) {
-                    this.game.addPlayer(data.id, data);
+                    await this.game.addPlayer(data.id, data);
                 }
             });
 
