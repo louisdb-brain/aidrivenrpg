@@ -86,7 +86,9 @@ function sendMessage() {
 // Raycaster setup
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
-
+window.addEventListener("unhandledrejection", e => {
+    console.error("Unhandled promise rejection:", e.reason);
+});
 window.addEventListener('pointerup', (event) => {
     if (isDragging || orbiting) return; // Ignore camera movements
 

@@ -112,7 +112,7 @@ export class Game {
             aperture:  0.0005,   // smaller = sharper, larger = blurrier
             maxblur: 0.001,     // max blur size
         });
-        this.composer.addPass(this.bokehPass);
+        //this.composer.addPass(this.bokehPass);
 
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();

@@ -20,6 +20,8 @@ app.use(express.static('dist'));
 
 
 
+
+
 app.use(express.static('public')); // Serve index.html and client.js
 
 const gamestate=new gamestateClass(io);
@@ -122,9 +124,10 @@ io.on('connection', (socket) => {
     });
 
 
-});
-/*
+});/*
 server.listen(3000, () => {
     console.log('Socket.IO server running at http://localhost:3000');
 });*/
+
+
 

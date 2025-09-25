@@ -21,6 +21,12 @@ export class UI{
             magic: false
 
         }
+        this.music = new Audio('/music/pubsong.mp3');
+        this.music.loop = true;
+
+
+
+
         this.inventory=new Inventory(document.getElementById("inventoryCanvas"));
         this.playerInventory=["potion","sword"]
         this.raycaster = new THREE.Raycaster();
@@ -66,10 +72,30 @@ export class UI{
 
         })
 
+        const musicButton = document.createElement('button');
+        musicButton.textContent = "Toggle Music";
+        musicButton.style.position = "absolute";
+        musicButton.style.top = "10px";
+        musicButton.style.right = "10px";
+        document.body.appendChild(musicButton);
+
+        musicButton.addEventListener('click', () => this.toggleMusic());
+
+
 
 
 
     }
+    toggleMusic() {
+        if (this.musicplaying) {
+            this.music.pause();
+            this.musicplaying = false;
+        } else {
+            this.music.play();
+            this.musicplaying = true;
+        }
+    }
+
     makeSprite()
     {
         const canvas = document.createElement('canvas');
