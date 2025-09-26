@@ -26,7 +26,14 @@ export class player {
         this.followTarget="";
         this.targetObject=null;
         this.follow=false;
-
+        this.skillLevels={
+            ADVENTURING:10,
+            FORESTRY:10,
+            CRAFTING:10,
+            MINING:10,
+            SMITHING:10,
+            FISHING:10,
+            COOKING:10}
         this.wantedlevel=0;
         this.zone=0;
         this.name=pName;

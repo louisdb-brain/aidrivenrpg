@@ -4,10 +4,23 @@ export class objectManager{
     constructor() {
         this.chests={}
         this.loot={};
+        this.nodes={};
     }
     update(delta) {
         for (const chest of Object.values(this.chests)) {
             chest.update(delta);
+        }
+    }
+    addNode(node,id) {
+        if(!this.nodes[id]) {
+            this.nodes[id] = node;
+        }
+    }
+    clickNode(id,player) {
+        if(this.nodes[id]){
+            this.nodes[id].click();
+        }else {
+            console.log("no nodes with id: "+id);
         }
     }
     addloot(loot,id){

@@ -1,23 +1,22 @@
 export class skillManager{
     constructor(){
-        this.skillList=[];
+        this.skillList=[
+            "ADVENTURING",
+            "FORESTRY",
+            "CRAFTING",
+            "MINING",
+            "SMITHING",
+            "FISHING",
+            "COOKING"
+        ];
         this.nodeList=[];
-
-        const actions=
-            {
-                ADVENTURING:"adventuring",
-                FORESTRY:"forestry",
-                CRAFTING:"crafting",
-                MINING:"mining",
-                SMITHING:"smithing",
-                FISHING:"fishing",
-                COOKING:"cooking"
-
-            }
 
     }
     createNodes()
     {
 
+    }
+    addNode(node){
+        this.nodeList.push(node);
     }
 }

@@ -18,6 +18,9 @@ export class inventory{
             }
             this.emit('add-item', payload);
         }
+        else{
+            //CODE FOR DROPPING LOOT ON FLOOR;
+        }
     }
     removeitem(index){
         this.items.splice(1,index);
