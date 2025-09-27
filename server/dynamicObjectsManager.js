@@ -11,14 +11,14 @@ export class objectManager{
             chest.update(delta);
         }
     }
-    addNode(node,id) {
-        if(!this.nodes[id]) {
-            this.nodes[id] = node;
+    addNode(node) {
+        if(!this.nodes[node.name]) {
+            this.nodes[node.name] = node;
         }
     }
     clickNode(id,player) {
         if(this.nodes[id]){
-            this.nodes[id].click();
+            this.nodes[id].click(player);
         }else {
             console.log("no nodes with id: "+id);
         }
@@ -34,7 +34,10 @@ export class objectManager{
     getloot(id){
         return this.loot[id];
     }
-    lootDo(id,socketid)
+    getNode(name){
+        return this.nodes[name];
+    }
+    lootObject(id,socketid)
     {
         const itemname=this.getloot(id);
         playermanager.additem(socketid,itemname);

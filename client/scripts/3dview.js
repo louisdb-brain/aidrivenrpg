@@ -90,79 +90,86 @@ window.addEventListener("unhandledrejection", e => {
     console.error("Unhandled promise rejection:", e.reason);
 });
 window.addEventListener('pointerup', (event) => {
-    if (isDragging || orbiting) return; // Ignore camera movements
-
-    /*const clickedSpellMenu   = thisgame.UI.activeMenus.magic     && e.target.closest('#spellMenu');
-    const clickedCookingMenu = thisgame.UI.activeMenus.cooking   && e.target.closest('#cookingMenu');
-    const clickedInventory   = thisgame.UI.activeMenus.inventory && e.target.closest('#inventoryCanvas');
-
-    if (clickedSpellMenu || clickedCookingMenu || clickedInventory) {
-        //return; // Prevent moving player
-    }*/
+    if (isDragging || orbiting) return; // ignore camera drag/rotate
 
     const rect = thisgame.renderer.domElement.getBoundingClientRect();
     const mouse = new THREE.Vector2(
         ((event.clientX - rect.left) / rect.width) * 2 - 1,
         -((event.clientY - rect.top) / rect.height) * 2 + 1
     );
+
     const raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mouse, thisgame.camera);
     raycaster.far = 100000;
 
-    if(thisgame.UI.spellmenu.activeSpell) {
-
-        const position = thisgame.UI.spellmenu.getMousePositionToGround(mouse, thisgame.camera, raycaster, thisgame.ground);
-        if (position) {
-            thisgame.UI.spellmenu.castSpell(position);
+    // ---- 1. Spell targeting (if spell menu is active) ----
+    if (thisgame.UI.spellmenu.activeSpell) {
+        const pos = thisgame.UI.spellmenu.getMousePositionToGround(mouse, thisgame.camera, raycaster, thisgame.ground);
+        if (pos) {
+            thisgame.UI.spellmenu.castSpell(pos);
+            return; // handled, stop further click logic
         }
     }
 
-    // 1. Check NPCs (deep match against child meshes)
-    // Remove null/undefined items
-    const npcModels = Object.values(thisgame.npcs).map(npc => npc.model);
-    const validNpcModels = npcModels.filter(obj => obj instanceof THREE.Object3D);
-
-    const npcIntersects = raycaster.intersectObjects(validNpcModels, true); // deep = true
-
-    if (npcIntersects.length > 0) {
-        const hitObject = npcIntersects[0].object;
-
-        for (const id in thisgame.npcs) {
-            const npc = thisgame.npcs[id];
-            const mesh = npc.model;
-
-            // Match parent or any child recursively
-            if (mesh === hitObject || mesh.children.includes(hitObject) || mesh.children.some(child => child === hitObject)) {
-                console.log("NPC clicked:", id);
-                networkHandler.attackNpc(id);
-                return; // done!
+    // ---- 2. SkillNode click ----
+    if (thisgame.nodeMap && thisgame.nodeMap.size > 0) {
+        const nodeMeshes = Array.from(thisgame.nodeMap.keys());
+        const nodeHits = raycaster.intersectObjects(nodeMeshes, true);
+        if (nodeHits.length > 0) {
+            const mesh = nodeHits[0].object;
+            const node = thisgame.nodeMap.get(mesh);
+            if (node) {
+                console.log("Clicked skillNode:", node.name);
+                networkHandler.sendNode( node.name);
+                return; // stop — we clicked a node
             }
         }
     }
 
-    // 2. Check Loot
-    const lootResult = thisgame.levelHandeler.tryPickupLootFromRay(raycaster);
+    // ---- 3. NPC click ----
+    const npcModels = Object.values(thisgame.npcs)
+        .map(n => n?.model)
+        .filter(m => m instanceof THREE.Object3D);
+    const npcHits = raycaster.intersectObjects(npcModels, true);
+    if (npcHits.length > 0) {
+        const hitObj = npcHits[0].object;
+        for (const id in thisgame.npcs) {
+            const npc = thisgame.npcs[id];
+            const mesh = npc.model;
+            if (!mesh) continue;
+
+            // check parent/children
+            if (mesh === hitObj || mesh.children.includes(hitObj) || mesh.children.some(c => c === hitObj)) {
+                console.log("NPC clicked:", id);
+                networkHandler.attackNpc(id);
+                return;
+            }
+        }
+    }
+
+    // ---- 4. Loot click ----
+    const lootResult = thisgame.levelHandeler?.tryPickupLootFromRay(raycaster);
     if (lootResult) {
         networkHandler.loot(lootResult.itemID);
         return;
     }
 
-    // 3. Check ground click (movement)
-    const groundHit = raycaster.intersectObject(thisgame.ground);
-    if (groundHit.length > 0) {
-        const point = groundHit[0].point;
-        const socketid = networkHandler.getsocket().id;
-        const player = thisgame.players[socketid];
-        if (!player) return;
+    // ---- 5. Ground click (movement) ----
+    if (thisgame.ground) {
+        const groundHit = raycaster.intersectObject(thisgame.ground);
+        if (groundHit.length > 0) {
+            const point = groundHit[0].point;
+            const socketid = networkHandler.getsocket().id;
+            const player = thisgame.players[socketid];
+            if (!player) return;
 
-        const isRightClick = event.button === 2;
-        networkHandler.sendTarget(point, isRightClick);
-
-        console.log("GROUND hit at:", groundHit[0].point);
-        console.log(point);
-        console.log(isRightClick ? "Right click" : "Left click", point);
+            const isRightClick = event.button === 2;
+            networkHandler.sendTarget(point, isRightClick);
+            console.log("Ground clicked:", point, isRightClick ? "(right)" : "(left)");
+        }
     }
 });
+
 
 // Hover state + helpers
 let hoveredNPC = null;

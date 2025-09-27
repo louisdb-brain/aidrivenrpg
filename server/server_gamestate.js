@@ -64,11 +64,13 @@ export class gamestateClass{
     removeloot(id){
         this.objectManager.removeloot(id);
     }
+
     addnpc(pNPC){
         this.npcManager.addNpc(pNPC);
         this.emitNpc();
 
     }
+
     emitPlayers()
     {
         const playerMap=playermanager.getAllPlayers();

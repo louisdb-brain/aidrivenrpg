@@ -1,27 +1,29 @@
 import * as THREE from 'three';
-import { SpriteBillboard } from './animatedbillboard.js'; // Adjust path if needed
+import {SpriteBillboard} from "./animatedbillboard.js";
 
 export class skillNode {
-    constructor(scene, position = {x: 0, y: 0, z: 0},jsonID,sprite,skill,resources) {
+    constructor(scene, name, position = {x: 0, y: 0, z: 0}, spritePath) {
         this.scene = scene;
+        this.name = name;
         this.position = new THREE.Vector3(position.x, position.y, position.z);
 
-
-        this.sprite = new SpriteBillboard(
+        // Create the billboard
+        this.billboard = new SpriteBillboard(
             scene,
-            options.fps || 8,
+            0,          // fps
             this.position,
-            options.frameCount || 4,
-            options.animationRow || 0,
-            options.textureUrl || '/sprites/player.png',
-            options.rowCount || 2
+            1,          // frameCount
+            0,          // animationRow
+            spritePath, // image path
+            1,          // rowCount
+            3           // size (scale it bigger if needed)
         );
-        this.type="skillNode";
-        this.skill=skill;
-        this.resources=resources;
-    }
-    gatherResource(resource)
-    {
 
+        this.type = "skillNode";
+    }
+
+    // Provide a getter for the actual clickable THREE.Sprite
+    get mesh() {
+        return this.billboard?.sprite;
     }
 }

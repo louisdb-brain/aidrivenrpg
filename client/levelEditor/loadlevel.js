@@ -5,7 +5,7 @@ const derivedTextureCache = new Map();
 const placedObjects = [];
 const SPRITE_SCALE_DIVISOR = 100;
 
-// ---- Sun direction (WORLD space). Change this if you like; only used at load-time.
+// ---- Sun direction (WORLD space). Change if you like; only used at load-time.
 let SUN_DIR = new THREE.Vector3(1, 2, 0).normalize();
 export function setSunDirection(x, y, z) {
     SUN_DIR.set(x, y, z).normalize();
@@ -13,7 +13,6 @@ export function setSunDirection(x, y, z) {
 
 /**
  * Create (and cache) a black silhouette with vertical fade from an existing THREE.Texture.
- * Works with HTMLImageElement, ImageBitmap, or raw {data,width,height}.
  */
 function getShadowTextureFor(texture) {
     if (derivedTextureCache.has(texture.uuid)) return derivedTextureCache.get(texture.uuid);
@@ -64,7 +63,6 @@ function getShadowTextureFor(texture) {
     ctx.globalCompositeOperation = "source-over";
 
     const shadowTex = new THREE.CanvasTexture(canvas);
-    // keep tone mapping off on materials; encoding can follow your renderer
     shadowTex.needsUpdate = true;
 
     derivedTextureCache.set(texture.uuid, shadowTex);
@@ -73,34 +71,24 @@ function getShadowTextureFor(texture) {
 
 /**
  * Skew a ground-plane quad in the sun's projected direction.
- * We bake BOTH: rotation-to-ground and in-plane shear into the GEOMETRY.
- *
- * Steps:
- * 1) Start with an XY-oriented PlaneGeometry (as you already have).
- * 2) Rotate geometry to ground (X Z) by -PI/2 around X.
- * 3) Align the sun's XZ projection to +X via a Y-rotation, apply shear (X by Z), rotate back.
  */
 function buildSkewedShadowGeometry(srcPlaneGeometry, sunDir, shearAmount = 0.6) {
     const g = srcPlaneGeometry.clone();
 
-    // 1) rotate plane (XY) to ground (XZ)
     const rotToGround = new THREE.Matrix4().makeRotationX(-Math.PI / 2);
     g.applyMatrix4(rotToGround);
 
-    // 2) compute yaw to align sun's XZ proj with +X
     const p = new THREE.Vector3(sunDir.x, 0, sunDir.z);
     if (p.lengthSq() < 1e-8) {
-        // sun straight up/down -> no skew needed
         g.computeBoundingBox(); g.computeBoundingSphere();
         return g;
     }
     p.normalize();
-    const theta = Math.atan2(p.z, p.x); // yaw from +X to projected sun dir
+    const theta = Math.atan2(p.z, p.x);
 
     const Ralign = new THREE.Matrix4().makeRotationY(-theta);
     const Runalign = new THREE.Matrix4().makeRotationY(theta);
 
-    // 3) shear along X by Z: x' = x + k * z
     const shear = new THREE.Matrix4().set(
         1, 0, shearAmount, 0,
         0, 1, 0,           0,
@@ -117,93 +105,82 @@ function buildSkewedShadowGeometry(srcPlaneGeometry, sunDir, shearAmount = 0.6) 
 }
 
 /**
- * Offset the shadow on the floor so that it anchors at the sprite's base.
- * The sprite's mesh is placed with +planeH/2 in Y, so we push the shadow along -sunDir.xz * (planeH/2).
+ * Place a vertical sprite + baked shadow and add it to the scene.
+ * Returns a record with mesh, shadow, and scale info.
  */
-function positionShadowUnderSprite(shadowMesh, spriteMesh, planeH, sunDir) {
-    const halfH = planeH * 0.5;
-    const offsetXZ = new THREE.Vector3(-sunDir.x, 0, -sunDir.z).multiplyScalar(halfH);
+export async function placeSprite({ name, texturePath, position, scene, sunDir = SUN_DIR }) {
+    const texture = await iccColorPreloader.load(texturePath);
+    texture.encoding = THREE.LinearEncoding;
+    texture.flipY = true;
+    texture.magFilter = THREE.NearestFilter;
+    texture.minFilter = THREE.NearestFilter;
+    texture.needsUpdate = true;
 
+    const img = texture.image;
+    const planeW = img.width / SPRITE_SCALE_DIVISOR;
+    const planeH = img.height / SPRITE_SCALE_DIVISOR;
+
+    const geometry = new THREE.PlaneGeometry(planeW, planeH);
+
+    // ---- Sprite mesh ----
+    const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+        toneMapped: false,
+        depthWrite: false,
+        side: THREE.DoubleSide
+    });
+    const spriteMesh = new THREE.Mesh(geometry, material);
+    spriteMesh.position.set(position.x, position.y + planeH / 2, position.z);
+    spriteMesh.userData.faceCamera = true;
+    scene.add(spriteMesh);
+
+    // ---- Shadow mesh ----
+    const shadowTex = getShadowTextureFor(texture);
+    const shadowMat = new THREE.MeshBasicMaterial({
+        map: shadowTex,
+        transparent: true,
+        opacity: 0.7,
+        toneMapped: false,
+        depthWrite: false,
+        side: THREE.DoubleSide
+    });
+    const shadowGeo = buildSkewedShadowGeometry(geometry, sunDir, 0.6);
+    const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
     shadowMesh.position.set(
-        spriteMesh.position.x + offsetXZ.x,
-        0.01, // just above floor
-        spriteMesh.position.z + offsetXZ.z
+        position.x - planeW / 2,
+        0,
+        position.z - planeH / 2
     );
+    scene.add(shadowMesh);
+
+    const record = {
+        type: "facingMesh",
+        name,
+        position,
+        spriteScale: { w: planeW, h: planeH },
+        mesh: spriteMesh,
+        shadow: shadowMesh
+    };
+    placedObjects.push(record);
+    return record;
 }
 
+/**
+ * Load a level from a JSON-like array of object data.
+ */
 export async function loadLevel(data, pScene) {
     for (const objData of data) {
-
         if (objData.type === "sprite" && objData.name) {
-            const texturePath = `/sprites/${objData.texture || objData.name}`;
-            const texture = await iccColorPreloader.load(texturePath);
-
-            // Keep your original choices; if your renderer is sRGB, consider sRGBEncoding instead.
-            texture.encoding = THREE.LinearEncoding;
-            texture.flipY = true;
-            texture.magFilter = THREE.NearestFilter;
-            texture.minFilter = THREE.NearestFilter;
-            texture.needsUpdate = true;
-
-            const img = texture.image;
-            const imgW = img.width;
-            const imgH = img.height;
-            const planeW = imgW / SPRITE_SCALE_DIVISOR;
-            const planeH = imgH / SPRITE_SCALE_DIVISOR;
-
-            const geometry = new THREE.PlaneGeometry(planeW, planeH);
-
-            // ---- MAIN VERTICAL SPRITE ----
-            const material = new THREE.MeshBasicMaterial({
-                map: texture,
-                transparent: true,
-                toneMapped: false,
-                depthWrite: false,
-                side: THREE.DoubleSide
-            });
-            const spriteMesh = new THREE.Mesh(geometry, material);
-            spriteMesh.position.set(
-                objData.position.x,
-                objData.position.y +planeH/2,
-                objData.position.z
-            );
-            spriteMesh.userData.faceCamera = true;
-            pScene.add(spriteMesh);
-
-            // ---- FLOOR SHADOW (baked skew, no per-frame updates) ----
-            const shadowTex = getShadowTextureFor(texture);
-            const shadowMat = new THREE.MeshBasicMaterial({
-                map: shadowTex,
-                transparent: true,
-                opacity: 0.7,            // tune as desired
-                toneMapped: false,
-                depthWrite: false,
-                side: THREE.DoubleSide,
-                //blending: THREE.MultiplyBlending
-            });
-
-            // Bake rotation-to-ground + skew into geometry
-            const shadowGeo = buildSkewedShadowGeometry(geometry, SUN_DIR, /*shear*/ 0.6);
-            const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
-            shadowMesh.position.set(
-                objData.position.x -planeW/2,
-                0,                           // just above floor
-                objData.position.z - planeH / 2 // move in +Z by half sprite height
-            );
-
-            pScene.add(shadowMesh);
-
-            placedObjects.push({
-                type: "facingMesh",
+            await placeSprite({
                 name: objData.name,
+                texturePath: `/sprites/${objData.texture || objData.name}`,
                 position: objData.position,
-                spriteScale: { w: planeW, h: planeH },
-                mesh: spriteMesh,
-                shadow: shadowMesh
+                scene: pScene
             });
         }
 
-        else if (objData.type === 'decal') {
+        else if (objData.type === "decal") {
             const tex = new THREE.TextureLoader().load('/sprites/' + objData.texture);
             tex.magFilter = THREE.NearestFilter;
             tex.minFilter = THREE.NearestFilter;
@@ -221,6 +198,9 @@ export async function loadLevel(data, pScene) {
     }
 }
 
+/**
+ * Make all sprite meshes face the given camera.
+ */
 export function faceAllToCamera(camera) {
     for (const obj of placedObjects) {
         if (obj.mesh && obj.mesh.lookAt) {
@@ -228,4 +208,3 @@ export function faceAllToCamera(camera) {
         }
     }
 }
-

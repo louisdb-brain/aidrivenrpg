@@ -28,7 +28,7 @@ export class player {
         this.follow=false;
         this.skillLevels={
             ADVENTURING:10,
-            FORESTRY:10,
+            WOODCUTTING:10,
             CRAFTING:10,
             MINING:10,
             SMITHING:10,

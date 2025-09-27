@@ -1,29 +1,43 @@
-import * as THREE from 'three';
-import { SpriteBillboard } from './animatedbillboard.js';
-import {io} from "socket.io-client"; // Adjust path if needed
+
 
 export class skillNode {
-    constructor( name,position,jsonID,skill,level,resources,emitCallback) {
+    constructor( name,position,sprite,skill,level,resources,emitCallback,socketCallback,spawnCallback) {
         this.name=name;
         this.position = position
-
+        this.sprite = sprite;
         this.type="skillNode";
         this.skill=skill;
         this.level=level;
         this.resources=resources;
-        this.emitCallback=emitCallback
+        this.emitCallback=emitCallback;
+        this.socketCallback=socketCallback;
+        this.spawnCallback=spawnCallback;
         this.emitNode();
     }
     emitNode() {
         const payload={
             name:this.name,
             position:this.position,
-            skill:this.skill,
+            sprite:this.sprite
                     }
         this.emitCallback('emitnode',payload);
     }
     click(player) {
-        this.checkSkill(player,this.skill,this.level);
+        console.log("clicked " + this.name);
+        if(this.checkSkill(player,this.skill,this.level)) {
+            this.socketCallback('clickedNode', this.name);
+            const spawnposition = {
+                x: this.position.x ,
+                y: this.position.y-2,
+                z: this.position.z
+            };
+            this.spawnCallback(this.name+'lootid',this.resources,spawnposition);
+
+
+        }else {
+            console.log("skill not high enough");
+            this.socketCallback("chat-message",{id:"warning:",message:" skill level nog high enough"});
+        }
     }
     gatherResource(player,resource) {
         player.inventory.additem(resource);
@@ -31,12 +45,8 @@ export class skillNode {
     }
     checkSkill(player,skill,level)
     {
-        if(player.skillLevels[skill])
-        {
-            return true;
-        }
-        else
-        {return false;}
+        if(player.skillLevels[skill]>level){return true;}
+        else {return false;}
     }
     consumeResource(resourceNeeded,player) {
         console.log(resource +" consumed");

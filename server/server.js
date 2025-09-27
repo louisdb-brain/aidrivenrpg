@@ -8,6 +8,7 @@ import {npc} from "./npc.js";
 import {toVec3} from "./utilities.js"
 import {Chest} from "./chest.js";
 import {loot} from "./loot.js";
+import {skillNode} from "./interactivenode.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -25,7 +26,12 @@ app.use(express.static('dist'));
 app.use(express.static('public')); // Serve index.html and client.js
 
 const gamestate=new gamestateClass(io);
+
+//CALLBACKS
 const destroynpcmethod=(npcInstance) => gamestate.npcManager.removeNPC(npcInstance.npcid);
+const emitCallback=(event, data) => {io.emit(event, data)}
+
+
 gamestate.addnpc(new npc("goblin1id",{x:10,y:0,z:0},"goblin_1",io,destroynpcmethod));
 gamestate.addnpc(new npc("goblin2id",{x:20,y:0,z:0},"goblin_2",io,destroynpcmethod));
 gamestate.addChest(new Chest({x:10,y:0,z:0},"chest1"))
@@ -37,6 +43,7 @@ gamestate.start();
 
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
+    const socketCallback=(event,data)=>{socket.emit(event,data)};
     playermanager.addPlayer(socket.id,(event, data) => {
         io.to(socket.id).emit(event, data);//callback function for events
     });
@@ -53,9 +60,10 @@ io.on('connection', (socket) => {
     playermanager.additem(socket.id,"onion");
     playermanager.additem(socket.id,"onion");
 
-    gamestate.objectManager.addloot(new loot("steakid1","steak",{x:0,y:0,z:0},(event, data) => {
-        io.emit(event, data);
-    }));
+    gamestate.objectManager.addloot(new loot("steakid1","steak",{x:0,y:0,z:0},emitCallback));
+    const spawnCallback=(pLootid,pName,pLocation)=>{gamestate.objectManager.addloot(new loot(pLootid,pName,pLocation,emitCallback))}
+    gamestate.objectManager.addNode(new skillNode("woodcutting1",{x:5,y:5,z:0},"plants/woodcutting_tree_oak","WOODCUTTING","0","log",emitCallback,socketCallback,spawnCallback));
+    gamestate.objectManager.addNode(new skillNode("mining1",{x:-5,y:5,z:0},"miningrock_copper","MINING","0","ore_copper",emitCallback,socketCallback,spawnCallback));
 
     //gamestate.emitNpc();
     //gamestate.emitPlayers();
@@ -103,8 +111,17 @@ io.on('connection', (socket) => {
 
     })
     socket.on('loot',(lootID)=>{
-    gamestate.objectManager.lootDo(lootID,socket.id);
+    gamestate.objectManager.lootObject(lootID,socket.id);
     })
+
+    socket.on('click-node', (nodeId) => {
+
+        const node = gamestate.objectManager.getNode(nodeId);
+        const player = playermanager.getPlayer(socket.id);
+        node.click(player);
+
+    });
+
     /*
     socket.on('move',(pos,target)=> {
 

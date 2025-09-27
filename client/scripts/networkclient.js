@@ -131,6 +131,11 @@ export class NetworkClient {
                 console.log(pathname);
                 this.game.levelHandeler.spawnLoot(data.id,data.name,data.location,pathname);
             })
+            this.socket.on('emitnode', (data) => {
+                const pathname="./sprites/"+data.sprite+".png";
+
+                this.game.addNode(data.name,data.position,pathname);
+            })
             this.socket.on("spellcast",(data)=>
             {
                 console.log("spell received from server "+data.name)
@@ -149,6 +154,10 @@ export class NetworkClient {
                 callback();
             }, 0); // Wait one tick to ensure player is added
         });
+    }
+    sendNode(name)
+    {
+        this.socket.emit("click-node",name);
     }
     sendTarget(pTarget,rightmouse) {
         const player = this.game.players[this.socket.id];

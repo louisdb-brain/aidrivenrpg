@@ -120,6 +120,7 @@ export class SpriteBillboard {
         return this.position.clone();
     }
 
+
     play() { this.isAnimating = true; }
     stop() { this.isAnimating = false; }
 }
