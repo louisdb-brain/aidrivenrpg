@@ -76,11 +76,11 @@ body.cursor-hidden {
 }
 
 #customCursor.knife {
-    background-image: url("sprites/cooking_knife.png");
+    background-image: url("/sprites/cooking_knife.png");
 }
 
 #customCursor.spatula {
-    background-image: url("sprites/cooking_spatula.png");
+    background-image: url("/sprites/cooking_spatula.png");
     height:240px;
     width: 240px;
     z-index: 2;
