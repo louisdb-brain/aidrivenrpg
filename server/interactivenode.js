@@ -22,23 +22,35 @@ export class skillNode {
                     }
         this.emitCallback('emitnode',payload);
     }
-    click(player) {
+    click(player, socket) {
         console.log("clicked " + this.name);
-        if(this.checkSkill(player,this.skill,this.level)) {
-            this.socketCallback('clickedNode', this.name);
+
+        if (this.checkSkill(player, this.skill, this.level)) {
+            socket.emit('clickedNode', this.name);
+
+            const randomnumber = Math.random() * 2 - 1;
+            const randomYnumber = Math.random() / 2 - 1;
             const spawnposition = {
-                x: this.position.x ,
-                y: this.position.y-2,
-                z: this.position.z
+                x: this.position.x + randomnumber,
+                y: this.position.y,
+                z: this.position.z + 2 + randomYnumber
             };
-            this.spawnCallback(this.name+'lootid',this.resources,spawnposition);
 
+            this.spawnCallback(this.name + 'lootid', this.resources, spawnposition);
+            player.skillLevels[this.skill]++;
 
-        }else {
-            console.log("skill not high enough");
-            this.socketCallback("chat-message",{id:"warning:",message:" skill level nog high enough"});
+            socket.emit(
+                "local-message",
+                `You went a level up in ${this.skill}, you are now level ${player.skillLevels[this.skill]}`
+            );
+        } else {
+            socket.emit(
+                "local-message",
+                `Skill level not high enough — need ${this.level} in ${this.skill}`
+            );
         }
     }
+
     gatherResource(player,resource) {
         player.inventory.additem(resource);
 

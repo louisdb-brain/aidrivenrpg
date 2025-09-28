@@ -34,6 +34,12 @@ export class player {
             SMITHING:10,
             FISHING:10,
             COOKING:10}
+        this.unlockedTalents={
+            MININGCOPPER:true,
+            MININGIRON:false,
+            MININGGOLD:false,
+            MININGMITHRIL:false
+        }
         this.wantedlevel=0;
         this.zone=0;
         this.name=pName;

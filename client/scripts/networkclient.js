@@ -12,9 +12,9 @@ export class NetworkClient {
         this.game=pGame;
         this.spriteHandeler=pGame.spriteHandeler;
         // ✅ Works locally and on Render
-        this.socket = io(); // Uses same origin as page
+        //this.socket = io(); // Uses same origin as page
 
-        //this.socket = io('http://localhost:3000');
+        this.socket = io('http://localhost:3000');
 
         window.addEventListener('DOMContentLoaded', () => {
             //socket token
@@ -35,6 +35,15 @@ export class NetworkClient {
                     console.warn(`Chat received for unknown player: ${msg.id}`);
                 }
             });
+            //private server messages
+            this.socket.on('local-message', (msg) => {
+                const log = document.getElementById(pChat);
+                const entry = document.createElement('li');
+                entry.textContent = `[You]: ${msg}`;
+                log.appendChild(entry);
+                log.scrollTop = log.scrollHeight;
+            });
+
             //PLAYER LEAVE
             this.socket.on('player-left', (id) => {
                 this.game.removePlayer(id);
