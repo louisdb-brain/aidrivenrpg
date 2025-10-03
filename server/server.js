@@ -87,6 +87,7 @@ io.on('connection', (socket) => {
             message: msg
         });
     });
+    socket.on('')
 
     socket.on('player-target',(target,rightmouse)=>
     {

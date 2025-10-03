@@ -211,6 +211,10 @@ export class NetworkClient {
     {
 
     }
+    sendInputVector(x, y)
+    {
+        this.socket.emit("input-vector",x,y);
+    }
 
 
 }

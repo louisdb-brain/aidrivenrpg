@@ -305,6 +305,9 @@ export class Game {
             console.log(`Clicked at: ${point.toArray().map(v => v.toFixed(2))}, distance = ${dist.toFixed(2)}`);
         }
     }
+    sendInputVector(x, y) {
+        this.players[playerId].inputVector(x,y);
+    }
     spawnSpell(spelldata) {
         console.log("spawning spell at "+spelldata.position.x)
         const pos=new THREE.Vector3(spelldata.position.x,spelldata.position.y+0.1, spelldata.position.z);

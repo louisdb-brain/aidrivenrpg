@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import handlersConfig from './networkevents.json' assert { type: 'json' };
 import { NetworkClient } from "./networkclient.js";
-import { Game } from "./gameLoop";
-
+import { Game } from "./gameLoop.js";
+import {gamepad} from "./gamepad.js";
 
 
 const handlers = {};
@@ -16,9 +16,13 @@ for (const [key, methodName] of Object.entries(handlersConfig)) {
         console.warn(`Method '${methodName}' not found on NetworkClient`);
     }
 }
+
+var playerisReady=false;
 networkHandler.onPlayerReady(() => {
     thisgame.localPlayerId = networkHandler.getsocket().id;
     thisgame.loop();
+    playerisReady = true;
+
 });
 
 
@@ -82,7 +86,51 @@ function sendMessage() {
     networkHandler.socket.emit('chat-message', input.value);
     input.value = '';
 }
+//gamepad setup
 
+var gamepad = null;
+window.addEventListener("gamepadconnected", (e) => {
+    console.log("Gamepad connected:", e.gamepad.id);
+
+    gamepad=new gamepad(networkHandler,thisgame);
+
+
+});
+if(gamepad.connected)
+{
+    gamepad.loop();
+}
+
+window.addEventListener("gamepaddisconnected", (e) => {
+    console.log("Gamepad disconnected:", e.gamepad.id);
+});
+//input setup
+document.addEventListener('keydown', event => {
+    const key = event.key.toLowerCase();
+    if(keys[key] !== undefined) { keys[key] = true; sendInput(); }
+});
+document.addEventListener('keyup', event => {
+    const key = event.key.toLowerCase();
+    if(keys[key] !== undefined) { keys[key] = false; sendInput(); }
+});
+
+function sendInput() {
+    let x = 0, y = 0;
+    if (keys.w) y -= 1;
+    if (keys.s) y += 1;
+    if (keys.a) x -= 1;
+    if (keys.d) x += 1;
+
+    // normalize
+    const len = Math.hypot(x, y);
+    if (len > 0) {
+        x /= len;
+        y /= len;
+    }
+    const playerId=networkHandler.getsocket().id;
+    networkHandler.sendInputVector(x, y,playerId);
+    thisgame.sendInputVector(x,y,playerId);
+}
 // Raycaster setup
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
