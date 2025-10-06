@@ -93,7 +93,7 @@ export class gamestateClass{
                 z:player.lockedPosition.z
             },
             angle: player.angle,
-            locked:player.locked
+            locked:player.locked,
 
 
         }));
@@ -151,6 +151,7 @@ export class gamestateClass{
     {
         this.spellManager.castSpell("noid",data);
         //calculate damage later
+        console.log(data.sprite);
         this.io.emit('spellcast',data);
 
     }

@@ -51,11 +51,12 @@ io.on('connection', (socket) => {
     //socket.emit('session-token', sessionToken);
 
 
-    io.emit('existing-players',playermanager.getAllPlayers() );
-    io.emit('playerjoin',{
-        id:socket.id,
-        position: {x: 0, y: 0, z: 0}
+    socket.emit('existing-players', Object.values(playermanager.getAllPlayers())); // only to new client
+    socket.broadcast.emit('playerjoin', {
+        id: socket.id,
+        position: {x:0,y:0,z:0}
     });
+
     playermanager.additem(socket.id,"onion");
     playermanager.additem(socket.id,"onion");
     playermanager.additem(socket.id,"onion");
@@ -87,14 +88,13 @@ io.on('connection', (socket) => {
             message: msg
         });
     });
-    socket.on('')
 
-    socket.on('player-target',(target,rightmouse)=>
-    {
-        playermanager.setTarget(socket.id,target,rightmouse)
-        playermanager.getPlayer(socket.id)
 
-    })
+    socket.on('player-target', (target, rightmouse) => {
+        const player = playermanager.getPlayer(socket.id);
+        if (!player) return;
+        player.setTarget(target);
+    });
     socket.on('player-attacknpc',(npcid)=>
     {
         console.log("received attack target" +npcid+" for player "+socket.id);

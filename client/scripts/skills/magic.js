@@ -65,6 +65,15 @@ export class magicSystem {
             this.menuContainer.appendChild(btn);
         });
     }
+    selectSpellByName(name) {
+        const spell = this.spells.find(s => s.name === name);
+        console.log("spritename "+spell.spellSprite);
+        if (spell) {
+            this.selectSpell(spell);
+        } else {
+            console.warn(`Spell '${name}' not found.`);
+        }
+    }
 
     selectSpell(spell) {
         this.activeSpell = spell;
@@ -115,6 +124,7 @@ export class magicSystem {
         const spellData = {
             id: this.activeSpell.id,
             name: this.activeSpell.name,
+            spellSprite:this.activeSpell.spellSprite,
             damage:this.activeSpell.damage,
             radius: this.activeSpell.radius,
             position: pos

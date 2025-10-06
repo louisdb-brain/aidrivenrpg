@@ -9,10 +9,10 @@ export class Player {
         this.targetPosition = this.position.clone();
         this.locked = false;
         this.lockedPosition = this.position.clone();
-        this.speed =  options.speed||5;
+        this.speed =  options.speed||8;
         this.interactionRadius=0.8;
 
-        this.angle = null; // ← reserved for future use (e.g., facing direction)
+        this.angle = null;
 
         this.sprite = new SpriteBillboard(
             scene,
@@ -30,27 +30,21 @@ export class Player {
 
     update(delta, camera) {
         // inside update(delta, camera)
-        const target = this.locked ? this.lockedPosition : this.targetPosition;
-        const direction = new THREE.Vector3().subVectors(target, this.position);
+
+
+        const direction = new THREE.Vector3().subVectors(this.targetPosition, this.position);
+
+
         const distance = direction.length();
         const moveStep = this.speed * delta;
 
-        if (distance > 0.8 + this.interactionRadius) {
-            // Far: move normally
+        if (distance > 0.0002) {
             direction.normalize();
-            this.position.add(direction.clone().multiplyScalar(moveStep));
+            this.position.add(direction.multiplyScalar(moveStep));
             this.sprite.setTarget(this.position);
             this.sprite.setFlippedX(direction.x > 0);
             this.sprite.play();
-        } else if (distance > 0.05) {
-            // Close: smooth approach
-            this.position.lerp(target, 0.2);
-            this.sprite.setTarget(this.position);
-            this.sprite.play();
         } else {
-            // Arrived: snap and stop animation
-            this.position.copy(target);
-            this.sprite.setTarget(this.position);
             this.sprite.stop();
         }
 

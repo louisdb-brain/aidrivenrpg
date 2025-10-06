@@ -11,5 +11,15 @@
     "speed": 12,
     "damage": 50,
     "lifetime": 500
-  }
+  },{
+  "id":"meleeattack",
+  "name": "MeleeAttack",
+  "icon": "vfx/melee_slash.png",
+  "targetSprite": "vfx/targetarrow1.png",
+  "spellSprite": "vfx/melee_slash.png",
+  "lifetime": 150,
+  "radius": 2,
+  "damage": 3
+}
+
 ]

@@ -10,10 +10,12 @@ export class player {
         //this.io=pIO; NEVER PASS IO->circular ref
         this.emit=emitCallback;
         this.position = new THREE.Vector3(position.x, position.y, position.z);
+
         this.targetPosition = this.position.clone();
         this.lockedPosition= this.position.clone();
         this.locked=false;
-        this.speed = 5;
+        this.inputMethods={CONTROLLER:false,MOUSE:true};
+        this.speed = 8;
         this.angle=null;
         this.interactionRadius=0.8;
         this.maxcooldown=150;
@@ -62,7 +64,8 @@ export class player {
             }
         }
         var angledirection= null;
-        const movedirection=new THREE.Vector3().subVectors(this.targetPosition,this.position);;
+        var movedirection=new THREE.Vector3().subVectors(this.targetPosition,this.position);
+
         if (this.locked==false) {
              angledirection = new THREE.Vector3().subVectors(this.targetPosition, this.position);
         }
@@ -71,7 +74,7 @@ export class player {
         }
         const distance = movedirection.length();
 
-        if (distance > 0.2+this.interactionRadius) {
+        if (distance > 0.0002) {
             movedirection.normalize();
             angledirection.normalize();
             const moveStep = this.speed * delta;
@@ -84,6 +87,13 @@ export class player {
 
 
 
+    }
+    setVector(x, y) {
+        this.inputMethods.CONTROLLER = true;
+        this.inputMethods.MOUSE = false;
+
+        const input = new THREE.Vector3(x, 0, y);
+        this.inputVector.copy(input);
     }
     combatlogic()
     {
@@ -125,13 +135,16 @@ export class player {
         //set cooldown
     }
     setTarget(position) {
-    //if(this.targetObject!=""||this.targetObject!=null){
-      //      this.targetObject="";
-        //}
-        let temppos=position.clone();
-        temppos.y=0;
+        // Convert plain object to Vector3 if needed
+        const posVec = position instanceof THREE.Vector3
+            ? position
+            : new THREE.Vector3(position.x, position.y, position.z);
+
+        let temppos = posVec.clone();
+        temppos.y = 0;
         this.targetPosition.copy(temppos); // store destination
     }
+
     setTargetEntity(entityID,npcobject)
     {
         this.followTarget=entityID;

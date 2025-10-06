@@ -65,7 +65,7 @@ export class UI{
                 this.activeMenus.inventory=!this.activeMenus.inventory;
                 this.inventory?.toggle();
             }
-            if (event.key === 's' || event.key === 'S') {
+            if (event.key === 'é' || event.key === '2') {
                 this.activeMenus.magic = !this.activeMenus.magic;
                 this.spellmenu?.toggle();
             }
@@ -195,7 +195,7 @@ export class UI{
             const sprite = new THREE.Sprite(material);
 
 
-            sprite.scale.set(5 , 5, 0);
+            sprite.scale.set(2 , 2, 0);
             sprite.position.copy(position.clone().add(new THREE.Vector3(0, 1.5, 0)));
             this.scene.add(sprite);
 

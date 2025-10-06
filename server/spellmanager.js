@@ -13,7 +13,7 @@ export class SpellManager {
 
     castSpell(casterId, spellData) {
 
-        const spell = new Spell(spellData.id,casterId,spellData.radius,spellData.damage,spellData.lifetime,spellData.position);
+        const spell = new Spell(spellData.id,casterId,spellData.sprite,spellData.radius,spellData.damage,spellData.lifetime,spellData.position);
         this.activeSpells.push(spell);
     }
 

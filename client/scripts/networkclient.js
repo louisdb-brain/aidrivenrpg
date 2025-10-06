@@ -9,12 +9,14 @@ export function toVec3(obj) {
 }
 export class NetworkClient {
     constructor(pChat,pGame) {
+        this.inputSequence = 0;
+        this.pendingInputs = [];
         this.game=pGame;
         this.spriteHandeler=pGame.spriteHandeler;
         // ✅ Works locally and on Render
-        this.socket = io(); // Uses same origin as page
+        //this.socket = io(); console.log("RUNNING SERVER ONLINE"); // Uses same origin as page
 
-        //this.socket = io('http://localhost:3000');
+        this.socket = io('http://localhost:3000');
 
         window.addEventListener('DOMContentLoaded', () => {
             //socket token
@@ -50,26 +52,23 @@ export class NetworkClient {
                 console.log(id+ " player left");
             });
             //PLAYER JOIN
-            this.socket.on('playerjoin',async (data)=>
-            {
-                //🎅making other players on client
-                if (data.id !== this.socket.id) {
-                    await this.game.addPlayer(data.id, data);
+            this.socket.on('playerjoin', (data) => {
+                if (!this.game.players[data.id]) {
+                    this.game.addPlayer(data.id, data.position);
                 }
             });
+
 
 
             this.socket.on('disconnect', () => {
                 this.game.removePlayer(this.socket.id);
             })
             this.socket.on("player-positionupdate", (data) => {
-               data.forEach(player => {
-                   this.game.playerUpdate(player.id,player.pos,player.targetpos,player.locked,player.lockedpos,player.angle)
-
-               })
-
+                this.game.playerUpdate(data);
 
             })
+
+
             this.socket.on('npc-position-update', (npcs) => {
                 npcs.forEach(npc => {
                     if(!this.game.npcs[npc.id])
@@ -123,11 +122,10 @@ export class NetworkClient {
                     }
                 })
             })*/
-            this.socket.on('existing-players', (data) => {
-                //console.log(data);
-                for (const id in data) {
-                    if (id !== this.socket.id) {
-                        this.game.addPlayer(id,data[id].position );
+            this.socket.on('existing-players', (players) => {
+                for (const p of players) {
+                    if (p.id !== this.socket.id) {
+                        this.game.addPlayer(p.id, p.pos); // or p.position if that's the correct field
                     }
                 }
             });
@@ -194,6 +192,8 @@ export class NetworkClient {
     }
     castSpell(spellData) {
         console.log(spellData);
+        if(!spellData.spellSprite){console.log("errorrr")}
+        console.log(spellData.spellSprite)
         // Send a spellcast message to the server
         this.socket.emit('spellcast', {
             id: this.localPlayerId,
@@ -207,14 +207,13 @@ export class NetworkClient {
         });
         console.log(`Spellcast emitted:`, spellData);
     }
-    spawnInteractiveNode(data)
-    {
 
-    }
-    sendInputVector(x, y)
+    /*sendInputVector(x, y)
     {
-        this.socket.emit("input-vector",x,y);
-    }
+        const value=[x,y];
+        const msg={x:value[0],y:value[1]}
+        this.socket.emit("input-vector",msg);
+    }*/
 
 
 }

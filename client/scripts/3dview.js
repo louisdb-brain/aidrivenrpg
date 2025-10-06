@@ -53,8 +53,8 @@ window.addEventListener('pointermove', (e) => {
     {
         const rect = thisgame.renderer.domElement.getBoundingClientRect();
         const mouse = new THREE.Vector2(
-            ((event.clientX - rect.left) / rect.width) * 2 - 1,
-            -((event.clientY - rect.top) / rect.height) * 2 + 1
+            ((e.clientX - rect.left) / rect.width) * 2 - 1,
+            -((e.clientY - rect.top) / rect.height) * 2 + 1
         );
 
         const raycaster = new THREE.Raycaster();
@@ -88,30 +88,47 @@ function sendMessage() {
 }
 //gamepad setup
 
-var gamepad = null;
+var gamepadOne = null;
 window.addEventListener("gamepadconnected", (e) => {
     console.log("Gamepad connected:", e.gamepad.id);
 
-    gamepad=new gamepad(networkHandler,thisgame);
-
-
+    gamepadOne=new gamepad(networkHandler,thisgame);
+    gamepadOne.addEventListener("buttondown", (e) => {
+        if (e.detail.button === 7) {
+            console.log("Gamepad down");
+            thisgame.UI.spellmenu.selectSpellByName("MeleeAttack");
+        }
+    });
+    gamepadOne.addEventListener("buttonup", (e) => {
+        if (e.detail.button === 7) {
+            console.log("Gamepad up");
+            thisgame.UI.spellmenu.castSpell(thisgame.players[networkHandler.socket.id].position)
+        }
+    });
+    if(gamepadOne instanceof gamepad && gamepadOne.connected)
+    {
+        gamepadOne.loop();
+    }
 });
-if(gamepad.connected)
-{
-    gamepad.loop();
-}
+
+const keys = {
+    w: false,
+    a: false,
+    s: false,
+    d: false
+};
 
 window.addEventListener("gamepaddisconnected", (e) => {
     console.log("Gamepad disconnected:", e.gamepad.id);
 });
 //input setup
 document.addEventListener('keydown', event => {
-    const key = event.key.toLowerCase();
-    if(keys[key] !== undefined) { keys[key] = true; sendInput(); }
+    const k = event.key.toLowerCase();
+    if(keys[k] !== undefined) { keys[k] = true; sendInput(); }
 });
 document.addEventListener('keyup', event => {
-    const key = event.key.toLowerCase();
-    if(keys[key] !== undefined) { keys[key] = false; sendInput(); }
+    const k = event.key.toLowerCase();
+    if(keys[k] !== undefined) { keys[k] = false; sendInput(); }
 });
 
 function sendInput() {

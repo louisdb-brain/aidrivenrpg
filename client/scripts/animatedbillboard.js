@@ -13,6 +13,7 @@ export class SpriteBillboard {
     ) {
         this.scene = scene;
         this.frame = 0;
+        this.frameTime=1.5;
         this.frameCount = frameCount;
         this.rowCount = rowCount;
         this.animationRow = animationRow;
@@ -80,7 +81,7 @@ export class SpriteBillboard {
 
         if (this.isAnimating) {
             this.timer += delta;
-            const frameDuration = 1 / this.fps;
+            const frameDuration = this.frameTime / this.fps;
             if (this.timer >= frameDuration) {
                 this.timer -= frameDuration;
                 this.frame = (this.frame + 1) % this.frameCount;

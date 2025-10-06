@@ -23,6 +23,7 @@ export class Game {
 
 
 
+
         const aspect = window.innerWidth / window.innerHeight;
         const frustumSize = 30;
         this.camera = new THREE.OrthographicCamera(
@@ -260,15 +261,53 @@ export class Game {
         delete this.players[id];
     }
 
-    playerUpdate(id, pos, target, locked, lockedpos, angle) {
-        if (!this.players[id]) return;
-        const player = this.players[id];
-        player.angle = angle;
-        player.position.copy(toVec3(pos));
-        player.setTarget(toVec3(target));
-        player.locked = locked;
-        player.setLockedTarget(toVec3(lockedpos));
+    playerUpdate(playerDataArray) {
+        for (const data of playerDataArray) {
+            const id = data.id;
+
+            // Skip if player not found
+            if (!this.players[id]) {
+                console.warn(`[Game] Skipping update: Unknown player ID ${id}`);
+                continue;
+            }
+
+            const player = this.players[id];
+
+            // Skip update for new players not yet initialized
+            if (!data.pos) {
+                console.warn(`[Game] Skipping update: No position for ${id}`);
+                continue;
+            }
+
+            // Set current server-authoritative position (snap or lerp)
+            const serverPos = new THREE.Vector3(data.pos.x, data.pos.y, data.pos.z);
+
+            if (id === this.localPlayerId) {
+                // Local player: trust server fully, but optionally smooth a little
+                player.position.lerp(serverPos, 0.5); // or .copy(serverPos) for hard snap
+            } else {
+                // Remote player: always lerp to avoid jitter
+                player.position.lerp(serverPos, 0.2);
+            }
+
+            // Server-set movement data
+            if (data.lockedpos) {
+                player.lockedPosition.set(data.lockedpos.x, data.lockedpos.y, data.lockedpos.z);
+            }
+
+            if (data.targetpos) {
+                player.setTarget(new THREE.Vector3(
+                    data.targetpos.x,
+                    data.targetpos.y,
+                    data.targetpos.z
+                ));
+            }
+
+            player.locked = data.locked ?? false;
+            player.angle = data.angle ?? 0;
+        }
     }
+
 
     UpdateChest(id, pos, grounded, targetObject, angle) {
         if (!this.chests[id]) return;
@@ -305,13 +344,19 @@ export class Game {
             console.log(`Clicked at: ${point.toArray().map(v => v.toFixed(2))}, distance = ${dist.toFixed(2)}`);
         }
     }
-    sendInputVector(x, y) {
+    /*sendInputVector(x, y,playerId) {
+        if(!this.players[playerId])
+        {
+            console.warn("player not yet connected but you are sending inputs")
+            return;
+        }
         this.players[playerId].inputVector(x,y);
-    }
+    }*/
     spawnSpell(spelldata) {
         console.log("spawning spell at "+spelldata.position.x)
         const pos=new THREE.Vector3(spelldata.position.x,spelldata.position.y+0.1, spelldata.position.z);
-        this.VFX.spawn('/icons/fireball.png', pos, 'flat', 10, spelldata.lifetime);
+        const pathname=spelldata.sprite;
+        this.VFX.spawn(pathname, pos, 'flat', 10, spelldata.lifetime);
 
 
     }
