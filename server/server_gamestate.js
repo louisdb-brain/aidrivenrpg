@@ -59,6 +59,7 @@ export class gamestateClass{
     }
     addloot(loot)
     {
+        console.log("addloot called :")
         this.objectManager.addloot(loot,loot.id);
     }
     removeloot(id){

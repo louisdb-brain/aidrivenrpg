@@ -62,7 +62,12 @@ io.on('connection', (socket) => {
     playermanager.additem(socket.id,"onion");
 
     gamestate.objectManager.addloot(new loot("steakid1","steak",{x:0,y:0,z:0},emitCallback));
-    const spawnCallback=(pLootid,pName,pLocation)=>{gamestate.objectManager.addloot(new loot(pLootid,pName,pLocation,emitCallback))}
+
+    const spawnCallback = (lootId, name, location) => {
+        const newLoot = new loot(lootId, name, location, emitCallback); // ✅ emits to client
+        gamestate.objectManager.addloot(newLoot,lootId);                       // ✅ stores on server
+    }
+
     gamestate.objectManager.addNode(new skillNode("woodcutting1",{x:5,y:0,z:0},"plants/woodcutting_tree_oak","WOODCUTTING","0","log",emitCallback,socketCallback,spawnCallback));
     gamestate.objectManager.addNode(new skillNode("mining1",{x:-5,y:0,z:0},"miningrock_copper","MINING","0","ore_copper",emitCallback,socketCallback,spawnCallback));
     gamestate.objectManager.addNode(new skillNode("mining2",{x:-5,y:0,z:+5},"miningrock_mithril","MINING","30","ore_mithril",emitCallback,socketCallback,spawnCallback));

@@ -23,13 +23,14 @@ export class objectManager{
             console.log("no nodes with id: "+id);
         }
     }
-    addloot(loot,id){
-        let thisId=id;
-        if(!this.loot[thisId])
-        {
-            this.loot[thisId]=loot;
+    addloot(loot, id) {
+        let thisId = id;
+        if (!this.loot[thisId]) {
+            console.log("[ADDLOOT] Storing new loot:", thisId);
+            this.loot[thisId] = loot;
+        } else {
+            console.warn("[ADDLOOT] Loot with ID already exists:", thisId);
         }
-
     }
     getloot(id){
         return this.loot[id];
@@ -37,15 +38,18 @@ export class objectManager{
     getNode(name){
         return this.nodes[name];
     }
-    lootObject(id,socketid)
-    {
+    lootObject(id, socketid) {
+        console.log("[DEBUG] lootObject called with id:", id, "by", socketid);
         const lootObj = this.getloot(id);
-        if (!lootObj) return;
-        playermanager.additem(socketid, lootObj.name); // ✅ now it's a string
-
+        if (!lootObj) {
+            console.warn("[WARN] Loot not found for ID:", id);
+            return;
+        }
+        console.log("[DEBUG] lootObj.name:", lootObj.name);
+        playermanager.additem(socketid, lootObj.name);
         this.removeloot(id);
-
     }
+
     removeloot(id){
         delete this.loot[id];
     }

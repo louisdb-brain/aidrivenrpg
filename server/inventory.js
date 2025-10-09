@@ -10,12 +10,14 @@ export class inventory{
 
     additem(itemId)
     {
+
         if(this.items.length<this.holdmax){
             this.items.push(itemId);
             const payload={
                 id:this.playerid,
                 name:itemId
             }
+            console.log("[SERVER] Inventory additem:", itemId);
             this.emit('add-item', payload);
         }
         else{

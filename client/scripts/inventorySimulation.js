@@ -57,7 +57,7 @@ export class inventorySim{
     update()
     {
 
-
+        this.physicsResolved=false;
         if(!this.physicsResolved){
             this.checkResolved()
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -119,8 +119,8 @@ export class itemPhysical{
 
     }
     draw(ctx){
-        ctx.fillStyle="orange";
-        ctx.fillRect(this.x,this.y,this.w,this.h);
+        //ctx.fillStyle="orange";
+        //ctx.fillRect(this.x,this.y,this.w,this.h);
         if (this.image && this.image.complete && this.image.naturalWidth !== 0) {
             ctx.drawImage(this.image,this.x,this.y);
         }
