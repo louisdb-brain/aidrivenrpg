@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 export class Inventory {
     constructor({
                     cols = 4,
@@ -84,6 +85,13 @@ export class Inventory {
         this.items.push(item);
         this.draw();
         return item;
+    }
+    calculateBagGravity(){
+        for(let i in this.items){
+            if(i.falltest()===null){
+                i.appygravity();
+            }
+        }
     }
 
     placeItemInSlot(item, index) {
@@ -279,7 +287,8 @@ class Slot {
 }
 
 class Item {
-    constructor(name, imagePath, size, onLoad) {
+    constructor(name, imagePath, size, onLoad,items) {
+        this.items=items;
         this.name = name;
         this.image = new Image();
         this.image.src = imagePath;
@@ -289,7 +298,10 @@ class Item {
         this.x = 0;
         this.y = 0;
         this.slotIndex = null;
+        this.mass=3;
+        this.gravity=2;
     }
+
 
     draw(ctx) {
         ctx.fillStyle = '#ccc';
@@ -301,6 +313,15 @@ class Item {
         } else {
             ctx.fillStyle = '#000';
             ctx.fillText(this.name, this.x + 4, this.y + this.size / 2);
+        }
+    }
+    falltest(){
+        const raycast=new THREE.Raycaster;
+        const items=Array.from(this.items.values());
+        const nodeHits = raycaster.intersectObjects(items, true);
+        if (nodeHits.length > 0) {
+            const collideditem = nodeHits[0].object;
+            this.y+=(this.gravity*this.mass);
         }
     }
 
