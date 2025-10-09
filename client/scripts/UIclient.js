@@ -6,6 +6,7 @@ import {CookingGame} from "./skills/cooking.js";
 import{magicSystem} from "./skills/magic.js";
 
 import{Inventory} from "./inventory.js";
+import{inventorySim} from "./inventorySimulation.js";
 
 export class UI{
     constructor(scene,ctx,camera,canvas,groundplane,handlers) {
@@ -27,7 +28,7 @@ export class UI{
 
 
 
-        this.inventory=new Inventory(document.getElementById("inventoryCanvas"));
+        this.inventory=new inventorySim();
         this.playerInventory=["potion","sword"]
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
@@ -110,6 +111,7 @@ export class UI{
     {
         this.cookinggame.update();
         this.cookinggame.draw();
+        this.inventory.update();
 
 
     }

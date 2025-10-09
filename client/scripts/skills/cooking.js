@@ -274,7 +274,7 @@ export class CookingGame {
 
 export class Ingredient {
     constructor(x, y, name, phases,imagePath,psizzlesound) {
-        this.name = name;
+
         this.imagePath = imagePath;
         this.image = new Image();
         this.image.src = imagePath;

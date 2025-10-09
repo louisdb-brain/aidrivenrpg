@@ -39,8 +39,10 @@ export class objectManager{
     }
     lootObject(id,socketid)
     {
-        const itemname=this.getloot(id);
-        playermanager.additem(socketid,itemname);
+        const lootObj = this.getloot(id);
+        if (!lootObj) return;
+        playermanager.additem(socketid, lootObj.name); // ✅ now it's a string
+
         this.removeloot(id);
 
     }

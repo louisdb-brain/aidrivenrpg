@@ -115,6 +115,7 @@ io.on('connection', (socket) => {
     })
     socket.on('loot',(lootID)=>{
     gamestate.objectManager.lootObject(lootID,socket.id);
+    console.log(lootID);
     })
 
     socket.on('click-node', (nodeId) => {

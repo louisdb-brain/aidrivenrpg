@@ -1,17 +1,10 @@
 // LevelHandler.js
 
 import * as THREE from 'three';
+import {Loot} from './Loot.js';
 
 // (Your Loot class - unchanged, can import it from another file)
-export class Loot {
-    constructor(itemID, name, location = { x: 0, y: 0, z: 0 }, iconPath = null, scaleDivisor = 100) {
-        this.itemID = itemID;
-        this.itemName = name;
-        this.location = { ...location };
-        this.iconPath = iconPath;
-        this.scaleDivisor = scaleDivisor;
-    }
-}
+
 
 function makeBillboard(mesh, mode = 'y') {
     const __tmpV = new THREE.Vector3();
@@ -40,7 +33,8 @@ export class levelHandler {
     // Spawns loot, returns lootId
     spawnLoot(itemID, name, location, iconPath) {
         const loot = new Loot(itemID, name, location, iconPath);
-        const lootId = this.nextLootId++;
+        const lootId = itemID;
+
 
         const loader = new THREE.TextureLoader();
         loader.load(loot.iconPath, (texture) => {
@@ -87,7 +81,8 @@ export class levelHandler {
 
             const hit = intersects[0].object;
             const lootId = hit.userData.lootId;
-            const lootObj = this.loots.get(lootId);
+            const lootObj = this.loots.get(String(lootId));
+
 
             if (!lootObj) return false;
 

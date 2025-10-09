@@ -6,7 +6,7 @@ export class gamepad {
         this.connected = true;
         this.gamepadId = null;
 
-        this._eventTarget = new EventTarget(); // 🧠 internal event system
+        this._eventTarget = new EventTarget(); //  internal event system
         this._buttonStates = {}; // tracks held buttons
 
         this.watchButtons(); // 🔁 start tracking button states

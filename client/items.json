@@ -18,5 +18,8 @@
   "id":"steak",
   "name": "steak",
   "image": "./sprites/steak.png"
-}
+},{
+  "id":"mining1lootid",
+  "name":"mining1lootid",
+  "image":"./sprites/ore_copper.png"}
 ]

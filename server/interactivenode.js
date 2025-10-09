@@ -36,7 +36,9 @@ export class skillNode {
                 z: this.position.z + 2 + randomYnumber
             };
 
-            this.spawnCallback(this.name + 'lootid', this.resources, spawnposition);
+            const uniqueId = `${this.name}_loot_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+            this.spawnCallback(uniqueId, this.resources, spawnposition);
+
             player.skillLevels[this.skill]++;
 
             socket.emit(

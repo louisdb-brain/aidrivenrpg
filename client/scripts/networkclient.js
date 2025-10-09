@@ -130,8 +130,10 @@ export class NetworkClient {
                 }
             });
             this.socket.on('add-item', (data) => {
+                console.log(data);
                 if(this.socket.id === data.id) {
-                    this.game.UI.inventory.addItem(data.itemName,"./sprites/"+data.name+".png");
+
+                    this.game.UI.inventory.addItem(data.name,"./sprites/"+data.name+".png");
                 }
             })
             this.socket.on('newloot', (data) => {
