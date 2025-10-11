@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Level Editor</title>
     <style>
-
         body {
             margin: 0;
             padding: 10px;
@@ -14,46 +13,40 @@
         }
         .grid-container {
             display: grid;
-            grid-template-columns: 200px 1fr 250px;
+            grid-template-columns: 300px 1fr 250px; /* Made left panel 50% wider (from 200 to 300) */
             gap: 15px;
             height: 100vh;
         }
         .panel {
-
             background: #2a2a2a;
             padding: 10px;
             border-radius: 8px;
             overflow: auto;
         }
         .leftpanel {
-
-            background: #2a2a2a;
-            padding: 10px;
-            border-radius: 8px;
-            overflow: auto;width: 400px;         /* fixed width */
-            min-width: 400px;     /* prevent shrinking */
-            max-width: 400px;     /* prevent growing */
+            width: 300px;               /* 50% wider than before */
+            min-width: 300px;
+            max-width: 300px;
             padding: 12px;
             background: #2a2a2a;
             border-radius: 8px;
-            overflow: hidden;     /* or auto if you want scrollbars */
+
             display: flex;
             flex-direction: column;
-            gap: 10px;            /* spacing between controls */
+            gap: 10px;
 
+            overflow-y: auto;          /* Scrollbar on entire tools panel */
+            max-height: 100vh;         /* Prevent panel from growing too large */
         }
         .panel select,
         .panel button {
             padding: 6px 10px;
             font-size: 0.95rem;
             border-radius: 4px;
-            flex-shrink: 0;       /* prevents shrinking */
-            width: 100%;          /* fills panel width */
+            flex-shrink: 0;
+            width: 100%;
             max-width: 100%;
-
         }
-
-
         .panel h3 {
             margin-top: 0;
             font-size: 1rem;
@@ -65,6 +58,7 @@
             margin-top: 10px;
             font-size: 0.9rem;
         }
+
         input[type="number"], select, button, input[type="file"] {
             width: 100%;
             padding: 6px;
@@ -80,82 +74,79 @@
             max-width: 100%;
         }
 
-        .palette-groups {
+        /* Palette display styles */
+        #paletteDisplay {
+            flex: none;                /* Don’t expand - fixed height or auto */
+            max-height: none;
+            overflow-y: visible;       /* Remove scrollbar from palette itself */
             display: flex;
             flex-direction: column;
-            gap: 10px;
-        }
-        .palette-group {
-            display: flex;
-            flex-wrap: wrap;
             gap: 8px;
         }
-        .palette-group h4 {
-            margin: 0;
-            color: #ddd;
-            font-size: 0.9rem;
-        }
-        .palette-group img {
-            max-width: 48px;
-            max-height: 48px;
-            cursor: pointer;
-            border: 2px solid transparent;
+        .palette-item img {
+            width: 10px;               /* Smaller sprite thumbnails */
+            height: 10px;
+            object-fit: contain;
             border-radius: 4px;
-            background-color: transparent;
         }
-        .palette-group img.selected {
-            border-color: red;
+
+        .palette-item span {
+            margin-left: 10px;
+            flex-grow: 1;
+            color: #eee;
+            font-size: 0.9rem;
+            overflow-wrap: break-word;
         }
-        button:hover { background: #666; }
-        .drag-control { display: flex; align-items: center; gap: 5px; }
-        .drag-control input[type="range"] { flex: 1; }
+        /* Remove (x) button styling */
+        .palette-item .remove-btn {
+            position: absolute;
+            top: 4px;
+            right: 6px;
+            background: transparent;
+            border: none;
+            color: #f66;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            user-select: none;
+        }
+        .palette-item .remove-btn:hover {
+            color: #f00;
+        }
 
         /* Center viewport sizing fix */
         #viewportdiv { display: flex; flex-direction: column; }
         #viewport {
             background: #111;
             border: 1px solid #333;
-            flex: 1;               /* fills the panel height */
+            flex: 1;
             position: relative;
             overflow: hidden;
             min-height: 200px;
-        }
-        #paletteDisplay img {
-            width: 90px;
-            height: 90px;
-            object-fit: contain; /* keeps aspect ratio inside the box */
-            border: 2px solid transparent;
-            border-radius: 4px;
-            cursor: pointer;
-            background-color: transparent;
-        }
-
-        /* Highlight selected palette item */
-        #paletteDisplay img.selected {
-            border-color: red;
         }
         canvas { display: block; }
     </style>
 </head>
 <body>
 <div class="grid-container">
-    <!-- Left tools -->
     <div class="leftpanel">
         <h3>Tools</h3>
         <button id="toggleCam">Switch Camera</button>
         <button id="spriteModeBtn">Mode: Decal</button>
 
         <label for="modelSelector">Sprite Asset</label>
-        <select id="modelSelector">
-
-        </select>
+        <select id="modelSelector"></select>
 
         <button id="savebutton">Save Level</button>
         <input type="file" id="loadInput" accept=".json" style="display:none;">
         <button id="loadbutton">Load Level</button>
 
+        <button id="undoBtn">↩️ Undo</button> <!-- ✅ NEW Undo Button -->
+
         <h3>Sprite Preview</h3>
-        <img id="spritePreview" src="assets/spaceship.png" alt="Preview" style="max-width:150px;max-height:150px;">
+        <img id="spritePreview" src="assets/spaceship.png" alt="Preview" style="max-width:150px; max-height:150px;">
         <hr style="border:1px solid #444; margin:10px 0;">
 
         <div id="paletteButtons">
@@ -164,15 +155,14 @@
             <button id="loadPaletteBtn">📂 Load Palette</button>
         </div>
 
-        <!-- Optional: a list to display saved palette items -->
-        <div id="paletteDisplay" class="palette-display"></div>
+        <!-- Palette display container -->
+        <div id="paletteDisplay"></div>
     </div>
 
-    <!-- Center viewport -->
+    <!-- Center viewport remains unchanged -->
     <div id="viewportdiv" class="panel">
         <h3>Viewport</h3>
         <div id="viewport"></div>
-        <!-- Just your editor JS; it imports Three from CDN -->
         <script type="module" src="./levelEditor2.js"></script>
     </div>
 
@@ -181,24 +171,24 @@
         <h3>Context Menu</h3>
 
         <label for="spriteName">Name</label>
-        <input type="text" id="spriteName" placeholder="Enter name">
+        <input type="text" id="spriteName" placeholder="Enter name" />
 
         <label>Position X</label>
         <div class="drag-control">
-            <input type="number" id="posX" step="0.01" placeholder="X">
-            <input type="range" id="sliderX" min="-100" max="100" step="0.01">
+            <input type="number" id="posX" step="0.01" placeholder="X" />
+            <input type="range" id="sliderX" min="-100" max="100" step="0.01" />
         </div>
 
         <label>Position Y</label>
         <div class="drag-control">
-            <input type="number" id="posY" step="0.01" placeholder="Y">
-            <input type="range" id="sliderY" min="-100" max="100" step="0.01">
+            <input type="number" id="posY" step="0.01" placeholder="Y" />
+            <input type="range" id="sliderY" min="-100" max="100" step="0.01" />
         </div>
 
         <label>Position Z</label>
         <div class="drag-control">
-            <input type="number" id="posZ" step="0.01" placeholder="Z">
-            <input type="range" id="sliderZ" min="-100" max="100" step="0.01">
+            <input type="number" id="posZ" step="0.01" placeholder="Z" />
+            <input type="range" id="sliderZ" min="-100" max="100" step="0.01" />
         </div>
 
         <label for="entityType">Entity Type</label>
@@ -209,6 +199,11 @@
             <option value="drop">Drop</option>
         </select>
 
+        <label>
+            <input type="checkbox" id="lockCheckbox" />
+            🔒 Lock Position
+        </label> <!-- ✅ NEW Lock Checkbox -->
+
         <button id="updateBtn">Update</button>
     </div>
 </div>
@@ -217,11 +212,67 @@
     // Keep the preview in sync with the selector
     const modelSelector = document.getElementById('modelSelector');
     const spritePreview = document.getElementById('spritePreview');
-    spritePreview.src = modelSelector.value;
+    spritePreview.src = "sprites/"+modelSelector.value;
     modelSelector.addEventListener('change', () => {
         spritePreview.src = "sprites/"+modelSelector.value;
     });
+
+    const paletteDisplay = document.getElementById('paletteDisplay');
+
+    // Example palette items data structure (replace with your real data)
+    let paletteItems = [];
+
+    // Function to render palette items
+    function renderPalette() {
+        paletteDisplay.innerHTML = '';
+        paletteItems.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'palette-item';
+            div.dataset.id = item.id;
+
+            const img = document.createElement('img');
+            img.src = "sprites/" + item.asset;
+            img.alt = item.name || "Palette item";
+            div.appendChild(img);
+
+            const span = document.createElement('span');
+            span.textContent = item.name || item.asset;
+            div.appendChild(span);
+
+            const btn = document.createElement('button');
+            btn.className = 'remove-btn';
+            btn.title = 'Remove from Palette';
+            btn.textContent = '×';
+            div.appendChild(btn);
+
+            paletteDisplay.appendChild(div);
+        });
+    }
+
+    // Add example code to add an item (replace with your actual logic)
+    const addToPaletteBtn = document.getElementById('addToPaletteBtn');
+    addToPaletteBtn.addEventListener('click', () => {
+        if (!modelSelector.value) return;
+        const id = "palette_" + Date.now();
+        paletteItems.push({ id, asset: modelSelector.value, name: modelSelector.value });
+        renderPalette();
+    });
+
+    // Delegate click event to handle remove buttons
+    paletteDisplay.addEventListener('click', e => {
+        if (e.target.classList.contains('remove-btn')) {
+            const itemDiv = e.target.closest('.palette-item');
+            if (!itemDiv) return;
+            const id = itemDiv.dataset.id;
+            paletteItems = paletteItems.filter(p => p.id !== id);
+            renderPalette();
+        }
+    });
+
+    // Initial rendering
+    renderPalette();
 </script>
+
 <script type="module" src="./loader.js"></script>
 </body>
 </html>

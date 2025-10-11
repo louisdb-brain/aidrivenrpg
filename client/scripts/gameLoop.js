@@ -4,7 +4,7 @@ import { Player } from './player.js';
 import { npc } from './npc.js';
 import { Chest } from './chest.js';
 import { toVec3 } from './networkclient.js';
-import { UI } from './UIclient.js';
+import { UI } from './UI/UIclient.js';
 import { loadLevel,placeSprite } from '../levelEditor/loadlevel.js';
 import { levelHandler } from './levelHandler.js';
 import {vfxHandler} from "./vfxHandeler.js";
