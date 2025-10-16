@@ -73,7 +73,7 @@ window.addEventListener('pointermove', (e) => {
 
     }
 });
-
+document.getElementById('levelButton').addEventListener('click', (e) => {thisgame.levelHandeler.setLevel(document.getElementById('chatInput').value)})
 // Chat functionality
 document.getElementById('chatButton').addEventListener("click", sendMessage);
 const input = document.getElementById('chatInput');
@@ -234,6 +234,7 @@ window.addEventListener('pointerup', (event) => {
         }
     }
 });
+
 
 
 // Hover state + helpers

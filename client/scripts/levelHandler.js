@@ -2,6 +2,7 @@
 
 import * as THREE from 'three';
 import {Loot} from './Loot.js';
+import {clearLevel, loadLevel} from "../levelEditor/loadlevel";
 
 // (Your Loot class - unchanged, can import it from another file)
 
@@ -22,14 +23,23 @@ function makeBillboard(mesh, mode = 'y') {
 }
 
 export class levelHandler {
-    constructor(scene, playerRef) {
+    constructor(scene, player,level) {
         this.scene = scene;
-        this.playerRef = playerRef; // Should be a THREE.Object3D or something with .position
+        //this.networkHandler=networkhandler
+        this.level=level;
+        this.player = player; // Should be a THREE.Object3D or something with .position
         this.loots = new Map();     // id -> { loot, mesh }
         this.nextLootId = 1;
         this.PICKUP_RADIUS = 10;
     }
-
+    setLevel(levelname) {
+        fetch('/'+levelname+'.json')
+            .then(res => res.json())
+            .then(async data => {
+                await clearLevel(this.scene);
+                await loadLevel(data, this.scene);
+            });
+    }
     // Spawns loot, returns lootId
     spawnLoot(itemID, name, location, iconPath) {
         const loot = new Loot(itemID, name, location, iconPath);

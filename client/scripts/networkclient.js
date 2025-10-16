@@ -204,7 +204,8 @@ export class NetworkClient {
             position: spellData.position,
             lifetime:spellData.lifetime,
             damage:spellData.damage,
-            radius:spellData.radius
+            radius:spellData.radius,
+            level:this.game.level,
 
         });
         console.log(`Spellcast emitted:`, spellData);

@@ -95,6 +95,7 @@ export class gamestateClass{
             },
             angle: player.angle,
             locked:player.locked,
+            level:player.level,
 
 
         }));

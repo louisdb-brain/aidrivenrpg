@@ -9,6 +9,7 @@ export const playermanager = {
     addPlayer(id,emitCallback, position = { x: 0, y: 0, z: 0 }) {
         players[id] = new player(id,emitCallback,position,`Player-${id.slice(0, 5)}`)
 
+
         //console.log(players[id]);
 
     },

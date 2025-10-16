@@ -197,6 +197,23 @@ export async function loadLevel(data, pScene) {
         }
     }
 }
+export function clearLevel(scene) {
+    for (const obj of placedObjects) {
+        if (obj.mesh) {
+            scene.remove(obj.mesh);
+            obj.mesh.geometry?.dispose();
+            obj.mesh.material?.dispose();
+        }
+        if (obj.shadow) {
+            scene.remove(obj.shadow);
+            obj.shadow.geometry?.dispose();
+            obj.shadow.material?.dispose();
+        }
+    }
+    placedObjects.length = 0;
+    //renderer.clear();
+}
+
 
 /**
  * Make all sprite meshes face the given camera.

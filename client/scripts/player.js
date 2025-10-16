@@ -11,7 +11,7 @@ export class Player {
         this.lockedPosition = this.position.clone();
         this.speed =  options.speed||8;
         this.interactionRadius=0.8;
-
+        this.level="level1";
         this.angle = null;
 
         this.sprite = new SpriteBillboard(

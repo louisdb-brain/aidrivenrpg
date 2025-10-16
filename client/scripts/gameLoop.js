@@ -134,9 +134,11 @@ export class Game {
         for (const id in this.chests) this.chests[id].update(delta);
 
         const player = this.players[this.localPlayerId];
-        this.levelHandeler.playerRef = player;
+        this.levelHandeler.player = player;
+        //this.levelHandeler.level=player.level;
         this.UI.update();
     }
+
 
     draw() {
         this.renderer.render(this.scene, this.camera);
