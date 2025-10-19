@@ -7,13 +7,13 @@ export class SpriteBillboard {
         position = { x: 0, y: 0, z: 0 },
         frameCount,
         animationRow,
-        textureInput,          // Can be URL string or preloaded THREE.Texture
+        textureInput,
         rowCount = 1,
         size = 1
     ) {
         this.scene = scene;
         this.frame = 0;
-        this.frameTime=1.5;
+        this.frameTime = 1.5;
         this.frameCount = frameCount;
         this.rowCount = rowCount;
         this.animationRow = animationRow;
@@ -22,20 +22,18 @@ export class SpriteBillboard {
         this.isAnimating = false;
         this.flipped = false;
         this.position = new THREE.Vector3(position.x, position.y, position.z);
+        this.isFrozen = false;
 
-        // Placeholder sprite while texture loads
         const placeholderMat = new THREE.SpriteMaterial({ transparent: true });
         this.sprite = new THREE.Sprite(placeholderMat);
-        this.sprite.center.set(0.5, 0.0); // Anchor at feet
+        this.sprite.center.set(0.5, 0.0);
         this.sprite.position.copy(this.position);
         this.sprite.scale.set(10, 10, 10);
         scene.add(this.sprite);
 
-        // Handle both URL strings and preloaded textures
         const loader = new THREE.TextureLoader();
 
         if (typeof textureInput === 'string') {
-            // URL string → load texture
             loader.load(
                 textureInput,
                 (tex) => this._onTextureLoaded(tex, size),
@@ -43,16 +41,12 @@ export class SpriteBillboard {
                 (err) => console.error('Failed to load texture:', textureInput, err)
             );
         } else if (textureInput && textureInput.isTexture) {
-            // Preloaded THREE.Texture or DataTexture → use directly
             this._onTextureLoaded(textureInput, size);
         } else {
             console.error('Invalid texture input for SpriteBillboard:', textureInput);
         }
     }
 
-    /**
-     * Private helper to configure the sprite once the texture is ready.
-     */
     _onTextureLoaded(tex, size) {
         tex.minFilter = THREE.NearestFilter;
         tex.magFilter = THREE.NearestFilter;
@@ -65,12 +59,14 @@ export class SpriteBillboard {
         this.sprite.material.toneMapped = false;
         this.sprite.material.color.setScalar(0.9);
         this.sprite.material.needsUpdate = true;
+        this.sprite.material.side = THREE.DoubleSide;
 
         const framePixelWidth = tex.image.width / this.frameCount;
         const framePixelHeight = tex.image.height / this.rowCount;
         const aspect = framePixelHeight / framePixelWidth;
         this.size = size;
         this.sprite.scale.set(this.size, aspect * this.size, this.size);
+        if (this.flipped) this.sprite.scale.x *= -1;
 
         this.texture = tex;
         this.setFrame(this.frame);
@@ -78,6 +74,7 @@ export class SpriteBillboard {
 
     update(delta, camera) {
         if (camera) this.sprite.quaternion.copy(camera.quaternion);
+        if (this.isFrozen) return; // 👈 stops animation when frozen
 
         if (this.isAnimating) {
             this.timer += delta;
@@ -93,11 +90,26 @@ export class SpriteBillboard {
         }
     }
 
+    setCell(col, row) {
+        this.animationRow = row;
+        this.setFrame(col);
+    }
+
     setFrame(frame) {
         this.frame = frame % this.frameCount;
         if (!this.texture) return;
-        const offsetX = this.frame / this.frameCount;
+
+        let offsetX;
         const offsetY = (this.rowCount - 1 - this.animationRow) / this.rowCount;
+
+        if (this.flipped) {
+            offsetX = 1 - (this.frame + 1) / this.frameCount;
+            this.texture.repeat.x = -Math.abs(this.texture.repeat.x);
+        } else {
+            offsetX = this.frame / this.frameCount;
+            this.texture.repeat.x = Math.abs(this.texture.repeat.x);
+        }
+
         this.texture.offset.set(offsetX, offsetY);
     }
 
@@ -107,9 +119,19 @@ export class SpriteBillboard {
     }
 
     setFlippedX(flipped) {
-        if (this.flipped === flipped) return;
-        this.flipped = flipped;
-        this.sprite.scale.x = Math.abs(this.sprite.scale.x) * (flipped ? -1 : 1);
+        const want = !!flipped;
+        if (this.flipped === want) return;
+        this.flipped = want;
+
+        if (!this.texture) return;
+
+        const repeatX = 1 / this.frameCount;
+        const repeatY = 1 / this.rowCount;
+        this.texture.repeat.set(this.flipped ? -repeatX : repeatX, repeatY);
+        this.texture.offset.x = this.flipped
+            ? (1 - this.frame / this.frameCount - 1 / this.frameCount)
+            : (this.frame / this.frameCount);
+        this.texture.needsUpdate = true;
     }
 
     setTarget(posVec3) {
@@ -121,6 +143,23 @@ export class SpriteBillboard {
         return this.position.clone();
     }
 
+    // 👇 NEW — to show one specific frame and freeze it
+    showStaticFrame(col, row) {
+        this.isFrozen = true;
+        this.isAnimating = false;
+        this.timer = 0;
+        this.animationRow = row;
+        this.setFrame(col);
+    }
+
+    // 👇 NEW — unfreeze and reset animation cleanly
+    resumeAnimation() {
+        this.isFrozen = false;
+        this.timer = 0;
+        this.frame = 0;
+        this.setFrame(0);
+        this.play();
+    }
 
     play() { this.isAnimating = true; }
     stop() { this.isAnimating = false; }

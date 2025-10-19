@@ -76,7 +76,7 @@ export class NetworkClient {
                         this.game.addNpc(npc.id);
                     }
 
-                    this.game.updateNpc(npc.id,npc.name,toVec3(npc.position),toVec3(npc.targetPosition),npc.angle,npc.health);
+                    this.game.updateNpc(npc.id,npc.name,npc.level,toVec3(npc.position),toVec3(npc.targetPosition),npc.angle,npc.health);
                     //console.log("updated " + npc.name);
                 });
             });

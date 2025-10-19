@@ -89,7 +89,10 @@ export class Game {
         this.hasStartedLoop = false;
 
         const groundGeometry = new THREE.PlaneGeometry(100, 100);
-        const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x80995D, side: THREE.DoubleSide });
+        const groundMaterial = new THREE.MeshStandardMaterial({
+            color: 	0x131122
+            /*green: 0x80995D*/,
+            side: THREE.DoubleSide });
         this.ground = new THREE.Mesh(groundGeometry, groundMaterial);
         this.ground.rotation.x = -Math.PI / 2;
         this.ground.position.y = -1.05;
@@ -130,7 +133,7 @@ export class Game {
     update() {
         const delta = this.clock.getDelta();
         for (const id in this.players) this.players[id].update(delta);
-        for (const id in this.npcs) this.npcs[id].update(delta);
+        for (const id in this.npcs) this.npcs[id].update(delta,this.camera);
         for (const id in this.chests) this.chests[id].update(delta);
 
         const player = this.players[this.localPlayerId];
@@ -164,6 +167,7 @@ export class Game {
 
         loopInternal();
     }
+
 
     followPlayer() {
         const player = this.players[this.localPlayerId];
@@ -217,8 +221,15 @@ export class Game {
     }
 
 
-    addNpc(id, position = { x: 0, y: 0, z: 0 }, npcid) {
-        const thisnpc = new npc(this.scene, position, npcid, (npcInstance) => {
+    async addNpc(id, position = { x: 0, y: 0, z: 0 }, npcid) {
+        const tex = await iccColorPreloader.load('/sprites/Goblin.png');
+        tex.encoding = THREE.LinearEncoding;
+        tex.flipY = true;
+        tex.magFilter = THREE.NearestFilter;
+        tex.minFilter = THREE.NearestFilter;
+        tex.needsUpdate = true;
+
+        const thisnpc = new npc(this.scene,tex, position, npcid, (npcInstance) => {
             if (npcInstance.mesh) this.clickableObjects.push(npcInstance.mesh);
         });
         this.npcs[id] = thisnpc;
@@ -237,11 +248,12 @@ export class Game {
         this.chests[id] = thischest;
     }
 
-    updateNpc(id, name, position, targetposition, angle, health) {
+    updateNpc(id, name,level, position, targetposition, angle, health) {
         if (!this.npcs[id]) return;
         this.npcs[id].name = name;
         this.npcs[id].angle = angle;
         this.npcs[id].health = health;
+        this.npcs[id].level = level;
         this.npcs[id].position.copy(toVec3(position));
         this.npcs[id].setTarget(toVec3(targetposition));
     }

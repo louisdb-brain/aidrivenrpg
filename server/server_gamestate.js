@@ -45,9 +45,10 @@ export class gamestateClass{
     tick(delta) {
         if(this.maps[1]==true){
 
-           this.npcManager.update(delta);
-           this.emitNpc();
+
            playermanager.update(delta);
+            this.npcManager.update(delta);
+            this.emitNpc(playermanager.getAllPlayers());
            this.emitPlayers();
            this.objectManager.update(delta);
            this.emitChests();
@@ -121,7 +122,8 @@ export class gamestateClass{
             },
             angle: npc.angle,
             health: npc.health,
-            target: npc.targetPlayerId
+            target: npc.targetPlayerId,
+            level:npc.level
         }));
 
         this.io.emit('npc-position-update', payload);

@@ -31,9 +31,12 @@ const gamestate=new gamestateClass(io);
 const destroynpcmethod=(npcInstance) => gamestate.npcManager.removeNPC(npcInstance.npcid);
 const emitCallback=(event, data) => {io.emit(event, data)}
 
+const numberofgoblins=20;
+for(let i=0;i<numberofgoblins;i++){
+    gamestate.addnpc(new npc("goblinid"+i,{x:2*i,y:0,z:0},"goblin_"+i,io,destroynpcmethod));
 
-gamestate.addnpc(new npc("goblin1id",{x:10,y:0,z:0},"goblin_1",io,destroynpcmethod));
-gamestate.addnpc(new npc("goblin2id",{x:20,y:0,z:0},"goblin_2",io,destroynpcmethod));
+}
+
 gamestate.addChest(new Chest({x:10,y:0,z:0},"chest1"))
 gamestate.start();
 //hardcoded temporary npcs

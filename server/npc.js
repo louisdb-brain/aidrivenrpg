@@ -9,30 +9,35 @@ export class npc{
         this.io=io;
         this.npcid = npcID;
         this.position= new THREE.Vector3(positionObj.x,positionObj.y,positionObj.z);
+        this.level="1";
         this.zone=0;
         this.name=pName;
         this.health=10;
         this.attack=2;
-        this.detectionRadius=1000;
+        this.detectionRadius=10;
+        this.attackRadius= 1;
+        this.hitboxRadius=1.5;
         this.detectionsphere= new THREE.Sphere(this.position, this.detectionRadius);
         this.onDestroy = onDestroy;
-
+        this.hitTime=0;
+        this.hitTimer=13;
         this.speed= 2;
         this.attackspeed=3;
+
         this.cooldown=50;
         this.targetPosition = this.position.clone();
 
         this.targetPlayerId=null;//later for targetting in combat
 
         this.decisiontimer=0;
-        this.decisiontreshhold=5;
+        this.decisiontreshhold=20;
         this.angle=Math.atan2(0,0);
 
 
 
     }
     update(delta,players){
-
+        if(this.hitTimer>0)this.hitTime--;
         if(this.health<1)
         {
             const payload=
@@ -48,7 +53,7 @@ export class npc{
 
         }
         this.aiupdate(delta);
-        //this.checkFollow(players)
+        this.checkFollow(players)
         this.move(delta);
         //console.log(this.position)
 
@@ -61,6 +66,7 @@ export class npc{
         this.targetPosition.copy(temppos); // store destination
     }
     move(delta){
+        if(this.hitTime>0)return; //check invincibleframes
         const direction = new THREE.Vector3().subVectors(this.targetPosition, this.position);
         const distance = direction.length();
 
@@ -78,8 +84,11 @@ export class npc{
 
         for (const playerId in players) {
             const player = players[playerId];
-            const playerpos=new THREE.Vector3(player.x, player.y,player.z);
-
+            const playerpos = new THREE.Vector3(
+                player.position.x,
+                player.position.y,
+                player.position.z
+            );
 
 
             if (this.detectionsphere.containsPoint(playerpos)) {
@@ -126,8 +135,10 @@ export class npc{
 
     }
     takeDamage(pAmount){
+        if(this.hitTime>0)return; //check invincibleframse
         this.health=this.health-pAmount;
         console.log(this.health);
+        this.hitTime=this.hitTimer;
         const payload=
             {
                 id:this.npcid,

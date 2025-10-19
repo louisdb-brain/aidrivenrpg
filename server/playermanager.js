@@ -82,4 +82,5 @@ export const playermanager = {
         players[id].inventory.additem(itemname);
     }
 
+
 };
