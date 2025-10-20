@@ -25,6 +25,7 @@ export class CookingGame {
             DONE: "DONE",
             BURNED: "BURNED",
         };
+
         this.itemLibrary = {};
 
         this.pot = { x: 600, y: 400, w: 150, h: 100 };
@@ -45,20 +46,38 @@ export class CookingGame {
         };
         this.potImage.onerror = () => console.error('Failed to load image!');
 
+        this.currentRecipe = null;
+        this.recipeImage = new Image();
+
+
         this.ingredientsReady = false;
-        fetch('/ingredients.json')
-            .then(res => res.json())
-            .then(data => {
-                data.forEach(item => {
+        this.recipesReady = false;
+
+        Promise.all([
+            fetch('/ingredients.json').then(res => res.json()),
+            fetch('/recipes.json').then(res => res.json())
+        ])
+            .then(([ingredientsData, recipesData]) => {
+                ingredientsData.forEach(item => {
                     this.itemLibrary[item.id] = item;
-                    //console.log(this.itemLibrary);
                 });
+
+                this.recipes = recipesData;
+                this.recipesReady = true;
                 this.ingredientsReady = true;
 
-                this.addIngredient("steak");
+                // Example: spawn a few starter ingredients
+                this.addIngredient("minotaursteak");
                 this.addIngredient("onion");
-                this.addIngredient("steak");
+                this.addIngredient("butter");
+                this.addIngredient("manaherb");
+                this.addIngredient("vegetablestock");
+                this.addIngredient("dragonbroth");
+                this.addIngredient("dragonscale");
+                this.addIngredient("tomato");
+                this.addIngredient("eyeballsjar");
             });
+
 
         this.canvas.addEventListener("mousedown", this.handleMouseDown.bind(this));
         this.canvas.addEventListener("mousemove", this.handleMouseMove.bind(this));
@@ -67,6 +86,9 @@ export class CookingGame {
 
 
         this.activeIngredients = [];
+        this.addedIngredients = [];
+        this.ghostGlowTime = 0;
+
         //cursor
         this.customCursor = document.createElement("div");
         this.customCursor.id = "customCursor";
@@ -101,15 +123,130 @@ export class CookingGame {
             name,
             this.ingredientPhase,
             imagePath,
-            this.shortSizzleSound
+            (success) => this.tryAddRecipe(this.addedIngredients, ing, success),
+            this.shortSizzleSound,
+            Number(info.cooktime) || 0,
+            Number(info.burntime) || 9999
         );
 
         this.activeIngredients.push(ing);
+        return ing;
         console.log("Spawned ingredient:", name, ing);
     }
+    tryAddRecipe(list, ingredient, success) {
+        if (success) {
+            if (!list.includes(ingredient)) {
+                list.push(ingredient);
+                console.log(`✅ Added ${ingredient.name} to pot (done).`);
+            }
+        } else {
+            const index = list.indexOf(ingredient);
+            if (index !== -1) {
+                list.splice(index, 1);
+                console.log(`❌ Removed ${ingredient.name} from pot (burned or undone).`);
+            }
+        }
+    }
+
+    checkForRecipe() {
+        if (!this.recipes || this.recipes.length === 0) return;
+
+        // Get only DONE ingredients currently valid for recipes
+        const validIngredients = this.addedIngredients.filter(
+            i => i.state === this.ingredientPhase.DONE
+        );
+        const names = validIngredients.map(i => i.name);
+
+        // Optional: cancel recipe if anything burned
+        if (this.addedIngredients.some(i => i.state === this.ingredientPhase.BURNED)) {
+            this.currentRecipe = null;
+            return;
+        }
+
+        // Look for a matching recipe
+        let matched = null;
+        for (const recipe of this.recipes) {
+            const allPresent = recipe.inputs.every(name => names.includes(name));
+            if (allPresent) {
+                matched = recipe;
+                break;
+            }
+        }
+
+        // Handle found recipe
+        if (matched) {
+            if (!this.currentRecipe || this.currentRecipe.output !== matched.output) {
+                this.currentRecipe = matched;
+                console.log(
+                    `%c🍳 Recipe ready!`,
+                    "color: gold; font-weight: bold;",
+                    `Inputs: [${matched.inputs.join(", ")}] → Output: ${matched.output}`
+                );
+            }
+        } else {
+            if (this.currentRecipe) {
+                console.log("❌ Recipe no longer valid.");
+            }
+            this.currentRecipe = null;
+        }
+    }
+
+    finishRecipe() {
+        if (!this.currentRecipe) return;
+
+        console.log(`🍽️ Created ${this.currentRecipe.output}!`);
+
+        // Remove used ingredients from the pot and from the ready list
+        const usedNames = [...this.currentRecipe.inputs];
+
+        // Remove from addedIngredients (recipe-ready list)
+        this.addedIngredients = this.addedIngredients.filter(
+            ing => !usedNames.includes(ing.name)
+        );
+
+        // Also remove from activeIngredients (visuals)
+        this.activeIngredients = this.activeIngredients.filter(
+            ing => !usedNames.includes(ing.name)
+        );
+
+        // Add the finished dish
+        const ing=this.addIngredient(this.currentRecipe.output);
+        ing.cut=true;
+        ing.state = this.ingredientPhase.DONE;
+
+        // Clear the current recipe so you can’t click again
+        this.currentRecipe = null;
+    }
+
+
+
+    isInsidePot(ing) {
+        return (
+            ing.x + ing.w > this.pot.x &&
+            ing.x < this.pot.x + this.pot.w &&
+            ing.y + ing.h > this.pot.y &&
+            ing.y < this.pot.y + this.pot.h
+        );
+    }
+
+
+
 
     handleMouseDown(e) {
         const { offsetX, offsetY } = e;
+        if (this.currentRecipe) {
+            const { ghostX, ghostY, ghostW, ghostH } = this.getGhostRect();
+            if (
+                offsetX >= ghostX &&
+                offsetX <= ghostX + ghostW &&
+                offsetY >= ghostY &&
+                offsetY <= ghostY + ghostH
+            ) {
+                this.finishRecipe();
+                return;
+            }
+        }
+
         for (const ing of this.activeIngredients) {
             if (!ing.cut && ing.hitTest(offsetX, offsetY)) {
                 ing.cutCount++;
@@ -121,6 +258,7 @@ export class CookingGame {
                 }
             } else if (ing.cut && ing.hitTest(offsetX, offsetY)) {
                 ing.dragging = true;
+
             }
         }
 
@@ -197,6 +335,16 @@ export class CookingGame {
         document.body.classList.remove("cursor-hidden");
         this.customCursor.style.display = "none";
     }
+    getGhostRect() {
+        const pulseY = Math.sin(this.ghostGlowTime * 2) * 5;
+        const ghostW = 128;
+        const ghostH = 128;
+        const ghostX = this.pot.x + this.pot.w / 2 - ghostW / 2;
+        const ghostY = this.pot.y - 200 + pulseY*2;
+
+        return { ghostX, ghostY, ghostW, ghostH };
+    }
+
 
 
     update() {
@@ -216,6 +364,17 @@ export class CookingGame {
                 this.sizzleSound.currentTime = 0;
             }
         }
+        // 🔍 Check for possible recipes based on ingredients in the pot
+        this.checkForRecipe();
+
+        //  Animate ghost glow if recipe exists
+        if (this.currentRecipe) {
+            if (this.ghostGlowTime === undefined) this.ghostGlowTime = 0;
+            this.ghostGlowTime += 0.05;
+        } else {
+            this.ghostGlowTime = 0;
+        }
+
 
 
     }
@@ -227,10 +386,36 @@ export class CookingGame {
         this.ctx.drawImage(this.boardImage, 30, 30, 400, 500);
         //const potrect=this.ctx.fillRect(this.pot.x, this.pot.y, this.pot.w, this.pot.h);
 
+        // 🔮 Draw ghost recipe if a valid combo is detected
+        if (this.currentRecipe && this.itemLibrary[this.currentRecipe.output]) {
+            const outputItem = this.itemLibrary[this.currentRecipe.output];
+            const img = new Image();
+            img.src = outputItem.image;
+
+            const pulse = (Math.sin(this.ghostGlowTime) + 1) / 2;
+            const glowSize = 15 + pulse * 15;
+            const alpha = 0.5 + pulse * 0.3;
+
+            const { ghostX, ghostY, ghostW, ghostH } = this.getGhostRect();
+
+
+            this.ctx.save();
+            this.ctx.shadowColor = `rgba(255, 255, 150, ${0.3 + pulse * 0.5})`;
+            this.ctx.shadowBlur = glowSize;
+            this.ctx.globalAlpha = alpha;
+
+            this.ctx.drawImage(img, ghostX, ghostY, ghostW, ghostH);
+
+            this.ctx.restore();
+            this.ctx.globalAlpha = 1.0;
+        }
+
 
         for (let ing of this.activeIngredients) {
             ing.draw(this.ctx);
         }
+
+
 
         requestAnimationFrame(() => this.draw());
     }
@@ -273,8 +458,8 @@ export class CookingGame {
 }
 
 export class Ingredient {
-    constructor(x, y, name, phases,imagePath,psizzlesound) {
-
+    constructor(x, y, name, phases,imagePath,cookedCallback,psizzlesound,cookTime, burnTime) {
+        this.name=name;
         this.imagePath = imagePath;
         this.image = new Image();
         this.image.src = imagePath;
@@ -293,43 +478,42 @@ export class Ingredient {
         this.cutCount = 0;
         this.dragging = false;
         this.isCooking=false;
+        this.wasCooking = false;
         this.timeCooking = 0;
-        this.cookTime = 200;
-        this.burnTime = 400;
+        this.cookTime = (typeof cookTime === "number" ? cookTime : 200);
+        this.burnTime = (typeof burnTime === "number" ? burnTime : 400);
         this.phases = phases;
         this.state = this.phases.UNCUT;
         this.sizzlesound=psizzlesound;
         this.hasPlayedSound=false;
+        this.cookedCallback=cookedCallback;
     }
 
     update() {
+        const wasCooking = this.wasCooking;
+
         if (this.isCooking) {
             this.state = this.phases.COOKING;
             this.timeCooking++;
 
             if (this.timeCooking > this.burnTime && this.state !== this.phases.BURNED) {
                 this.state = this.phases.BURNED;
-                if (!this.hasPlayedSound) {
-                    this.sizzlesound.currentTime = 0;
-                    this.sizzlesound.play().catch(console.error);
-                    this.hasPlayedSound = true;
-                }
-            } else if (this.timeCooking > this.cookTime && this.state !== this.phases.DONE) {
-                this.state = this.phases.DONE;
-
-                if (!this.hasPlayedSound) {
-                    this.sizzlesound.currentTime = 0;
-                    this.sizzlesound.play().catch(console.error);
-                    this.hasPlayedSound = true;
-                }
-                if(this.timeCooking==this.burnTime-1) this.hasPlayedSound=false;
+                this.cookedCallback(false);
             }
+            else if (this.timeCooking > this.cookTime && this.state !== this.phases.DONE) {
+                this.state = this.phases.DONE;
+                this.cookedCallback(true);
+            }
+        }
+        else if (wasCooking && !this.isCooking && this.state !== this.phases.DONE) {
+            // Ingredient was cooking last frame but just got removed from pan
+            this.cookedCallback(false);
+            console.log(`🥄 ${this.name} removed from pan mid-cook`);
+        }
 
+        // Remember this frame's cooking state
+        this.wasCooking = this.isCooking;
     }
-
-
-}
-
     draw(ctx) {
 
         ctx.fillStyle = this.cut ? "lightgreen" : "blue";

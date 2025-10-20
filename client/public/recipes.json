@@ -1,0 +1,18 @@
+[
+  {
+    "inputs": ["minotaursteak", "onion", "butter"],
+    "output": "stew"
+  },
+  {
+    "inputs": ["manaherb", "dragonbroth"],
+    "output": "dragonstew"
+  },
+  {
+    "inputs": ["onion", "butter", "dragonscale", "tomato"],
+    "output": "dragonbroth"
+  },
+  {
+    "inputs": ["onion", "butter"],
+    "output": "vegetablestock"
+  }
+]

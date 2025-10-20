@@ -21,5 +21,15 @@
 },{
   "id":"mining1lootid",
   "name":"mining1lootid",
-  "image":"./sprites/ore_copper.png"}
+  "image":"./sprites/ore_copper.png"},
+  {
+    "id": "stew",
+    "name": "stew",
+    "image": "./sprites/stew.png"
+  },
+  {
+    "id": "dragonstew",
+    "name": "dragonstew",
+    "image": "./sprites/dragonstew.png"
+  }
 ]

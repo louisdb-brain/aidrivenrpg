@@ -3,20 +3,80 @@
     "id": "tomato",
     "image": "sprites/tomato.png",
     "burntime": "300",
-    "cooktime": "120"
+    "cooktime": "120",
+    "description":"good for throwing at your frenemies"
   },
   {
-    "id": "steak",
+    "id": "minotaursteak",
     "image": "sprites/steak.png",
-    "burntime": "400",
-    "cooktime": "220"
+    "burntime": "320",
+    "cooktime": "220",
+    "description":"also beef if you think about it"
   },
   {
     "id": "onion",
     "image": "sprites/onion.png",
     "burntime": "500",
-    "cooktime": "120"
+    "cooktime": "120",
+    "description":"makes you want to cry"
+  },
+  {
+    "id": "butter",
+    "image": "sprites/butter.png",
+    "burntime": "1000",
+    "cooktime": "120",
+    "description":"most chef's secret ingredient is a giant slab of butter on everything"
+  },
+  {
+    "id": "manaherb",
+    "image": "sprites/manaherb.png",
+    "burntime": "50",
+    "cooktime": "50",
+    "description": "herb with magical properties that regenerate mana when consumed"
+  },
+  {
+    "id": "vegetablestock",
+    "image": "sprites/vegetablestock.png",
+    "burntime": "1000",
+    "cooktime": "100",
+    "description": "plant base-d"
+  },
+  {
+    "id": "dragonbroth",
+    "image": "sprites/dragonbroth.png",
+    "burntime": "1000",
+    "cooktime": "100",
+    "description": "sticks and stones will cook your bones"
+  },
+  {
+    "id": "eyeballsjar",
+    "image": "sprites/eyeballjar.png",
+    "burntime": "1000",
+    "cooktime": "100",
+    "description": "a usefull ingredient depending on the way you look at it"
+  },
+  {
+    "id": "dragonscale",
+    "image": "sprites/dragonscale.png",
+    "burntime": "1500",
+    "cooktime": "1350",
+    "description": "smells like dragonbreath"
+  },
+  {
+    "id": "stew",
+    "image": "sprites/stew.png",
+    "burntime": "500",
+    "cooktime": "0",
+    "description": "yummy in my tummy"
+  },
+  {
+    "id": "dragonstew",
+    "image": "sprites/dragonstew.png",
+    "burntime": "500",
+    "cooktime": "0",
+    "description": "eating this makes you all but breathe fire"
   }
+
 ]
 
 
