@@ -60,6 +60,101 @@ export class spriteHandeler {
         });
         this.#deploy(item, position);
     }
+    spawnDisintegration(sourceSprite) {
+        if (!sourceSprite || !sourceSprite.material?.map) return;
+
+        const { w, h } = this.opts.canvasSize;
+
+        // Create a copy canvas for this sprite
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+
+        // Draw the original texture onto the canvas
+        const image = sourceSprite.material.map.image;
+        if (image) ctx.drawImage(image, 0, 0, w, h);
+
+        // Create texture + sprite from canvas
+        const texture = new THREE.CanvasTexture(canvas);
+        const material = new THREE.SpriteMaterial({
+            map: texture,
+            transparent: true,
+            opacity: 1,
+            depthTest: false,
+        });
+        const sprite = new THREE.Sprite(material);
+        sprite.scale.copy(sourceSprite.scale);
+        sprite.position.copy(sourceSprite.position);
+        this.scene.add(sprite);
+
+        // Animate disintegration
+        const duration = 1.5; // seconds
+        const startTime = performance.now();
+        const noise = new Image();
+        noise.src = '/sprites/noise.png';
+
+        const animate = (time) => {
+            const elapsed = (time - startTime) / 1000;
+            const t = Math.min(elapsed / duration, 1);
+
+            // Optional: expand slightly as it dissolves
+            const scale = 1 + t * 0.2;
+            sprite.scale.setScalar(scale);
+
+            // Noise flicker
+            if (noise.complete) {
+                ctx.clearRect(0, 0, w, h);
+                ctx.drawImage(image, 0, 0, w, h);
+
+                // Apply noise mask
+                const nW = noise.width, nH = noise.height;
+                const noiseData = this.#getNoiseData(noise);
+                const imgData = ctx.getImageData(0, 0, w, h);
+                const data = imgData.data;
+
+                for (let i = 0; i < data.length; i += 4) {
+                    const x = (i / 4) % w;
+                    const y = Math.floor(i / 4 / w);
+                    const nIdx = ((y % nH) * nW + (x % nW)) * 4;
+                    const nVal = noiseData[nIdx] / 255;
+
+                    if (nVal < t) {
+                        // remove pixel
+                        data[i + 3] = 0;
+                    }
+                }
+                ctx.putImageData(imgData, 0, 0);
+                texture.needsUpdate = true;
+            }
+
+            material.opacity = 1 - t * 1.2;
+
+            if (t < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                this.scene.remove(sprite);
+                texture.dispose();
+                material.dispose();
+            }
+        };
+
+        requestAnimationFrame(animate);
+    }
+
+    // Utility: cache noise pixel data
+    #getNoiseData(image) {
+        if (!this._noiseCache) {
+            const canvas = document.createElement('canvas');
+            canvas.width = image.width;
+            canvas.height = image.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(image, 0, 0);
+            this._noiseCache = ctx.getImageData(0, 0, image.width, image.height).data;
+        }
+        return this._noiseCache;
+    }
+
 
 
     dispose() {

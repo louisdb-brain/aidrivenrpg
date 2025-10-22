@@ -80,11 +80,11 @@ export class NetworkClient {
                     //console.log("updated " + npc.name);
                 });
             });
-            this.socket.on('npc-kill',(payload)=>
-            {
-
-                delete this.game.npcs[payload.id];
-                //manager.npcs = manager.npcs.filter(n => n !== npc)
+            this.socket.on('npc-kill', (payload) => {
+                const npc = this.game.npcs[payload.id];
+                if (npc) {
+                    npc.destroy(); //clean scene & remove from gameloop
+                }
             });
             this.socket.on('npc-takedamage',(payload) => {
                 //console.log(payload.amount);

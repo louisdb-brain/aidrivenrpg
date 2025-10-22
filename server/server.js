@@ -28,12 +28,15 @@ app.use(express.static('public')); // Serve index.html and client.js
 const gamestate=new gamestateClass(io);
 
 //CALLBACKS
-const destroynpcmethod=(npcInstance) => gamestate.npcManager.removeNPC(npcInstance.npcid);
+const destroynpcmethod = (npcInstance) => gamestate.npcManager.removeNPC(npcInstance);
 const emitCallback=(event, data) => {io.emit(event, data)}
-
+const spawnCallback = (lootId, name, location) => {
+    const newLoot = new loot(lootId, name, location, emitCallback); // ✅ emits to client
+    gamestate.objectManager.addloot(newLoot,lootId);                       // ✅ stores on server
+}
 const numberofgoblins=20;
 for(let i=0;i<numberofgoblins;i++){
-    gamestate.addnpc(new npc("goblinid"+i,{x:2*i,y:0,z:0},"goblin_"+i,io,destroynpcmethod));
+    gamestate.addnpc(new npc("goblinid"+i,{x:2*i,y:0,z:0},"goblin_"+i,io,destroynpcmethod,spawnCallback,"dragonscale"));
 
 }
 
@@ -66,10 +69,7 @@ io.on('connection', (socket) => {
 
     gamestate.objectManager.addloot(new loot("steakid1","steak",{x:0,y:0,z:0},emitCallback));
 
-    const spawnCallback = (lootId, name, location) => {
-        const newLoot = new loot(lootId, name, location, emitCallback); // ✅ emits to client
-        gamestate.objectManager.addloot(newLoot,lootId);                       // ✅ stores on server
-    }
+
 
     gamestate.objectManager.addNode(new skillNode("woodcutting1",{x:5,y:0,z:0},"plants/woodcutting_tree_oak","WOODCUTTING","0","log",emitCallback,socketCallback,spawnCallback));
     gamestate.objectManager.addNode(new skillNode("mining1",{x:-5,y:0,z:0},"miningrock_copper","MINING","0","ore_copper",emitCallback,socketCallback,spawnCallback));

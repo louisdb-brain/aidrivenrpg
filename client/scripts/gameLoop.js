@@ -218,6 +218,9 @@ export class Game {
         if (this.players[id]) return;
         const player = new Player(this.scene,position,tex);
         this.players[id] = player;
+        if (id === this.localPlayerId) {
+            this.levelHandeler.playerRef = player;  // Assign here
+        }
     }
 
 
@@ -229,17 +232,37 @@ export class Game {
         tex.minFilter = THREE.NearestFilter;
         tex.needsUpdate = true;
 
-        const thisnpc = new npc(this.scene,tex, position, npcid, (npcInstance) => {
-            if (npcInstance.mesh) this.clickableObjects.push(npcInstance.mesh);
-        });
+        const thisnpc = new npc(
+            this.scene,
+            tex,
+            position,
+            npcid,
+            (npcInstance) => {
+                if (npcInstance.mesh) this.clickableObjects.push(npcInstance.mesh);
+            },
+            (npcInstance) => {
+                // ✅ Remove NPC from Game's list when destroyed
+                this.scene.remove(npcInstance.mesh?.sprite);
+                delete this.npcs[id];
+                console.log(`🧹 NPC ${id} removed from gameloop.`);
+            }
+        );
+
         this.npcs[id] = thisnpc;
     }
     async addNode(name, position, sprite) {
-        const node = new skillNode(this.scene, name, position, sprite);
-        if (node.mesh) {          // now guaranteed to be a THREE.Sprite
+        const node = await skillNode.create(this.scene, name, position, sprite);
+
+        if (node.mesh && node.mesh.isObject3D) {
             this.nodeMap.set(node.mesh, node);
+            this.clickableObjects.push(node.mesh);
+        } else {
+            console.warn(`⚠️ Failed to create mesh for node '${name}'`);
         }
+
+        return node;
     }
+
 
 
     addChest(id) {

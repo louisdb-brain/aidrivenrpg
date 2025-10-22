@@ -5,7 +5,7 @@ import * as THREE from 'three';
 
 export class npc{
 
-    constructor(npcID,positionObj,pName,io,onDestroy){
+    constructor(npcID,positionObj,pName,io,onDestroy,spawnCallback,loot){
         this.io=io;
         this.npcid = npcID;
         this.position= new THREE.Vector3(positionObj.x,positionObj.y,positionObj.z);
@@ -23,6 +23,8 @@ export class npc{
         this.hitTimer=13;
         this.speed= 2;
         this.attackspeed=3;
+        this.loot=loot;
+        this.spawnCallback = spawnCallback;
 
         this.cooldown=50;
         this.targetPosition = this.position.clone();
@@ -36,30 +38,16 @@ export class npc{
 
 
     }
-    update(delta,players){
-        if(this.hitTimer>0)this.hitTime--;
-        if(this.health<1)
-        {
-            const payload=
-                {
-                    id:this.npcid,
-                    name:this.name,
+    update(delta, players) {
+        if (this._destroyed) return; // skip dead NPCs
 
-                }
-            //this.io.emit('npc-kill',payload);
-            console.log(this.health);
-            //if (this.onDestroy) this.onDestroy(this);
+        if (this.hitTimer > 0) this.hitTime--;
 
-
-        }
         this.aiupdate(delta);
-        this.checkFollow(players)
+        this.checkFollow(players);
         this.move(delta);
-        //console.log(this.position)
-
-
-
     }
+
     setTarget(position) {
         let temppos=position.clone();
         temppos.y=0;
@@ -134,21 +122,42 @@ export class npc{
 
 
     }
-    takeDamage(pAmount){
-        if(this.hitTime>0)return; //check invincibleframse
-        this.health=this.health-pAmount;
-        console.log(this.health);
-        this.hitTime=this.hitTimer;
-        const payload=
-            {
-                id:this.npcid,
-                name:this.name,
-                amount:pAmount
-            }
-            //console.log("damage taken = "+pAmount);;
-        this.io.emit('npc-takedamage',payload);
+    takeDamage(pAmount) {
+        if (this.hitTime > 0) return; // invulnerability frames
 
+        this.health -= pAmount;
+        this.hitTime = this.hitTimer;
+
+        // Broadcast damage event
+        this.io.emit('npc-takedamage', {
+            id: this.npcid,
+            name: this.name,
+            amount: pAmount,
+            health: this.health
+        });
+
+        // If dead, destroy safely
+        if (this.health <= 0) {
+            this.spawnCallback();
+            this.destroy();
+        }
     }
+
+    destroy() {
+        if (this._destroyed) return; // prevent double cleanup
+        this._destroyed = true;
+        const uniqueId = `${this.name}_loot_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+        this.spawnCallback(uniqueId,this.loot,this.position)
+
+        console.log(`NPC ${this.name} (${this.npcid}) destroyed`);
+        this.io.emit('npc-kill', { id: this.npcid, name: this.name });
+
+        if (typeof this.onDestroy === 'function') {
+
+            this.onDestroy(this); // remove from manager
+        }
+    }
+
 
 
 }

@@ -1,35 +1,17 @@
 [
-  {
-    "id": "potion",
-    "name": "sword",
-    "image": "./sprites/potion.png"
-  },
-  {
-    "id": "sword",
-    "name": "sword",
-    "image": "./sprites/sword.png"
-  },
-  {
-    "id": "onion",
-    "name": "onion",
-    "image": "./sprites/onion.png"
-  }
-  ,{
-  "id":"steak",
-  "name": "steak",
-  "image": "./sprites/steak.png"
-},{
-  "id":"mining1lootid",
-  "name":"mining1lootid",
-  "image":"./sprites/ore_copper.png"},
-  {
-    "id": "stew",
-    "name": "stew",
-    "image": "./sprites/stew.png"
-  },
-  {
-    "id": "dragonstew",
-    "name": "dragonstew",
-    "image": "./sprites/dragonstew.png"
-  }
+  { "id": "potion", "name": "sword", "image": "./sprites/potion.png" },
+  { "id": "sword", "name": "sword", "image": "./sprites/sword.png" },
+  { "id": "onion", "name": "onion", "image": "./sprites/onion.png" },
+  { "id": "steak", "name": "steak", "image": "./sprites/steak.png" },
+  { "id": "mining1lootid", "name": "mining1lootid", "image": "./sprites/ore_copper.png" },
+  { "id": "stew", "name": "stew", "image": "./sprites/stew.png" },
+  { "id": "dragonstew", "name": "dragonstew", "image": "./sprites/dragonstew.png" },
+  { "id": "tomato", "name": "tomato", "image": "./sprites/tomato.png" },
+  { "id": "minotaursteak", "name": "minotaursteak", "image": "./sprites/steak.png" },
+  { "id": "butter", "name": "butter", "image": "./sprites/butter.png" },
+  { "id": "manaherb", "name": "manaherb", "image": "./sprites/manaherb.png" },
+  { "id": "vegetablestock", "name": "vegetablestock", "image": "./sprites/vegetablestock.png" },
+  { "id": "dragonbroth", "name": "dragonbroth", "image": "./sprites/dragonbroth.png" },
+  { "id": "eyeballsjar", "name": "eyeballsjar", "image": "./sprites/eyeballjar.png" },
+  { "id": "dragonscale", "name": "dragonscale", "image": "./sprites/dragonscale.png" }
 ]
