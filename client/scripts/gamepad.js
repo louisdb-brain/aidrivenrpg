@@ -1,3 +1,5 @@
+import { VirtualCursor } from "./virtualCursor.js";
+
 export class gamepad {
     constructor(networkhandeler, game) {
         this.navigator = navigator;
@@ -8,6 +10,8 @@ export class gamepad {
 
         this._eventTarget = new EventTarget(); //  internal event system
         this._buttonStates = {}; // tracks held buttons
+
+        this.virtualCursor = new VirtualCursor();
 
         this.watchButtons(); // 🔁 start tracking button states
     }
@@ -25,6 +29,7 @@ export class gamepad {
     }
 
     watchButtons() {
+        let isDragging = false;  // internal drag state
         const loop = () => {
             const gp = this.navigator.getGamepads()[0];
             if (gp) {
@@ -32,26 +37,78 @@ export class gamepad {
                     const isPressed = button.pressed;
                     const wasPressed = this._buttonStates[index] || false;
 
+                    // --- Button pressed ---
                     if (isPressed && !wasPressed) {
                         this._eventTarget.dispatchEvent(new CustomEvent("buttondown", { detail: { button: index } }));
-                    } else if (!isPressed && wasPressed) {
+
+                        // 🎯 Right stick press (R3)
+                        if (index === 10 && this.virtualCursor) {
+                            this.virtualCursor.press(0);   // left mouse down
+                            this.virtualCursor.flash();
+                            isDragging = true;
+                        }
+
+                        // Example: Left stick press (L3) for right click
+                        // if (index === 9 && this.virtualCursor) {
+                        //     this.virtualCursor.press(2);
+                        // }
+                    }
+
+                    // --- Button released ---
+                    else if (!isPressed && wasPressed) {
                         this._eventTarget.dispatchEvent(new CustomEvent("buttonup", { detail: { button: index } }));
+
+                        // 🎯 Release R3
+                        if (index === 10 && this.virtualCursor) {
+                            this.virtualCursor.release(0);
+                            isDragging = false;
+                        }
+
+                        // if (index === 9 && this.virtualCursor) {
+                        //     this.virtualCursor.release(2);
+                        // }
                     }
 
                     this._buttonStates[index] = isPressed;
                 });
+
+                // 🌀 If dragging, send pointermove each frame to simulate dragging
+                if (isDragging && this.virtualCursor) {
+                    const dragEvt = new PointerEvent('pointermove', {
+                        clientX: this.virtualCursor.position.x,
+                        clientY: this.virtualCursor.position.y,
+                        buttons: 1
+                    });
+                    window.dispatchEvent(dragEvt);
+                }
             }
+
             requestAnimationFrame(loop);
         };
         loop();
     }
 
+
+
     loop() {
-        const gamepadvector = this.getGamepadVector();
-        this.sendInputTarget(gamepadvector.x, gamepadvector.y);
+        const gp = this.navigator.getGamepads()[0];
+        if (!gp) {
+            requestAnimationFrame(() => this.loop());
+            return;
+        }
+
+        // Left stick still moves player
+        const move = this.getGamepadVector();
+        this.sendInputTarget(move.x, move.y);
+
+        // Right stick moves the cursor
+        const xAxis = gp.axes[2] || 0;
+        const yAxis = gp.axes[3] || 0;
+        this.virtualCursor.updateFromAxes(xAxis, yAxis);
 
         requestAnimationFrame(() => this.loop());
     }
+
 
     getGamepadVector() {
         const gp = this.navigator.getGamepads()[0];

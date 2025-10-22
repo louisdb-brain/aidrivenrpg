@@ -71,6 +71,8 @@ export class UI{
                 this.spellmenu?.toggle();
             }
 
+
+
         })
 
         const musicButton = document.createElement('button');
@@ -87,6 +89,29 @@ export class UI{
 
 
     }
+    attachVirtualCursor(virtualCursor) {
+        this.virtualCursor = virtualCursor;
+
+        // Build the list dynamically from existing sub-UIs
+        this.virtualCursor.uiCanvases = [
+            this.inventory?.canvas,
+            this.cookinggame?.canvas,
+            this.spellmenu?.canvas
+        ].filter(Boolean); // ignore nulls
+
+        console.log("VirtualCursor attached to UIs:", this.virtualCursor.uiCanvases);
+    }
+    get uiCanvases() {
+        return [
+            this.inventory?.canvas,
+            this.cookinggame?.canvas,
+            this.spellmenu?.canvas,
+
+        ].filter(Boolean);
+    }
+
+
+
     toggleMusic() {
         if (this.musicplaying) {
             this.music.pause();

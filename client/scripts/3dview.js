@@ -92,7 +92,17 @@ var gamepadOne = null;
 window.addEventListener("gamepadconnected", (e) => {
     console.log("Gamepad connected:", e.gamepad.id);
 
-    gamepadOne=new gamepad(networkHandler,thisgame);
+    gamepadOne = new gamepad(networkHandler, thisgame);
+
+    // 💡 Pass it into the Game
+    thisgame.gamepad = gamepadOne;
+
+    // Ensure VirtualCursor is linked to all UIs
+    if (gamepadOne.virtualCursor) {
+        thisgame.UI.attachVirtualCursor(gamepadOne.virtualCursor);
+    }
+
+
     gamepadOne.addEventListener("buttondown", (e) => {
         if (e.detail.button === 7) {
             console.log("Gamepad down");

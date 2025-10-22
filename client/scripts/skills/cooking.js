@@ -380,6 +380,9 @@ export class CookingGame {
     }
 
     draw() {
+
+
+
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.fillStyle = "#654321";
         this.ctx.drawImage(this.potImage, this.pot.x, this.pot.y, this.pot.w, this.pot.h);
@@ -413,6 +416,11 @@ export class CookingGame {
 
         for (let ing of this.activeIngredients) {
             ing.draw(this.ctx);
+            this.ctx.strokeStyle = 'yellow';
+            for (const ing of this.activeIngredients) {
+                this.ctx.strokeRect(ing.x, ing.y, ing.w, ing.h);
+            }
+
         }
 
 

@@ -15,7 +15,7 @@ import { BokehPass } from 'three/examples/jsm/postprocessing/BokehPass.js';
 import {skillNode} from "./interactiveNodes";
 
 export class Game {
-    constructor(handlers) {
+    constructor(handlers,gamepad=null) {
         this.handlers = handlers;
         this.scene = new THREE.Scene();
         this.scene.fog = new THREE.FogExp2(0x99ffcc, 0.004);
@@ -128,6 +128,10 @@ export class Game {
         this.toggleCameraFocus();
         this.UI.cookinggame.toggle();
         this.UI.inventory.toggle();
+        this.gamepad=gamepad;
+        if (this.gamepad && this.gamepad.virtualCursor) {
+            this.UI.attachVirtualCursor(this.gamepad.virtualCursor);
+        }
     }
 
     update() {
