@@ -108,7 +108,7 @@ function buildSkewedShadowGeometry(srcPlaneGeometry, sunDir, shearAmount = 0.6) 
  * Place a vertical sprite + baked shadow and add it to the scene.
  * Returns a record with mesh, shadow, and scale info.
  */
-export async function placeSprite({ name, texturePath, position, scene, sunDir = SUN_DIR }) {
+export async function placeSprite({ name, texturePath, position, scene, sunDir = SUN_DIR, type = "sprite" }) {
     const texture = await iccColorPreloader.load(texturePath);
     texture.encoding = THREE.LinearEncoding;
     texture.flipY = true;
@@ -135,27 +135,37 @@ export async function placeSprite({ name, texturePath, position, scene, sunDir =
     spriteMesh.userData.faceCamera = true;
     scene.add(spriteMesh);
 
-    // ---- Shadow mesh ----
-    const shadowTex = getShadowTextureFor(texture);
-    const shadowMat = new THREE.MeshBasicMaterial({
-        map: shadowTex,
-        transparent: true,
-        opacity: 0.7,
-        toneMapped: false,
-        depthWrite: false,
-        side: THREE.DoubleSide
-    });
-    const shadowGeo = buildSkewedShadowGeometry(geometry, sunDir, 0.6);
-    const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
-    shadowMesh.position.set(
-        position.x - planeW / 2,
-        0,
-        position.z - planeH / 2
-    );
-    scene.add(shadowMesh);
+    let shadowMesh = null;
+
+    // ---- Only create shadow for actual sprites ----
+    if (type === "sprite") {
+        const shadowTex = getShadowTextureFor(texture);
+        const shadowMat = new THREE.MeshBasicMaterial({
+            map: shadowTex,
+            transparent: true,
+            opacity: 0.7,
+            toneMapped: false,
+            depthWrite: false,
+            side: THREE.DoubleSide
+        });
+        const shadowGeo = buildSkewedShadowGeometry(geometry, sunDir, 0.6);
+        shadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
+        // Compute projected offset based on sun direction
+        const offsetX = -sunDir.x * (planeW * 0.5);
+        const offsetZ = planeH/2;
+
+        shadowMesh.position.set(
+            position.x + offsetX,
+            position.y - 0.1,
+            position.z - offsetZ
+        );
+
+
+        scene.add(shadowMesh);
+    }
 
     const record = {
-        type: "facingMesh",
+        type,
         name,
         position,
         spriteScale: { w: planeW, h: planeH },
@@ -166,37 +176,100 @@ export async function placeSprite({ name, texturePath, position, scene, sunDir =
     return record;
 }
 
+export async function placeDecal({ name, texturePath, position, scene }) {
+    try {
+        const tex = await iccColorPreloader.load(texturePath);
+        tex.encoding = THREE.LinearEncoding;
+        tex.flipY = false;
+        tex.magFilter = THREE.NearestFilter;
+        tex.minFilter = THREE.NearestFilter;
+        tex.needsUpdate = true;
+
+        const img = tex.image;
+        if (!img) {
+            console.warn("Decal image not loaded:", texturePath);
+            return null;
+        }
+
+        const planeW = img.width  / SPRITE_SCALE_DIVISOR;
+        const planeH = img.height / SPRITE_SCALE_DIVISOR;
+
+        const geo = new THREE.PlaneGeometry(planeW, planeH);
+        const mat = new THREE.MeshBasicMaterial({
+            map: tex,
+            transparent: true,
+            toneMapped: false,
+            depthWrite: false,
+            side: THREE.DoubleSide,
+        });
+
+        const mesh = new THREE.Mesh(geo, mat);
+        // flat on ground, tiny lift to avoid z-fighting
+        mesh.rotation.x = -Math.PI / 2;
+        mesh.position.set(position.x, 0.01, position.z);
+
+        mesh.userData = { type: "decal", asset: name };
+
+        scene.add(mesh);
+
+        const record = {
+            type: "decal",
+            name,
+            mesh,
+            asset: name,
+            position: { x: position.x, y: 0, z: position.z }
+        };
+
+        placedObjects.push(record);
+        return record;
+    } catch (err) {
+        console.error("Failed to place decal:", texturePath, err);
+        return null;
+    }
+}
+
+
+
+
+
 /**
  * Load a level from a JSON-like array of object data.
  */
 export async function loadLevel(data, pScene) {
+    const newObjects = [];
+
     for (const objData of data) {
         if (objData.type === "sprite" && objData.name) {
-            await placeSprite({
+            const record = await placeSprite({
                 name: objData.name,
                 texturePath: `/sprites/${objData.texture || objData.name}`,
                 position: objData.position,
                 scene: pScene
             });
+            record.type = "sprite";
+            record.asset = objData.texture || objData.name;
+            newObjects.push(record);
         }
-
         else if (objData.type === "decal") {
-            const tex = new THREE.TextureLoader().load('/sprites/' + objData.texture);
-            tex.magFilter = THREE.NearestFilter;
-            tex.minFilter = THREE.NearestFilter;
-            tex.encoding = THREE.sRGBEncoding;
-            tex.flipY = false;
-            tex.needsUpdate = true;
-
-            const geo = new THREE.PlaneGeometry(1, 1);
-            const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide });
-            const decal = new THREE.Mesh(geo, mat);
-            decal.position.set(objData.position.x, objData.position.y, objData.position.z);
-            pScene.add(decal);
-            placedObjects.push({ type: 'decal', name: objData.texture, mesh: decal });
+            const record = await placeDecal({
+                name: objData.name || objData.texture,
+                texturePath: `/sprites/${objData.texture || objData.name}`,
+                position: objData.position,
+                scene: pScene
+            });
+            if (record) {
+                record.type = "decal";
+                record.asset = objData.texture || objData.name;
+                newObjects.push(record);
+            }
         }
+
     }
+
+    placedObjects.push(...newObjects);
+    return newObjects; // ✅ Return for the editor
 }
+
 export function clearLevel(scene) {
     for (const obj of placedObjects) {
         if (obj.mesh) {

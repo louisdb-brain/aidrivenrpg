@@ -1,6 +1,8 @@
 // levelEditor2.js
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { loadLevel, clearLevel ,placeSprite} from "./loadlevel.js";
+
 
 /* ---------- DOM ---------- */
 const viewport       = document.getElementById('viewport');
@@ -11,6 +13,8 @@ const undoBtn        = document.getElementById('undoBtn');
 const saveBtn        = document.getElementById('savebutton');
 const loadBtn        = document.getElementById('loadbutton');
 const loadInput      = document.getElementById('loadInput');
+const newLevelBtn = document.getElementById('newLevelBtn');
+
 
 const nameInput      = document.getElementById('spriteName');
 const posXInput      = document.getElementById('posX');
@@ -23,6 +27,7 @@ const entityTypeSel  = document.getElementById('entityType');
 const lockCheckbox   = document.getElementById('lockCheckbox');
 const updateBtn      = document.getElementById('updateBtn');
 const contextMenu    = document.getElementById('contextMenu');
+
 
 /* ---------- Scene ---------- */
 const scene = new THREE.Scene();
@@ -69,11 +74,36 @@ let placed = [];
 let selectedEntry = null;
 let undoStack = [];
 let highlightMesh = null;
+let isAltDown = false;
+
 
 /* ---------- Helpers ---------- */
 const textureLoader = new THREE.TextureLoader();
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
+
+function clearCurrentLevel() {
+    // Remove all placed meshes
+    for (const p of placed) {
+        scene.remove(p.mesh);
+        p.mesh.geometry?.dispose();
+        p.mesh.material?.dispose();
+    }
+
+    // Clear the imported loadlevel objects (if used)
+    clearLevel(scene);
+
+    placed.length = 0;
+    undoStack.length = 0;
+    selectedEntry = null;
+
+    if (highlightMesh) {
+        scene.remove(highlightMesh);
+        highlightMesh = null;
+    }
+
+    console.log("🧹 Cleared current level");
+}
 
 function setPointerFromEvent(e) {
     const r = renderer.domElement.getBoundingClientRect();
@@ -85,6 +115,15 @@ function resolveSpritePath(asset) {
     if (!asset) return null;
     return asset.startsWith('sprites/') ? `/${asset}` : `/sprites/${asset}`;
 }
+newLevelBtn.addEventListener('click', () => {
+    if (placed.length > 0) {
+        const shouldSave = confirm("Do you want to save the current level before starting a new one?");
+        if (shouldSave) {
+            saveBtn.click(); // Trigger save
+        }
+    }
+    clearCurrentLevel();
+});
 
 function createSpriteMesh(asset, mode, atPoint) {
     return new Promise((resolve, reject) => {
@@ -127,19 +166,54 @@ function createSpriteMesh(asset, mode, atPoint) {
 }
 
 async function placeObject(atPoint) {
-    const { mesh } = await createSpriteMesh(modelSelector.value, placementMode, atPoint);
-    scene.add(mesh);
-    const entry = {
-        id: mesh.uuid,
-        mesh,
-        name: modelSelector.value,
-        asset: modelSelector.value,
-        entityType: placementMode === 'billboard' ? 'billboard' : 'decal',
-        locked: !!lockCheckbox.checked
-    };
+    let mesh, entry;
+
+    if (placementMode === 'sprite') {
+        // Use the same function as loadLevel does
+        const record = await placeSprite({
+            name: modelSelector.value,
+            texturePath: `/sprites/${modelSelector.value}`,
+            position: atPoint.clone(), // Clone to avoid modifying shared object
+            scene: scene
+        });
+
+        // The loadLevel function lifts the sprite by half its height — undo that offset
+        const halfHeight = record.spriteScale?.h ? record.spriteScale.h / 2 : 0;
+        record.mesh.position.y -= halfHeight;
+        if (record.shadow) record.shadow.position.y -= halfHeight;
+
+        const entry = {
+            id: record.mesh.uuid,
+            mesh: record.mesh,
+            name: record.name,
+            asset: modelSelector.value,
+            entityType: 'sprite',
+            locked: !!lockCheckbox.checked
+        };
+        placed.push(entry);
+        return entry;
+    }
+
+
+    else if (placementMode === 'decal') {
+        const { mesh: decalMesh } = await createSpriteMesh(modelSelector.value, 'decal', atPoint);
+        scene.add(decalMesh);
+        mesh = decalMesh;
+
+        entry = {
+            id: mesh.uuid,
+            mesh,
+            name: modelSelector.value,
+            asset: modelSelector.value,
+            entityType: 'decal',
+            locked: !!lockCheckbox.checked
+        };
+    }
+
     placed.push(entry);
     return entry;
 }
+
 
 /* ---------- Selection ---------- */
 function selectEntry(entry) {
@@ -194,8 +268,30 @@ function undoLast() {
 }
 
 /* ---------- Events ---------- */
+
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Alt') {
+        isAltDown = true;
+        controls.enableRotate = true;
+        controls.enablePan = true;
+        controls.enableZoom = true;
+    }
+});
+
+window.addEventListener('keyup', (e) => {
+    if (e.key === 'Alt') {
+        isAltDown = false;
+        controls.enableRotate = false;
+        controls.enablePan = false;
+    }
+});
+
 renderer.domElement.addEventListener('pointerdown', async (e) => {
     if (e.button !== 0) return;
+    // If Alt is held, do not start placement
+    if (isAltDown) return;
+
+
     setPointerFromEvent(e);
     raycaster.setFromCamera(pointer, activeCamera);
 
@@ -217,7 +313,7 @@ renderer.domElement.addEventListener('pointerdown', async (e) => {
 });
 
 renderer.domElement.addEventListener('pointermove', (e) => {
-    if (!ghostMesh) return;
+    if (isAltDown || !ghostMesh) return; // prevent ghost while Alt
     setPointerFromEvent(e);
     raycaster.setFromCamera(pointer, activeCamera);
     const hit = raycaster.intersectObject(ground, false);
@@ -229,6 +325,8 @@ renderer.domElement.addEventListener('pointermove', (e) => {
 
 renderer.domElement.addEventListener('pointerup', async (e) => {
     if (e.button !== 0) return;
+    // If Alt was used for camera, ignore this release entirely
+    if (isAltDown) return;
     if (ghostMesh) {
         const finalPos = ghostMesh.position.clone();
         scene.remove(ghostMesh);
@@ -297,15 +395,16 @@ toggleCamBtn.addEventListener('click', () => {
 });
 
 spriteModeBtn.addEventListener('click', () => {
-    placementMode = placementMode === 'decal' ? 'billboard' : 'decal';
+    placementMode = placementMode === 'decal' ? 'sprite' : 'decal';
     spriteModeBtn.textContent = `Mode: ${placementMode.charAt(0).toUpperCase() + placementMode.slice(1)}`;
 });
+
 spriteModeBtn.textContent = `Mode: ${placementMode.charAt(0).toUpperCase() + placementMode.slice(1)}`;
 
 /* ---------- Save & Load ---------- */
 saveBtn.addEventListener('click', () => {
     const data = placed.map(p => ({
-        type: p.entityType === 'billboard' ? 'sprite' : 'decal',
+        type: p.entityType,
         name: p.name || p.asset,
         texture: p.asset,
         position: {
@@ -328,14 +427,32 @@ loadInput.addEventListener('change', e => {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = async evt => {
-        const json = JSON.parse(evt.target.result);
-        for (const item of json) {
-            const pos = new THREE.Vector3(item.position.x, item.position.y, item.position.z);
-            const entry = await placeObject(pos);
-            entry.name = item.name;
-            entry.entityType = item.type === 'sprite' ? 'billboard' : 'decal';
+        try {
+            clearCurrentLevel();
+            const json = JSON.parse(evt.target.result);
+
+            // Use the loadLevel() from loadlevel.js
+            const newObjects = await loadLevel(json, scene);
+
+            // Register them in the editor’s placed[] array
+            for (const obj of newObjects) {
+                const entry = {
+                    id: obj.mesh.uuid,
+                    mesh: obj.mesh,
+                    name: obj.name,
+                    asset: obj.asset,
+                    entityType: obj.type,
+                    locked: false
+                };
+                placed.push(entry);
+            }
+
+            console.log(`✅ Loaded ${newObjects.length} objects into editor`);
+        } catch (err) {
+            console.error('Failed to load level:', err);
         }
     };
+
     reader.readAsText(file);
 });
 
