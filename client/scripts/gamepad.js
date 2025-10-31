@@ -5,16 +5,27 @@ export class gamepad {
         this.navigator = navigator;
         this.networkhandeler = networkhandeler;
         this.game = game;
-        this.connected = true;
+        this.connected = false;
         this.gamepadId = null;
 
-        this._eventTarget = new EventTarget(); //  internal event system
-        this._buttonStates = {}; // tracks held buttons
-
+        this._eventTarget = new EventTarget();
+        this._buttonStates = {};
         this.virtualCursor = new VirtualCursor();
+        this.prevButtons = [];
 
-        this.watchButtons(); // 🔁 start tracking button states
+        window.addEventListener("gamepadconnected", (e) => {
+            console.log("🎮 Gamepad connected:", e.gamepad.id);
+            this.connected = true;
+            this.index = e.gamepad.index;
+            this.watchButtons(); // ✅ Start polling only when connected
+        });
+
+        window.addEventListener("gamepaddisconnected", () => {
+            console.log("❌ Gamepad disconnected");
+            this.connected = false;
+        });
     }
+
 
     addEventListener(...args) {
         this._eventTarget.addEventListener(...args);
@@ -29,64 +40,41 @@ export class gamepad {
     }
 
     watchButtons() {
-        let isDragging = false;  // internal drag state
-        const loop = () => {
-            const gp = this.navigator.getGamepads()[0];
-            if (gp) {
-                gp.buttons.forEach((button, index) => {
-                    const isPressed = button.pressed;
-                    const wasPressed = this._buttonStates[index] || false;
+        const gamepads = navigator.getGamepads();
+        const gp = gamepads[this.index];
+        if (!gp) {
+            requestAnimationFrame(() => this.watchButtons());
+            return;
+        }
 
-                    // --- Button pressed ---
-                    if (isPressed && !wasPressed) {
-                        this._eventTarget.dispatchEvent(new CustomEvent("buttondown", { detail: { button: index } }));
+        // ✅ Debug feedback
+        if (!this._debugLog || performance.now() - this._debugLog > 1000) {
+            console.log("Polling gamepad:", gp.id);
+            this._debugLog = performance.now();
+        }
 
-                        // 🎯 Right stick press (R3)
-                        if (index === 10 && this.virtualCursor) {
-                            this.virtualCursor.press(0);   // left mouse down
-                            this.virtualCursor.flash();
-                            isDragging = true;
-                        }
+        for (let i = 0; i < gp.buttons.length; i++) {
+            const button = gp.buttons[i];
+            const pressed = button.pressed;
 
-                        // Example: Left stick press (L3) for right click
-                        // if (index === 9 && this.virtualCursor) {
-                        //     this.virtualCursor.press(2);
-                        // }
-                    }
-
-                    // --- Button released ---
-                    else if (!isPressed && wasPressed) {
-                        this._eventTarget.dispatchEvent(new CustomEvent("buttonup", { detail: { button: index } }));
-
-                        // 🎯 Release R3
-                        if (index === 10 && this.virtualCursor) {
-                            this.virtualCursor.release(0);
-                            isDragging = false;
-                        }
-
-                        // if (index === 9 && this.virtualCursor) {
-                        //     this.virtualCursor.release(2);
-                        // }
-                    }
-
-                    this._buttonStates[index] = isPressed;
-                });
-
-                // 🌀 If dragging, send pointermove each frame to simulate dragging
-                if (isDragging && this.virtualCursor) {
-                    const dragEvt = new PointerEvent('pointermove', {
-                        clientX: this.virtualCursor.position.x,
-                        clientY: this.virtualCursor.position.y,
-                        buttons: 1
-                    });
-                    window.dispatchEvent(dragEvt);
-                }
+            if (pressed && !this.prevButtons[i]) {
+                this._eventTarget.dispatchEvent(
+                    new CustomEvent("buttondown", { detail: { button: i } })
+                );
             }
 
-            requestAnimationFrame(loop);
-        };
-        loop();
+            if (!pressed && this.prevButtons[i]) {
+                this._eventTarget.dispatchEvent(
+                    new CustomEvent("buttonup", { detail: { button: i } })
+                );
+            }
+
+            this.prevButtons[i] = pressed;
+        }
+
+        requestAnimationFrame(() => this.watchButtons());
     }
+
 
 
 

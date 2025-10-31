@@ -7,6 +7,7 @@ import {gamepad} from "./gamepad.js";
 
 const handlers = {};
 const thisgame = new Game(handlers);
+
 const networkHandler = new NetworkClient("chatLog", thisgame);
 
 for (const [key, methodName] of Object.entries(handlersConfig)) {
@@ -94,8 +95,10 @@ window.addEventListener("gamepadconnected", (e) => {
 
     gamepadOne = new gamepad(networkHandler, thisgame);
 
+
     // 💡 Pass it into the Game
     thisgame.gamepad = gamepadOne;
+
 
     // Ensure VirtualCursor is linked to all UIs
     if (gamepadOne.virtualCursor) {

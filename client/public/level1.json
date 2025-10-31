@@ -1,1370 +1,2722 @@
 [
-  {
-    "type": "sprite",
-    "name": "environment/desert_rock.png",
-    "position": {
-      "x": -9.842692076310525,
-      "y": 0,
-      "z": -9.563655782493706
+    {
+        "type": "sprite",
+        "name": "environment/desert_rock.png",
+        "texture": "environment/desert_rock.png",
+        "position": {
+            "x": -9.842692076310525,
+            "y": 0,
+            "z": -9.563655782493706
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "environment/desert_rock.png",
+        "texture": "environment/desert_rock.png",
+        "position": {
+            "x": 7.778507231034483,
+            "y": 0,
+            "z": -18.966337020470426
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "environment/desert_boulder.png",
+        "texture": "environment/desert_boulder.png",
+        "position": {
+            "x": -7.376456144365431,
+            "y": 0,
+            "z": -18.345443502847743
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "environment/desert_boulder.png",
+        "texture": "environment/desert_boulder.png",
+        "position": {
+            "x": 4.752159878565651,
+            "y": 0,
+            "z": -25.023666372346305
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "houses/houses_medieval_blue_big.png",
+        "texture": "houses/houses_medieval_blue_big.png",
+        "position": {
+            "x": -0.19612915296149858,
+            "y": 0,
+            "z": -4.8067892644538945
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "houses/houses_medieval_green_small.png",
+        "texture": "houses/houses_medieval_green_small.png",
+        "position": {
+            "x": -16.521154377302224,
+            "y": 0,
+            "z": 1.4712733555130093
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "houses/houses_medieval_red_small.png",
+        "texture": "houses/houses_medieval_red_small.png",
+        "position": {
+            "x": 14.69,
+            "y": 0,
+            "z": 4.319334322951255
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "environment/desert_boulder.png",
+        "texture": "environment/desert_boulder.png",
+        "position": {
+            "x": -27.80501990631809,
+            "y": 0,
+            "z": -25.913837250267385
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "environment/desert_boulder.png",
+        "texture": "environment/desert_boulder.png",
+        "position": {
+            "x": 29.264498184048918,
+            "y": 0,
+            "z": -25.327910732480085
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "environment/desert_boulder.png",
+        "texture": "environment/desert_boulder.png",
+        "position": {
+            "x": -41.95762687422564,
+            "y": 0,
+            "z": -19.827463610282507
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "environment/desert_background.png",
+        "texture": "environment/desert_background.png",
+        "position": {
+            "x": -16.87415290825114,
+            "y": 0,
+            "z": -37.903073036814
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "environment/desert_background.png",
+        "texture": "environment/desert_background.png",
+        "position": {
+            "x": 19.06394672825304,
+            "y": 0,
+            "z": -16.411247434984247
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "environment/desert_background.png",
+        "texture": "environment/desert_background.png",
+        "position": {
+            "x": -26.449793650461327,
+            "y": 0,
+            "z": -19.904317406507637
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "environment/desert_rock.png",
+        "texture": "environment/desert_rock.png",
+        "position": {
+            "x": 18.40170078521912,
+            "y": 0,
+            "z": -8.34445107136677
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "environment/desert_rock.png",
+        "texture": "environment/desert_rock.png",
+        "position": {
+            "x": -32.266939595772605,
+            "y": 0,
+            "z": -15.932866348908611
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_bucket1.png",
+        "texture": "plants/plant_bucket1.png",
+        "position": {
+            "x": -10.005793336512388,
+            "y": 0,
+            "z": 14.370389951856815
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_deadberry.png",
+        "texture": "plants/plant_deadberry.png",
+        "position": {
+            "x": 21.598512748022472,
+            "y": 0,
+            "z": 10.492690488021427
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_deadberry.png",
+        "texture": "plants/plant_deadberry.png",
+        "position": {
+            "x": 14.146607458775462,
+            "y": 0,
+            "z": -5.4157848177527015
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_deadberry.png",
+        "texture": "plants/plant_deadberry.png",
+        "position": {
+            "x": -34.507750095863365,
+            "y": 0,
+            "z": 3.6808796032545033
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_deadberry.png",
+        "texture": "plants/plant_deadberry.png",
+        "position": {
+            "x": -31.02369907625173,
+            "y": 0,
+            "z": -4.1007950850147665
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_deadberry.png",
+        "texture": "plants/plant_deadberry.png",
+        "position": {
+            "x": -23.95142392659045,
+            "y": 0,
+            "z": -9.988416521179623
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_deadberry.png",
+        "texture": "plants/plant_deadberry.png",
+        "position": {
+            "x": -43.38340919997608,
+            "y": 0,
+            "z": -10.224181667871015
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_deadberry.png",
+        "texture": "plants/plant_deadberry.png",
+        "position": {
+            "x": -8.307548657109923,
+            "y": 0,
+            "z": -3.4306374776658686
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_deadberry.png",
+        "texture": "plants/plant_deadberry.png",
+        "position": {
+            "x": 28.062990103910607,
+            "y": 0,
+            "z": -1.7312635612072853
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_anvil.png",
+        "texture": "plants/plant_anvil.png",
+        "position": {
+            "x": -21.198295657130526,
+            "y": 0,
+            "z": 6.916718807296341
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern.png",
+        "texture": "plants/plant_fern.png",
+        "position": {
+            "x": 35.081118319625844,
+            "y": 0,
+            "z": 1.3051468075324948
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern.png",
+        "texture": "plants/plant_fern.png",
+        "position": {
+            "x": 3.3634596437612485,
+            "y": 0,
+            "z": 6.402300425797083
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern.png",
+        "texture": "plants/plant_fern.png",
+        "position": {
+            "x": 9.43580645016923,
+            "y": 0,
+            "z": 8.265836542727417
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern.png",
+        "texture": "plants/plant_fern.png",
+        "position": {
+            "x": 20.70025011075159,
+            "y": 0,
+            "z": 6.766521242148503
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern.png",
+        "texture": "plants/plant_fern.png",
+        "position": {
+            "x": 7.193163106472189,
+            "y": 0,
+            "z": -3.2567186598366966
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern.png",
+        "texture": "plants/plant_fern.png",
+        "position": {
+            "x": 12.396214246229214,
+            "y": 0,
+            "z": -10.698750135399369
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern.png",
+        "texture": "plants/plant_fern.png",
+        "position": {
+            "x": 9.789567018753761,
+            "y": 0,
+            "z": -9.554051154172708
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern.png",
+        "texture": "plants/plant_fern.png",
+        "position": {
+            "x": -30.401925584436157,
+            "y": 0,
+            "z": 2.367042645728681
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern.png",
+        "texture": "plants/plant_fern.png",
+        "position": {
+            "x": -28.31470498830145,
+            "y": 0,
+            "z": 0.02101481069835387
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern.png",
+        "texture": "plants/plant_fern.png",
+        "position": {
+            "x": -35.75900427192499,
+            "y": 0,
+            "z": -3.7283970138026454
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern.png",
+        "texture": "plants/plant_fern.png",
+        "position": {
+            "x": -7.783280653085529,
+            "y": 0,
+            "z": 2.115771863206554
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern.png",
+        "texture": "plants/plant_fern.png",
+        "position": {
+            "x": -12.995579827236341,
+            "y": 0,
+            "z": 4.704345965940899
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern.png",
+        "texture": "plants/plant_fern.png",
+        "position": {
+            "x": 31.01688507437006,
+            "y": 0,
+            "z": 0.4253108207027445
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern.png",
+        "texture": "plants/plant_fern.png",
+        "position": {
+            "x": 20.00762571239444,
+            "y": 0,
+            "z": 5.658620522220826
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern.png",
+        "texture": "plants/plant_fern.png",
+        "position": {
+            "x": 18.32879214574481,
+            "y": 0,
+            "z": 5.298857961889951
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern.png",
+        "texture": "plants/plant_fern.png",
+        "position": {
+            "x": -11.464390229276852,
+            "y": 0,
+            "z": 2.8564488408801125
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern.png",
+        "texture": "plants/plant_fern.png",
+        "position": {
+            "x": -26.222237461855613,
+            "y": 0,
+            "z": -0.7926708965900637
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern.png",
+        "texture": "plants/plant_fern.png",
+        "position": {
+            "x": -22.535136448077928,
+            "y": 0,
+            "z": 4.443582790650691
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern2.png",
+        "texture": "plants/plant_fern2.png",
+        "position": {
+            "x": -15.489749460867259,
+            "y": 0,
+            "z": 5.353249890794483
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern2.png",
+        "texture": "plants/plant_fern2.png",
+        "position": {
+            "x": -27.147260150430007,
+            "y": 0,
+            "z": 8.079621015743765
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern2.png",
+        "texture": "plants/plant_fern2.png",
+        "position": {
+            "x": -8.87975994680892,
+            "y": 0,
+            "z": -1.339499818255824
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern2.png",
+        "texture": "plants/plant_fern2.png",
+        "position": {
+            "x": 10.590553503469001,
+            "y": 0,
+            "z": -3.1694897503394976
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern2.png",
+        "texture": "plants/plant_fern2.png",
+        "position": {
+            "x": 25.784206839178044,
+            "y": 0,
+            "z": 4.583729914048874
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_grass1.png",
+        "texture": "plants/plant_grass1.png",
+        "position": {
+            "x": -24.73532465709009,
+            "y": 0,
+            "z": 7.773716441791478
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_grass1.png",
+        "texture": "plants/plant_grass1.png",
+        "position": {
+            "x": -5.734648895052624,
+            "y": 0,
+            "z": -0.45767619720804475
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_grass1.png",
+        "texture": "plants/plant_grass1.png",
+        "position": {
+            "x": -26.685885768120258,
+            "y": 0,
+            "z": 4.511841348637251
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_grass1.png",
+        "texture": "plants/plant_grass1.png",
+        "position": {
+            "x": -25.214557627135697,
+            "y": 0,
+            "z": 4.674406487923875
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_grass1.png",
+        "texture": "plants/plant_grass1.png",
+        "position": {
+            "x": -27.957898080007507,
+            "y": 0,
+            "z": 5.685404043463066
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": -33.326471978588955,
+            "y": 0,
+            "z": -8.354527646726975
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": -16.25716459178301,
+            "y": 0,
+            "z": -7.55455862468099
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": -25.542275789583563,
+            "y": 0,
+            "z": -14.224441412913308
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": -27.95174024940949,
+            "y": 0,
+            "z": -6.954824856993998
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": 11.042895768073327,
+            "y": 0,
+            "z": -12.760852732092644
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": 12.187140130558628,
+            "y": 0,
+            "z": -6.727530691727196
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": 27.2913817391849,
+            "y": 0,
+            "z": -10.320215138453474
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": 24.228909691976362,
+            "y": 0,
+            "z": -5.002763711009873
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": 36.29820828685793,
+            "y": 0,
+            "z": -5.585918300949562
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": 26.27887447308412,
+            "y": 0,
+            "z": -13.840935680641557
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": -17.63350087107521,
+            "y": 0,
+            "z": -16.586146910469253
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": -46.12428251665204,
+            "y": 0,
+            "z": -13.29264988878056
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": 22.431549737519873,
+            "y": 0,
+            "z": -14.269683263483849
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": -31.498439705242674,
+            "y": 0,
+            "z": 9.043684832545459
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": -28.9991874515491,
+            "y": 0,
+            "z": 2.8672809265966954
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": 31.221917435782537,
+            "y": 0,
+            "z": 11.098876763874262
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": 26.848310928587782,
+            "y": 0,
+            "z": 7.470227108927048
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": 34.29017887247444,
+            "y": 0,
+            "z": 2.0190181986028257
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_background.png",
+        "texture": "plants/brush_background.png",
+        "position": {
+            "x": -11.47728836212905,
+            "y": 0,
+            "z": -15.044102716651487
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_background.png",
+        "texture": "plants/brush_background.png",
+        "position": {
+            "x": 20.878136790142324,
+            "y": 0,
+            "z": -10.782965371317886
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_background.png",
+        "texture": "plants/brush_background.png",
+        "position": {
+            "x": -38.432651563281425,
+            "y": 0,
+            "z": -11.225221550822155
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_background.png",
+        "texture": "plants/brush_background.png",
+        "position": {
+            "x": 23.823588880538416,
+            "y": 0,
+            "z": 1.778505286089569
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -27.12012859400955,
+            "y": 0,
+            "z": -0.7857407962954639
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 7.837681922223575,
+            "y": 0,
+            "z": -7.733443122209451
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -12.060140726076218,
+            "y": 0,
+            "z": -5.472004147282346
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -21.631531198097836,
+            "y": 0,
+            "z": -4.40167703834212
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 19.371863712994923,
+            "y": 0,
+            "z": -3.9163893564049364
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 13.072664414250088,
+            "y": 0,
+            "z": -1.8609855711561405
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 23.782077127432032,
+            "y": 0,
+            "z": 6.748367402002907
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 18.268599286450154,
+            "y": 0,
+            "z": 8.906282625827531
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 32.100007097779944,
+            "y": 0,
+            "z": -3.73456774030136
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 35.38279067593946,
+            "y": 0,
+            "z": -9.267795908895733
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -39.70964636709379,
+            "y": 0,
+            "z": -6.898387163870515
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -34.903624572721014,
+            "y": 0,
+            "z": -3.9130262344360514
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -43.49671504001027,
+            "y": 0,
+            "z": -1.1455877311159472
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -35.81408788791152,
+            "y": 0,
+            "z": -5.362908657849905
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 38.584840281964134,
+            "y": 0,
+            "z": -12.401996076923494
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 33.14706584799961,
+            "y": 0,
+            "z": -5.227298023968229
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -20.524435491734987,
+            "y": 0,
+            "z": 10.282980535291951
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -16.35365773619566,
+            "y": 0,
+            "z": 11.392305736330352
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -29.341655606578076,
+            "y": 0,
+            "z": 15.73970124731709
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 25.84581119092895,
+            "y": 0,
+            "z": 15.846303148067125
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 21.660522219982585,
+            "y": 0,
+            "z": 14.358829131961265
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 13.588450265450764,
+            "y": 0,
+            "z": 10.834889368679285
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 5.811059717288358,
+            "y": 0,
+            "z": 15.234217990033558
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 34.52853378888631,
+            "y": 0,
+            "z": 15.234224404535855
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 42.761874289863286,
+            "y": 0,
+            "z": 8.48180304056115
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -39.03811474431909,
+            "y": 0,
+            "z": 16.296280183224507
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": -37.72830804619902,
+            "y": 0,
+            "z": 9.070516486774473
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": 27.555310513825226,
+            "y": 0,
+            "z": 10.313241259450553
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": -8.79597534028928,
+            "y": 0,
+            "z": -8.301475430174207
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": -30.245981449668765,
+            "y": 0,
+            "z": -5.202910838862955
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": -40.70873969297533,
+            "y": 0,
+            "z": -1.2717032527336585
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_background.png",
+        "texture": "plants/brush_background.png",
+        "position": {
+            "x": -48.06500802066854,
+            "y": 0,
+            "z": 1.1626397565799493
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellow.png",
+        "texture": "plants/plant_mediumflower_yellow.png",
+        "position": {
+            "x": -23.117697701640164,
+            "y": 0,
+            "z": 12.713663778243045
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellow.png",
+        "texture": "plants/plant_mediumflower_yellow.png",
+        "position": {
+            "x": -17.790756257864658,
+            "y": 0,
+            "z": 6.9895553254726295
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellow.png",
+        "texture": "plants/plant_mediumflower_yellow.png",
+        "position": {
+            "x": -20.096954490413918,
+            "y": 0,
+            "z": 5.3375210898073995
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellow.png",
+        "texture": "plants/plant_mediumflower_yellow.png",
+        "position": {
+            "x": -19.51437957096395,
+            "y": 0,
+            "z": 7.260064935811773
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellow.png",
+        "texture": "plants/plant_mediumflower_yellow.png",
+        "position": {
+            "x": -28.121882309134048,
+            "y": 0,
+            "z": 12.45375877913733
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellow.png",
+        "texture": "plants/plant_mediumflower_yellow.png",
+        "position": {
+            "x": -29.796687495311104,
+            "y": 0,
+            "z": 9.2296533440787
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellow.png",
+        "texture": "plants/plant_mediumflower_yellow.png",
+        "position": {
+            "x": 11.806065850052015,
+            "y": 0,
+            "z": 6.244026395073146
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellow.png",
+        "texture": "plants/plant_mediumflower_yellow.png",
+        "position": {
+            "x": 10.106553981484769,
+            "y": 0,
+            "z": 5.794750060100867
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellow.png",
+        "texture": "plants/plant_mediumflower_yellow.png",
+        "position": {
+            "x": 7.619210578189373,
+            "y": 0,
+            "z": 7.4859482395681205
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellowheart.png",
+        "texture": "plants/plant_mediumflower_yellowheart.png",
+        "position": {
+            "x": 11.291136770946105,
+            "y": 0,
+            "z": 8.91351481138231
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellowheart.png",
+        "texture": "plants/plant_mediumflower_yellowheart.png",
+        "position": {
+            "x": -9.447822368602203,
+            "y": 0,
+            "z": 1.7809987726381493
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellowheart.png",
+        "texture": "plants/plant_mediumflower_yellowheart.png",
+        "position": {
+            "x": -5.823880651245767,
+            "y": 0,
+            "z": -2.7442287394100475
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellowheart.png",
+        "texture": "plants/plant_mediumflower_yellowheart.png",
+        "position": {
+            "x": -10.686767667154054,
+            "y": 0,
+            "z": -2.7765880655863775
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellowheart.png",
+        "texture": "plants/plant_mediumflower_yellowheart.png",
+        "position": {
+            "x": 5.554239919557975,
+            "y": 0,
+            "z": -0.3494054637261961
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellowheart.png",
+        "texture": "plants/plant_mediumflower_yellowheart.png",
+        "position": {
+            "x": 7.167067307807203,
+            "y": 0,
+            "z": 0.08835669426182946
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_smallflower_yellow.png",
+        "texture": "plants/plant_smallflower_yellow.png",
+        "position": {
+            "x": -17.656512592548847,
+            "y": 0,
+            "z": 6.273618277573593
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_smallflower_yellow.png",
+        "texture": "plants/plant_smallflower_yellow.png",
+        "position": {
+            "x": -15.754399575615826,
+            "y": 0,
+            "z": 7.379887686365315
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_smallflower_yellow.png",
+        "texture": "plants/plant_smallflower_yellow.png",
+        "position": {
+            "x": -16.198456980394695,
+            "y": 0,
+            "z": 9.087787329685149
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_smallflower_yellow.png",
+        "texture": "plants/plant_smallflower_yellow.png",
+        "position": {
+            "x": -17.835683839748466,
+            "y": 0,
+            "z": 9.010913360168871
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_smallflower_yellow.png",
+        "texture": "plants/plant_smallflower_yellow.png",
+        "position": {
+            "x": -22.68049793033815,
+            "y": 0,
+            "z": 11.605076331207284
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_smallflower_yellow.png",
+        "texture": "plants/plant_smallflower_yellow.png",
+        "position": {
+            "x": -24.869576580828973,
+            "y": 0,
+            "z": 12.235976245260982
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_smallflower_yellow.png",
+        "texture": "plants/plant_smallflower_yellow.png",
+        "position": {
+            "x": -25.73262037751781,
+            "y": 0,
+            "z": 14.669601797107712
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_smallflower_yellow.png",
+        "texture": "plants/plant_smallflower_yellow.png",
+        "position": {
+            "x": -21.8230700411793,
+            "y": 0,
+            "z": 14.542775573365368
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_smallflower_yellow.png",
+        "texture": "plants/plant_smallflower_yellow.png",
+        "position": {
+            "x": -19.75831401648596,
+            "y": 0,
+            "z": 14.18782534559202
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_smallflower_yellow.png",
+        "texture": "plants/plant_smallflower_yellow.png",
+        "position": {
+            "x": -19.503695691380727,
+            "y": 0,
+            "z": 12.871342879389312
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_smallflower_yellow.png",
+        "texture": "plants/plant_smallflower_yellow.png",
+        "position": {
+            "x": 10.184970770797165,
+            "y": 0,
+            "z": 11.695712142921042
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_smallflower_yellow.png",
+        "texture": "plants/plant_smallflower_yellow.png",
+        "position": {
+            "x": 11.870529811551274,
+            "y": 0,
+            "z": 12.626787901649589
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_smallflower_yellow.png",
+        "texture": "plants/plant_smallflower_yellow.png",
+        "position": {
+            "x": 14.334392130357665,
+            "y": 0,
+            "z": 12.697157752159132
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_smallflower_yellow.png",
+        "texture": "plants/plant_smallflower_yellow.png",
+        "position": {
+            "x": 11.525556982626332,
+            "y": 0,
+            "z": 11.328217674866785
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_smallflower_yellow.png",
+        "texture": "plants/plant_smallflower_yellow.png",
+        "position": {
+            "x": 18.023982767428667,
+            "y": 0,
+            "z": 12.527523238695679
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_smallflower_yellow.png",
+        "texture": "plants/plant_smallflower_yellow.png",
+        "position": {
+            "x": 18.35228089816492,
+            "y": 0,
+            "z": 11.052138002133171
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_smallflower_yellow.png",
+        "texture": "plants/plant_smallflower_yellow.png",
+        "position": {
+            "x": 17.244753757215772,
+            "y": 0,
+            "z": 10.418424867570572
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_smallflower_yellow.png",
+        "texture": "plants/plant_smallflower_yellow.png",
+        "position": {
+            "x": 16.436572230139696,
+            "y": 0,
+            "z": 9.865773167374588
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_smallflower_yellow.png",
+        "texture": "plants/plant_smallflower_yellow.png",
+        "position": {
+            "x": 20.790675661266985,
+            "y": 0,
+            "z": 9.84155638507236
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_bluethistle.png",
+        "texture": "plants/plant_bluethistle.png",
+        "position": {
+            "x": -10.094131361866232,
+            "y": 0,
+            "z": 4.375069652889717
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_bluethistle.png",
+        "texture": "plants/plant_bluethistle.png",
+        "position": {
+            "x": -13.320347344239043,
+            "y": 0,
+            "z": 6.80772910127811
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_bluethistle.png",
+        "texture": "plants/plant_bluethistle.png",
+        "position": {
+            "x": 10.727954969316432,
+            "y": 0,
+            "z": 8.520239031950801
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_bluethistle.png",
+        "texture": "plants/plant_bluethistle.png",
+        "position": {
+            "x": 16.36587021975257,
+            "y": 0,
+            "z": 12.140657453914901
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_bluethistle.png",
+        "texture": "plants/plant_bluethistle.png",
+        "position": {
+            "x": -18.28824210766022,
+            "y": 0,
+            "z": 14.534708674340493
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_bluethistle.png",
+        "texture": "plants/plant_bluethistle.png",
+        "position": {
+            "x": -24.578577315654517,
+            "y": 0,
+            "z": 14.154300776919685
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_bluethistle.png",
+        "texture": "plants/plant_bluethistle.png",
+        "position": {
+            "x": -21.583985511258955,
+            "y": 0,
+            "z": 3.570057185147295
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": -22.31781483342366,
+            "y": 0,
+            "z": 8.081281624417823
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": 18.891859656281973,
+            "y": 0,
+            "z": 13.63747740045318
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": -7.526841328102893,
+            "y": 0,
+            "z": 12.486021461020577
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/tree_oak.png",
+        "texture": "plants/tree_oak.png",
+        "position": {
+            "x": 9.035541726840446,
+            "y": 0,
+            "z": 14.220382959703919
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": -7.179831732871301,
+            "y": 0,
+            "z": -0.27806894820321304
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": -10.362825091511798,
+            "y": 0,
+            "z": 2.337085024511506
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": -20.874360507353302,
+            "y": 0,
+            "z": 1.324207235840344
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": 2.676595830761652,
+            "y": 0,
+            "z": -3.974333491645332
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": -5.223134771555743,
+            "y": 0,
+            "z": -5.356130025651634
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": -7.311206056691815,
+            "y": 0,
+            "z": -4.842840269715662
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": 10.431246998572703,
+            "y": 0,
+            "z": 14.675940624418384
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": 7.9796620605420365,
+            "y": 0,
+            "z": 15.584941932402533
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": 7.152192144155182,
+            "y": 0,
+            "z": 13.508119150889833
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": 10.198240129347175,
+            "y": 0,
+            "z": 15.653065673323944
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": -20.489702346628835,
+            "y": 0,
+            "z": 7.889140769836441
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": -25.998440115237077,
+            "y": 0,
+            "z": 7.992165627866417
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": -31.845883066555672,
+            "y": 0,
+            "z": 3.6438415017934744
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": 30.6667487356556,
+            "y": 0,
+            "z": 11.643459971958983
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": 32.32784399000781,
+            "y": 0,
+            "z": 3.438866028009322
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": 28.65841794369978,
+            "y": 0,
+            "z": 5.564403506126432
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": 23.038948178843214,
+            "y": 0,
+            "z": 9.834323607665645
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": 17.398775937478224,
+            "y": 0,
+            "z": 5.537072307766358
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": 28.984540900961193,
+            "y": 0,
+            "z": -8.35570740050052
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": 26.798219938718034,
+            "y": 0,
+            "z": -8.863566549424704
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": 10.144311884648719,
+            "y": 0,
+            "z": -6.937524253461589
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_leaf5.png",
+        "texture": "cave/cave_leaf5.png",
+        "position": {
+            "x": 4.981405284545558,
+            "y": 0,
+            "z": -11.886708449978087
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_flower1.png",
+        "texture": "plants/plant_flower1.png",
+        "position": {
+            "x": -20.33010051608621,
+            "y": 0,
+            "z": 11.939552394166459
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_flower1.png",
+        "texture": "plants/plant_flower1.png",
+        "position": {
+            "x": -27.138351967644134,
+            "y": 0,
+            "z": 9.60089837601792
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_flower1.png",
+        "texture": "plants/plant_flower1.png",
+        "position": {
+            "x": 15.760240600620559,
+            "y": 0,
+            "z": 10.465600919253745
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_flower1.png",
+        "texture": "plants/plant_flower1.png",
+        "position": {
+            "x": 14.766032649316347,
+            "y": 0,
+            "z": 9.24122334293908
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_flower1.png",
+        "texture": "plants/plant_flower1.png",
+        "position": {
+            "x": 7.024692112956979,
+            "y": 0,
+            "z": 15.760381352624858
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_flower1.png",
+        "texture": "plants/plant_flower1.png",
+        "position": {
+            "x": 9.092243547083976,
+            "y": 0,
+            "z": 16.80491807192695
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_flower1.png",
+        "texture": "plants/plant_flower1.png",
+        "position": {
+            "x": 11.95742043730117,
+            "y": 0,
+            "z": 14.991771419884873
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_flower1.png",
+        "texture": "plants/plant_flower1.png",
+        "position": {
+            "x": -16.889815968087035,
+            "y": 0,
+            "z": 5.798209561133774
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_flower1.png",
+        "texture": "plants/plant_flower1.png",
+        "position": {
+            "x": -13.46841623702996,
+            "y": 0,
+            "z": 2.6641088590913427
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern2.png",
+        "texture": "plants/plant_fern2.png",
+        "position": {
+            "x": -26.298827839335665,
+            "y": 0,
+            "z": 6.2164575739680075
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern2.png",
+        "texture": "plants/plant_fern2.png",
+        "position": {
+            "x": 16.9833535621397,
+            "y": 0,
+            "z": 8.655180066537817
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_fern2.png",
+        "texture": "plants/plant_fern2.png",
+        "position": {
+            "x": 6.068920151551956,
+            "y": 0,
+            "z": 11.662700219745684
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellow.png",
+        "texture": "plants/plant_mediumflower_yellow.png",
+        "position": {
+            "x": -19.23143749317868,
+            "y": 0,
+            "z": 6.2959817633951545
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellow.png",
+        "texture": "plants/plant_mediumflower_yellow.png",
+        "position": {
+            "x": 16.04878651142975,
+            "y": 0,
+            "z": 8.743171897509672
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellow.png",
+        "texture": "plants/plant_mediumflower_yellow.png",
+        "position": {
+            "x": 17.71470881915975,
+            "y": 0,
+            "z": 10.424272266005243
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellow.png",
+        "texture": "plants/plant_mediumflower_yellow.png",
+        "position": {
+            "x": -25.045179658889563,
+            "y": 0,
+            "z": 6.658764763309545
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellow.png",
+        "texture": "plants/plant_mediumflower_yellow.png",
+        "position": {
+            "x": -25.398727660731964,
+            "y": 0,
+            "z": 8.139263455204294
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_mediumflower_yellow.png",
+        "texture": "plants/plant_mediumflower_yellow.png",
+        "position": {
+            "x": -3.5915736076244107,
+            "y": 0,
+            "z": -3.394738753338281
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_deadberry.png",
+        "texture": "plants/plant_deadberry.png",
+        "position": {
+            "x": 21.086266967699036,
+            "y": 0,
+            "z": 11.016701952703414
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_deadberry.png",
+        "texture": "plants/plant_deadberry.png",
+        "position": {
+            "x": 21.055789785299915,
+            "y": 0,
+            "z": 5.733424598474329
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_deadberry.png",
+        "texture": "plants/plant_deadberry.png",
+        "position": {
+            "x": 24.815842164085048,
+            "y": 0,
+            "z": 12.398539290950179
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_deadberry.png",
+        "texture": "plants/plant_deadberry.png",
+        "position": {
+            "x": -26.965809928180413,
+            "y": 0,
+            "z": -3.87844034552856
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/plant_deadberry.png",
+        "texture": "plants/plant_deadberry.png",
+        "position": {
+            "x": -32.259237065361674,
+            "y": 0,
+            "z": 7.245279091668692
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": -23.251195760148768,
+            "y": 0,
+            "z": 2.364248823776002
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": 22.728248664646785,
+            "y": 0,
+            "z": 12.342940674407764
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": 26.905805772843735,
+            "y": 0,
+            "z": 17.85282152259406
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": 29.79094282778872,
+            "y": 0,
+            "z": 14.506239112614619
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": -25.74094452164543,
+            "y": 0,
+            "z": 17.509048471533966
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": -22.015660357562012,
+            "y": 0,
+            "z": 20.2687007864128
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": -32.57709497569724,
+            "y": 0,
+            "z": 13.576287533746179
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": -34.39682766718968,
+            "y": 0,
+            "z": 11.232659277055049
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": 24.853984456082735,
+            "y": 0,
+            "z": 19.197696260671332
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": 21.69532380923203,
+            "y": 0,
+            "z": 20.485013349039683
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -21.734055499974772,
+            "y": 0,
+            "z": 18.586938033900285
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -24.00573211942308,
+            "y": 0,
+            "z": 20.722847883519147
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -27.3307600572004,
+            "y": 0,
+            "z": 15.33445189459292
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -32.53068266749163,
+            "y": 0,
+            "z": 10.869775524643323
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 20.16436115057487,
+            "y": 0,
+            "z": 19.03922487112628
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 18.134247828401804,
+            "y": 0,
+            "z": 20.76308735269902
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 22.89051576495809,
+            "y": 0,
+            "z": 18.292725610985368
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -14.028636656564933,
+            "y": 0,
+            "z": 8.84499843245569
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -15.466948105703883,
+            "y": 0,
+            "z": 15.324216312877663
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 3.9043633881032473,
+            "y": 0,
+            "z": 11.742908548829028
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 1.7240252552770503,
+            "y": 0,
+            "z": 14.091412290876566
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 12.255340968253702,
+            "y": 0,
+            "z": 16.772685384110975
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 17.11777150722847,
+            "y": 0,
+            "z": 21.143601516387978
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 23.206757620665947,
+            "y": 0,
+            "z": 20.795931264445233
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 20.963354087575773,
+            "y": 0,
+            "z": 21.286451111425478
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 26.76962892576546,
+            "y": 0,
+            "z": 13.663095103306862
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 28.12175824839914,
+            "y": 0,
+            "z": 19.008431998138853
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -20.070390468840444,
+            "y": 0,
+            "z": 19.06223721584837
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -25.77672532423636,
+            "y": 0,
+            "z": 18.753827581524376
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -29.966439079144074,
+            "y": 0,
+            "z": 16.766928020238396
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -27.81386492380603,
+            "y": 0,
+            "z": 19.230264799962256
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": -24.434855296761263,
+            "y": 0,
+            "z": 18.12262280388514
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": -32.21787618575147,
+            "y": 0,
+            "z": 15.470942277797686
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_background.png",
+        "texture": "plants/brush_background.png",
+        "position": {
+            "x": 36.814517278495124,
+            "y": 0,
+            "z": 19.954558742948443
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_background.png",
+        "texture": "plants/brush_background.png",
+        "position": {
+            "x": -54.17489805075951,
+            "y": 0,
+            "z": 8.982185419145821
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_background.png",
+        "texture": "plants/brush_background.png",
+        "position": {
+            "x": 23.95426116469869,
+            "y": 0,
+            "z": 37.736112992362315
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_background.png",
+        "texture": "plants/brush_background.png",
+        "position": {
+            "x": -18.290828450792546,
+            "y": 0,
+            "z": 40.88245825803565
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": -15.951996172888867,
+            "y": 0,
+            "z": 42.156987852632135
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": -11.25494495427836,
+            "y": 0,
+            "z": 45.269954295339836
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": -6.894767488272627,
+            "y": 0,
+            "z": 41.61972127725462
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": -18.212754972364543,
+            "y": 0,
+            "z": 46.18668372753863
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": -23.787711608958958,
+            "y": 0,
+            "z": 43.3297364168971
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": -26.820204078233516,
+            "y": 0,
+            "z": 24.916269705973736
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": 16.70156884368891,
+            "y": 0,
+            "z": 40.69542099304277
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": 18.581478043792124,
+            "y": 0,
+            "z": 43.792338371412406
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": 22.216162227944285,
+            "y": 0,
+            "z": 40.279963660948845
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": 25.654236668987163,
+            "y": 0,
+            "z": 26.499263369175644
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": 26.870558728813826,
+            "y": 0,
+            "z": 42.152354960411394
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": 29.266680996525228,
+            "y": 0,
+            "z": 28.407483471490448
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": 24.300580969644255,
+            "y": 0,
+            "z": 43.25694601088348
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": 28.59548073048882,
+            "y": 0,
+            "z": 30.124259334931192
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": 8.435456325423559,
+            "y": 0,
+            "z": -16.154346821096183
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": 3.096547550782234,
+            "y": 0,
+            "z": -15.1803696538271
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green.png",
+        "texture": "plants/brush_green.png",
+        "position": {
+            "x": -26.00500895670398,
+            "y": 0,
+            "z": 30.42097962209538
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -7.98442804586234,
+            "y": 0,
+            "z": 44.818759566843305
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -27.08691150861367,
+            "y": 0,
+            "z": 33.84557380657374
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -24.512398156822847,
+            "y": 0,
+            "z": 25.288566911565393
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -14.581432414966278,
+            "y": 0,
+            "z": 45.610170922762364
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -21.504856141296436,
+            "y": 0,
+            "z": 44.493279511001475
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -23.82634711648176,
+            "y": 0,
+            "z": 31.58810554181457
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 13.157247761535961,
+            "y": 0,
+            "z": 42.28516136001506
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 23.628503347298366,
+            "y": 0,
+            "z": 28.262616512313087
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 16.23488577284034,
+            "y": 0,
+            "z": 42.29225295028798
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 21.583742645223968,
+            "y": 0,
+            "z": 43.124536549344874
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 29.058656702917062,
+            "y": 0,
+            "z": 42.07711452909207
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 27.770337363280415,
+            "y": 0,
+            "z": 22.813284350279343
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": 24.553599371517652,
+            "y": 0,
+            "z": 21.794765283364274
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -28.600148350100408,
+            "y": 0,
+            "z": 26.15530663232086
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "plants/brush_green_grass.png",
+        "texture": "plants/brush_green_grass.png",
+        "position": {
+            "x": -28.723458543463195,
+            "y": 0,
+            "z": 34.33127736787078
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_rock.png",
+        "texture": "cave/cave_rock.png",
+        "position": {
+            "x": -30.359203704669532,
+            "y": 0,
+            "z": 20.08699320137577
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_rock.png",
+        "texture": "cave/cave_rock.png",
+        "position": {
+            "x": -32.0097001398768,
+            "y": 0,
+            "z": 36.77906851752787
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_rock.png",
+        "texture": "cave/cave_rock.png",
+        "position": {
+            "x": 31.652452586492437,
+            "y": 0,
+            "z": 29.77447750261771
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_rock.png",
+        "texture": "cave/cave_rock.png",
+        "position": {
+            "x": 29.64630006507468,
+            "y": 0,
+            "z": 22.401344385667905
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_rock.png",
+        "texture": "cave/cave_rock.png",
+        "position": {
+            "x": 32.324594925006174,
+            "y": 0,
+            "z": 8.154643804038177
+        }
+    },
+    {
+        "type": "sprite",
+        "name": "cave/cave_rock.png",
+        "texture": "cave/cave_rock.png",
+        "position": {
+            "x": -6.1864243164175585,
+            "y": 0,
+            "z": 44.79245308300384
+        }
     }
-  },
-  {
-    "type": "sprite",
-    "name": "environment/desert_rock.png",
-    "position": {
-      "x": 7.778507231034483,
-      "y": 0,
-      "z": -18.966337020470426
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "environment/desert_boulder.png",
-    "position": {
-      "x": -7.376456144365431,
-      "y": 0,
-      "z": -18.345443502847743
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "environment/desert_boulder.png",
-    "position": {
-      "x": 4.752159878565651,
-      "y": 0,
-      "z": -25.023666372346305
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "houses/houses_medieval_blue_big.png",
-    "position": {
-      "x": -0.19612915296149858,
-      "y": 0,
-      "z": -4.8067892644538945
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "houses/houses_medieval_green_small.png",
-    "position": {
-      "x": -16.521154377302224,
-      "y": 0,
-      "z": 1.4712733555130093
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "houses/houses_medieval_red_small.png",
-    "position": {
-      "x": 13.922723503878716,
-      "y": 0,
-      "z": 4.319334322951255
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "environment/desert_boulder.png",
-    "position": {
-      "x": -27.80501990631809,
-      "y": 0,
-      "z": -25.913837250267385
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "environment/desert_boulder.png",
-    "position": {
-      "x": 29.264498184048918,
-      "y": 0,
-      "z": -25.327910732480085
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "environment/desert_boulder.png",
-    "position": {
-      "x": -41.95762687422564,
-      "y": 0,
-      "z": -19.827463610282507
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "environment/desert_background.png",
-    "position": {
-      "x": -16.87415290825114,
-      "y": 0,
-      "z": -37.903073036814
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "environment/desert_background.png",
-    "position": {
-      "x": 19.06394672825304,
-      "y": 0,
-      "z": -16.411247434984247
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "environment/desert_background.png",
-    "position": {
-      "x": -26.449793650461327,
-      "y": 0,
-      "z": -19.904317406507637
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "environment/desert_rock.png",
-    "position": {
-      "x": 18.40170078521912,
-      "y": 0,
-      "z": -8.34445107136677
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "environment/desert_rock.png",
-    "position": {
-      "x": -32.266939595772605,
-      "y": 0,
-      "z": -15.932866348908611
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_bucket1.png",
-    "position": {
-      "x": -10.005793336512388,
-      "y": 0,
-      "z": 14.370389951856815
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_deadberry.png",
-    "position": {
-      "x": 21.598512748022472,
-      "y": 0,
-      "z": 10.492690488021427
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_deadberry.png",
-    "position": {
-      "x": 14.146607458775462,
-      "y": 0,
-      "z": -5.4157848177527015
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_deadberry.png",
-    "position": {
-      "x": -34.507750095863365,
-      "y": 0,
-      "z": 3.6808796032545033
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_deadberry.png",
-    "position": {
-      "x": -31.02369907625173,
-      "y": 0,
-      "z": -4.1007950850147665
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_deadberry.png",
-    "position": {
-      "x": -23.95142392659045,
-      "y": 0,
-      "z": -9.988416521179623
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_deadberry.png",
-    "position": {
-      "x": -43.38340919997608,
-      "y": 0,
-      "z": -10.224181667871015
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_deadberry.png",
-    "position": {
-      "x": -8.307548657109923,
-      "y": 0,
-      "z": -3.4306374776658686
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_deadberry.png",
-    "position": {
-      "x": 28.062990103910607,
-      "y": 0,
-      "z": -1.7312635612072853
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_anvil.png",
-    "position": {
-      "x": -21.198295657130526,
-      "y": 0,
-      "z": 6.916718807296341
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern.png",
-    "position": {
-      "x": 35.081118319625844,
-      "y": 0,
-      "z": 1.3051468075324948
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern.png",
-    "position": {
-      "x": 3.3634596437612485,
-      "y": 0,
-      "z": 6.402300425797083
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern.png",
-    "position": {
-      "x": 9.43580645016923,
-      "y": 0,
-      "z": 8.265836542727417
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern.png",
-    "position": {
-      "x": 20.70025011075159,
-      "y": 0,
-      "z": 6.766521242148503
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern.png",
-    "position": {
-      "x": 7.193163106472189,
-      "y": 0,
-      "z": -3.2567186598366966
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern.png",
-    "position": {
-      "x": 12.396214246229214,
-      "y": 0,
-      "z": -10.698750135399369
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern.png",
-    "position": {
-      "x": 9.789567018753761,
-      "y": 0,
-      "z": -9.554051154172708
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern.png",
-    "position": {
-      "x": -30.401925584436157,
-      "y": 0,
-      "z": 2.367042645728681
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern.png",
-    "position": {
-      "x": -28.31470498830145,
-      "y": 0,
-      "z": 0.02101481069835387
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern.png",
-    "position": {
-      "x": -35.75900427192499,
-      "y": 0,
-      "z": -3.7283970138026454
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern.png",
-    "position": {
-      "x": -7.783280653085529,
-      "y": 0,
-      "z": 2.115771863206554
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern.png",
-    "position": {
-      "x": -12.995579827236341,
-      "y": 0,
-      "z": 4.704345965940899
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern.png",
-    "position": {
-      "x": 31.01688507437006,
-      "y": 0,
-      "z": 0.4253108207027445
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern.png",
-    "position": {
-      "x": 20.00762571239444,
-      "y": 0,
-      "z": 5.658620522220826
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern.png",
-    "position": {
-      "x": 18.32879214574481,
-      "y": 0,
-      "z": 5.298857961889951
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern.png",
-    "position": {
-      "x": -11.464390229276852,
-      "y": 0,
-      "z": 2.8564488408801125
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern.png",
-    "position": {
-      "x": -26.222237461855613,
-      "y": 0,
-      "z": -0.7926708965900637
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern.png",
-    "position": {
-      "x": -22.535136448077928,
-      "y": 0,
-      "z": 4.443582790650691
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern2.png",
-    "position": {
-      "x": -15.489749460867259,
-      "y": 0,
-      "z": 5.353249890794483
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern2.png",
-    "position": {
-      "x": -27.147260150430007,
-      "y": 0,
-      "z": 8.079621015743765
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern2.png",
-    "position": {
-      "x": -8.87975994680892,
-      "y": 0,
-      "z": -1.339499818255824
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern2.png",
-    "position": {
-      "x": 10.590553503469001,
-      "y": 0,
-      "z": -3.1694897503394976
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_fern2.png",
-    "position": {
-      "x": 25.784206839178044,
-      "y": 0,
-      "z": 4.583729914048874
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_grass1.png",
-    "position": {
-      "x": -24.73532465709009,
-      "y": 0,
-      "z": 7.773716441791478
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_grass1.png",
-    "position": {
-      "x": -5.734648895052624,
-      "y": 0,
-      "z": -0.45767619720804475
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_grass1.png",
-    "position": {
-      "x": -26.685885768120258,
-      "y": 0,
-      "z": 4.511841348637251
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_grass1.png",
-    "position": {
-      "x": -25.214557627135697,
-      "y": 0,
-      "z": 4.674406487923875
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_grass1.png",
-    "position": {
-      "x": -27.957898080007507,
-      "y": 0,
-      "z": 5.685404043463066
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": -33.326471978588955,
-      "y": 0,
-      "z": -8.354527646726975
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": -16.25716459178301,
-      "y": 0,
-      "z": -7.55455862468099
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": -25.542275789583563,
-      "y": 0,
-      "z": -14.224441412913308
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": -27.95174024940949,
-      "y": 0,
-      "z": -6.954824856993998
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": 11.042895768073327,
-      "y": 0,
-      "z": -12.760852732092644
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": 12.187140130558628,
-      "y": 0,
-      "z": -6.727530691727196
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": 27.2913817391849,
-      "y": 0,
-      "z": -10.320215138453474
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": 24.228909691976362,
-      "y": 0,
-      "z": -5.002763711009873
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": 36.29820828685793,
-      "y": 0,
-      "z": -5.585918300949562
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": 26.27887447308412,
-      "y": 0,
-      "z": -13.840935680641557
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": -17.63350087107521,
-      "y": 0,
-      "z": -16.586146910469253
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": -46.12428251665204,
-      "y": 0,
-      "z": -13.29264988878056
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": 22.431549737519873,
-      "y": 0,
-      "z": -14.269683263483849
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": -31.498439705242674,
-      "y": 0,
-      "z": 9.043684832545459
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": -28.9991874515491,
-      "y": 0,
-      "z": 2.8672809265966954
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": 31.221917435782537,
-      "y": 0,
-      "z": 11.098876763874262
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": 26.848310928587782,
-      "y": 0,
-      "z": 7.470227108927048
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": 34.29017887247444,
-      "y": 0,
-      "z": 2.0190181986028257
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_background.png",
-    "position": {
-      "x": -11.47728836212905,
-      "y": 0,
-      "z": -15.044102716651487
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_background.png",
-    "position": {
-      "x": 20.878136790142324,
-      "y": 0,
-      "z": -10.782965371317886
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_background.png",
-    "position": {
-      "x": -38.432651563281425,
-      "y": 0,
-      "z": -11.225221550822155
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_background.png",
-    "position": {
-      "x": 23.823588880538416,
-      "y": 0,
-      "z": 1.778505286089569
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": -27.12012859400955,
-      "y": 0,
-      "z": -0.7857407962954639
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": 7.837681922223575,
-      "y": 0,
-      "z": -7.733443122209451
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": -12.060140726076218,
-      "y": 0,
-      "z": -5.472004147282346
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": -21.631531198097836,
-      "y": 0,
-      "z": -4.40167703834212
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": 19.371863712994923,
-      "y": 0,
-      "z": -3.9163893564049364
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": 13.072664414250088,
-      "y": 0,
-      "z": -1.8609855711561405
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": 23.782077127432032,
-      "y": 0,
-      "z": 6.748367402002907
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": 18.268599286450154,
-      "y": 0,
-      "z": 8.906282625827531
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": 32.100007097779944,
-      "y": 0,
-      "z": -3.73456774030136
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": 35.38279067593946,
-      "y": 0,
-      "z": -9.267795908895733
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": -39.70964636709379,
-      "y": 0,
-      "z": -6.898387163870515
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": -34.903624572721014,
-      "y": 0,
-      "z": -3.9130262344360514
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": -43.49671504001027,
-      "y": 0,
-      "z": -1.1455877311159472
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": -35.81408788791152,
-      "y": 0,
-      "z": -5.362908657849905
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": 38.584840281964134,
-      "y": 0,
-      "z": -12.401996076923494
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": 33.14706584799961,
-      "y": 0,
-      "z": -5.227298023968229
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": -20.524435491734987,
-      "y": 0,
-      "z": 10.282980535291951
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": -16.35365773619566,
-      "y": 0,
-      "z": 11.392305736330352
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": -29.341655606578076,
-      "y": 0,
-      "z": 15.73970124731709
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": 25.84581119092895,
-      "y": 0,
-      "z": 15.846303148067125
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": 21.660522219982585,
-      "y": 0,
-      "z": 14.358829131961265
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": 13.588450265450764,
-      "y": 0,
-      "z": 10.834889368679285
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": 5.811059717288358,
-      "y": 0,
-      "z": 15.234217990033558
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": 34.52853378888631,
-      "y": 0,
-      "z": 15.234224404535855
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": 42.761874289863286,
-      "y": 0,
-      "z": 8.48180304056115
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green_grass.png",
-    "position": {
-      "x": -39.03811474431909,
-      "y": 0,
-      "z": 16.296280183224507
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green.png",
-    "position": {
-      "x": -37.72830804619902,
-      "y": 0,
-      "z": 9.070516486774473
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green.png",
-    "position": {
-      "x": 27.555310513825226,
-      "y": 0,
-      "z": 10.313241259450553
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green.png",
-    "position": {
-      "x": -8.79597534028928,
-      "y": 0,
-      "z": -8.301475430174207
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green.png",
-    "position": {
-      "x": -30.245981449668765,
-      "y": 0,
-      "z": -5.202910838862955
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_green.png",
-    "position": {
-      "x": -40.70873969297533,
-      "y": 0,
-      "z": -1.2717032527336585
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/brush_background.png",
-    "position": {
-      "x": -48.06500802066854,
-      "y": 0,
-      "z": 1.1626397565799493
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_mediumflower_yellow.png",
-    "position": {
-      "x": -23.117697701640164,
-      "y": 0,
-      "z": 12.713663778243045
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_mediumflower_yellow.png",
-    "position": {
-      "x": -17.790756257864658,
-      "y": 0,
-      "z": 6.9895553254726295
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_mediumflower_yellow.png",
-    "position": {
-      "x": -20.096954490413918,
-      "y": 0,
-      "z": 5.3375210898073995
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_mediumflower_yellow.png",
-    "position": {
-      "x": -19.51437957096395,
-      "y": 0,
-      "z": 7.260064935811773
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_mediumflower_yellow.png",
-    "position": {
-      "x": -28.121882309134048,
-      "y": 0,
-      "z": 12.45375877913733
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_mediumflower_yellow.png",
-    "position": {
-      "x": -29.796687495311104,
-      "y": 0,
-      "z": 9.2296533440787
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_mediumflower_yellow.png",
-    "position": {
-      "x": 11.806065850052015,
-      "y": 0,
-      "z": 6.244026395073146
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_mediumflower_yellow.png",
-    "position": {
-      "x": 10.106553981484769,
-      "y": 0,
-      "z": 5.794750060100867
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_mediumflower_yellow.png",
-    "position": {
-      "x": 7.619210578189373,
-      "y": 0,
-      "z": 7.4859482395681205
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_mediumflower_yellowheart.png",
-    "position": {
-      "x": 11.291136770946105,
-      "y": 0,
-      "z": 8.91351481138231
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_mediumflower_yellowheart.png",
-    "position": {
-      "x": -9.447822368602203,
-      "y": 0,
-      "z": 1.7809987726381493
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_mediumflower_yellowheart.png",
-    "position": {
-      "x": -5.823880651245767,
-      "y": 0,
-      "z": -2.7442287394100475
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_mediumflower_yellowheart.png",
-    "position": {
-      "x": -10.686767667154054,
-      "y": 0,
-      "z": -2.7765880655863775
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_mediumflower_yellowheart.png",
-    "position": {
-      "x": 5.554239919557975,
-      "y": 0,
-      "z": -0.3494054637261961
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_mediumflower_yellowheart.png",
-    "position": {
-      "x": 7.167067307807203,
-      "y": 0,
-      "z": 0.08835669426182946
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_smallflower_yellow.png",
-    "position": {
-      "x": -17.656512592548847,
-      "y": 0,
-      "z": 6.273618277573593
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_smallflower_yellow.png",
-    "position": {
-      "x": -15.754399575615826,
-      "y": 0,
-      "z": 7.379887686365315
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_smallflower_yellow.png",
-    "position": {
-      "x": -16.198456980394695,
-      "y": 0,
-      "z": 9.087787329685149
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_smallflower_yellow.png",
-    "position": {
-      "x": -17.835683839748466,
-      "y": 0,
-      "z": 9.010913360168871
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_smallflower_yellow.png",
-    "position": {
-      "x": -22.68049793033815,
-      "y": 0,
-      "z": 11.605076331207284
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_smallflower_yellow.png",
-    "position": {
-      "x": -24.869576580828973,
-      "y": 0,
-      "z": 12.235976245260982
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_smallflower_yellow.png",
-    "position": {
-      "x": -25.73262037751781,
-      "y": 0,
-      "z": 14.669601797107712
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_smallflower_yellow.png",
-    "position": {
-      "x": -21.8230700411793,
-      "y": 0,
-      "z": 14.542775573365368
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_smallflower_yellow.png",
-    "position": {
-      "x": -19.75831401648596,
-      "y": 0,
-      "z": 14.18782534559202
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_smallflower_yellow.png",
-    "position": {
-      "x": -19.503695691380727,
-      "y": 0,
-      "z": 12.871342879389312
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_smallflower_yellow.png",
-    "position": {
-      "x": 10.184970770797165,
-      "y": 0,
-      "z": 11.695712142921042
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_smallflower_yellow.png",
-    "position": {
-      "x": 11.870529811551274,
-      "y": 0,
-      "z": 12.626787901649589
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_smallflower_yellow.png",
-    "position": {
-      "x": 14.334392130357665,
-      "y": 0,
-      "z": 12.697157752159132
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_smallflower_yellow.png",
-    "position": {
-      "x": 11.525556982626332,
-      "y": 0,
-      "z": 11.328217674866785
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_smallflower_yellow.png",
-    "position": {
-      "x": 18.023982767428667,
-      "y": 0,
-      "z": 12.527523238695679
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_smallflower_yellow.png",
-    "position": {
-      "x": 18.35228089816492,
-      "y": 0,
-      "z": 11.052138002133171
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_smallflower_yellow.png",
-    "position": {
-      "x": 17.244753757215772,
-      "y": 0,
-      "z": 10.418424867570572
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_smallflower_yellow.png",
-    "position": {
-      "x": 16.436572230139696,
-      "y": 0,
-      "z": 9.865773167374588
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_smallflower_yellow.png",
-    "position": {
-      "x": 20.790675661266985,
-      "y": 0,
-      "z": 9.84155638507236
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_bluethistle.png",
-    "position": {
-      "x": -10.094131361866232,
-      "y": 0,
-      "z": 4.375069652889717
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_bluethistle.png",
-    "position": {
-      "x": -13.320347344239043,
-      "y": 0,
-      "z": 6.80772910127811
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_bluethistle.png",
-    "position": {
-      "x": 10.727954969316432,
-      "y": 0,
-      "z": 8.520239031950801
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_bluethistle.png",
-    "position": {
-      "x": 16.36587021975257,
-      "y": 0,
-      "z": 12.140657453914901
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_bluethistle.png",
-    "position": {
-      "x": -18.28824210766022,
-      "y": 0,
-      "z": 14.534708674340493
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_bluethistle.png",
-    "position": {
-      "x": -24.578577315654517,
-      "y": 0,
-      "z": 14.154300776919685
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/plant_bluethistle.png",
-    "position": {
-      "x": -21.583985511258955,
-      "y": 0,
-      "z": 3.570057185147295
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": -22.31781483342366,
-      "y": 0,
-      "z": 8.081281624417823
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": 18.891859656281973,
-      "y": 0,
-      "z": 13.63747740045318
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": -7.526841328102893,
-      "y": 0,
-      "z": 12.486021461020577
-    }
-  },
-  {
-    "type": "sprite",
-    "name": "plants/tree_oak.png",
-    "position": {
-      "x": 9.035541726840446,
-      "y": 0,
-      "z": 14.220382959703919
-    }
-  }
 ]

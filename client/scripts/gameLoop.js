@@ -13,17 +13,16 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { BokehPass } from 'three/examples/jsm/postprocessing/BokehPass.js';
 import {skillNode} from "./interactiveNodes";
+import { generateUpscaledTexture } from './textureUtils.js';
 
 export class Game {
-    constructor(handlers,gamepad=null) {
+    constructor(handlers, gamepad = null) {
         this.handlers = handlers;
         this.scene = new THREE.Scene();
         this.scene.fog = new THREE.FogExp2(0x99ffcc, 0.004);
         this.scene.background = new THREE.Color(0x99ffcc);
 
-
-
-
+        // Camera & renderer setup
         const aspect = window.innerWidth / window.innerHeight;
         const frustumSize = 30;
         this.camera = new THREE.OrthographicCamera(
@@ -34,35 +33,33 @@ export class Game {
             0.1,
             2000
         );
+
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         document.getElementById('game-container').appendChild(this.renderer.domElement);
         this.renderer.outputEncoding = THREE.LinearEncoding;
         this.renderer.toneMapping = THREE.NoToneMapping;
         this.renderer.toneMappingExposure = 1.0;
-
         this.renderer.physicallyCorrectLights = false;
-
 
         window.addEventListener('resize', () => {
             this.renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
+        // Orbit controls
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableZoom = true;
         this.controls.target.set(0, 0, 0);
         this.controls.update();
 
         this.setCameraAngleAndLock(30, 45, 45, new THREE.Vector3(0, 0, 0));
-
         this.useOrbitControls = true;
 
         window.addEventListener('keydown', (e) => {
             if (e.key.toLowerCase() === 'f') this.toggleCameraFocus();
         });
 
-
-
+        // Lighting
         const hemi = new THREE.HemisphereLight(0xF0B05B, 0xA1A1A1);
         hemi.position.set(0, 200, 0);
         this.scene.add(hemi);
@@ -75,65 +72,88 @@ export class Game {
         this.scene.add(pointlight);
         this.scene.add(new THREE.PointLightHelper(pointlight, 0.3));
 
+        // Clock, UI canvas, data containers
         this.clock = new THREE.Clock();
         this.canvas = document.createElement('canvas');
         this.ctx = this.canvas.getContext('2d');
-
 
         this.players = {};
         this.npcs = {};
         this.chests = {};
         this.clickableObjects = [];
-        this.nodeMap=new Map();
+        this.nodeMap = new Map();
         this.hoverFrameCounter = 10;
         this.hasStartedLoop = false;
 
-        const groundGeometry = new THREE.PlaneGeometry(100, 100);
-        const groundMaterial = new THREE.MeshStandardMaterial({
-            color: 	0x131122
-            /*green: 0x80995D*/,
-            side: THREE.DoubleSide });
-        this.ground = new THREE.Mesh(groundGeometry, groundMaterial);
+        // 🧱 Create placeholder ground immediately
+        this.ground = new THREE.Mesh(
+            new THREE.PlaneGeometry(100, 100),
+            new THREE.MeshStandardMaterial({ color: 0x99ffcc })
+        );
         this.ground.rotation.x = -Math.PI / 2;
         this.ground.position.y = -1.05;
+        this.ground.name = 'ground';
         this.scene.add(this.ground);
 
-        this.UI = new UI(this.scene, this.ctx, this.camera, this.canvas,this.ground,this.handlers);
+        // 🎨 Generate grass texture in the background (non-blocking)
+        generateUpscaledTexture(
+            '/grasstexture.jpg',
+            1,    // upscale factor
+            0.3,  // noise strength
+            10,   // noise scale
+            0.1,  // lightness
+            5     // hue shift
+        ).then((tex) => {
+            this.ground.material.map = tex;
+            this.ground.material.needsUpdate = true;
+            console.log("✅ Ground texture applied.");
+        }).catch((err) => {
+            console.warn("⚠️ Failed to generate ground texture:", err);
+        });
+
+        // UI + Handlers
+        this.UI = new UI(this.scene, this.ctx, this.camera, this.canvas, this.ground, this.handlers);
         this.levelHandeler = new levelHandler(this.scene);
-        this.VFX=new vfxHandler(this.scene, this.camera);
+        this.VFX = new vfxHandler(this.scene, this.camera);
+
+        // Load level asynchronously, but no blocking
         fetch('/level1.json')
             .then(res => res.json())
-            .then(async data => {
-                await loadLevel(data, this.scene);
-            });
-        //blur
+            .then(data => loadLevel(data, this.scene))
+            .catch(console.error);
 
-        this.composer=new EffectComposer(this.renderer);
+        // Postprocessing
+        this.composer = new EffectComposer(this.renderer);
         this.composer.renderTarget1.texture.encoding = THREE.sRGBEncoding;
         this.composer.renderTarget2.texture.encoding = THREE.sRGBEncoding;
-        this.renderPass=new RenderPass(this.scene,this.camera)
-        this.composer.addPass(this.renderPass)
-        this.bokehPass=new BokehPass(this.scene,this.camera, {
-            focus: 29.1,       // focus distance
-            aperture:  0.0005,   // smaller = sharper, larger = blurrier
-            maxblur: 0.001,     // max blur size
-        });
-        //this.composer.addPass(this.bokehPass);
+        this.renderPass = new RenderPass(this.scene, this.camera);
+        this.composer.addPass(this.renderPass);
 
+        this.bokehPass = new BokehPass(this.scene, this.camera, {
+            focus: 29.1,
+            aperture: 0.0005,
+            maxblur: 0.001,
+        });
+        // this.composer.addPass(this.bokehPass);
+
+        // Raycaster setup
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
         window.addEventListener("click", (e) => this.handleClick(e));
 
-        //turns off all the inventories and attaches the camera to orthographic
+        // Initialize UI + camera focus
         this.toggleCameraFocus();
         this.UI.cookinggame.toggle();
         this.UI.inventory.toggle();
-        this.gamepad=gamepad;
+
+        // Gamepad setup
+        this.gamepad = gamepad;
         if (this.gamepad && this.gamepad.virtualCursor) {
             this.UI.attachVirtualCursor(this.gamepad.virtualCursor);
         }
-    }
 
+
+    }
     update() {
         const delta = this.clock.getDelta();
         for (const id in this.players) this.players[id].update(delta);
@@ -164,6 +184,8 @@ export class Game {
             if (this.VFX) {
                 this.VFX.update();  // Update your VfxHandler each frame
             }
+            if (this.gamepad) this.gamepad.loop(); // ✅ Start polling gamepad input
+
             this.draw();
             requestAnimationFrame(loopInternal);
             this.composer.render();
@@ -228,7 +250,7 @@ export class Game {
     }
 
 
-    async addNpc(id, position = { x: 0, y: 0, z: 0 }, npcid) {
+    async addNpc(id, position = { x: 0, y: 0, z: 0 }, npcid,level) {
         const tex = await iccColorPreloader.load('/sprites/Goblin.png');
         tex.encoding = THREE.LinearEncoding;
         tex.flipY = true;
@@ -239,6 +261,7 @@ export class Game {
         const thisnpc = new npc(
             this.scene,
             tex,
+            level,
             position,
             npcid,
             (npcInstance) => {
@@ -255,7 +278,9 @@ export class Game {
         this.npcs[id] = thisnpc;
     }
     async addNode(name, position, sprite) {
+
         const node = await skillNode.create(this.scene, name, position, sprite);
+
 
         if (node.mesh && node.mesh.isObject3D) {
             this.nodeMap.set(node.mesh, node);
@@ -266,9 +291,6 @@ export class Game {
 
         return node;
     }
-
-
-
     addChest(id) {
         const pos = { x: 5, y: 0, z: -3 };
         const thischest = new Chest(id, this.scene, true, pos);

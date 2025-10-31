@@ -61,6 +61,10 @@ export class UI{
                 console.log("pressed &")
                 this.activeMenus.cooking=!this.activeMenus.cooking;
                 this.cookinggame?.toggle();
+
+                if (this.virtualCursor) {
+                    this.virtualCursor.active = !this.activeMenus.cooking; // disable it
+                }
             }
             if (event.key === 'i' || event.key === 'I') {
                 this.activeMenus.inventory=!this.activeMenus.inventory;

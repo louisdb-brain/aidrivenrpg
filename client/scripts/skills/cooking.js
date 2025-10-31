@@ -1,14 +1,16 @@
+import {drawHorizontalFadeRect,drawSlider,drawCrosshair} from "../uiDrawUtils.js";
 
 export class CookingGame {
-    constructor(canvas) {
+    constructor(canvas,gamepadInstance=null) {
+
         // Create a new canvas for UI
         this.canvas = document.createElement('canvas');
         this.canvas.id = "uiCanvas";
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
         this.canvas.style.position = 'absolute';
-        this.canvas.style.top = '0';
-        this.canvas.style.left = '500';
+        this.canvas.style.top = '0px';
+        this.canvas.style.left = '0px';
         this.canvas.style.zIndex = '10';
         this.canvas.style.pointerEvents = 'auto'; // allow mouse input
 
@@ -16,6 +18,18 @@ export class CookingGame {
         document.body.appendChild(this.canvas);
 
         this.ctx = this.canvas.getContext('2d');
+        this.usingGamepad = false;
+        this.crosshair = { x: this.canvas.width / 2, y: this.canvas.height / 2 };
+        this.crosshairTarget = { x: this.crosshair.x, y: this.crosshair.y };
+        this.animationStep = 0;
+        this.crosshairRadius = 16;
+        this.isGamepadDragging = false;
+        this.snapIndex = 0;
+        this.aButtonHoldStart = 0;
+        this.holdThreshold = 100;
+        this.crosshairspeed = 10;
+
+
 
         this.ingredientPhase = {
             UNCUT: "UNCUT",
@@ -32,7 +46,7 @@ export class CookingGame {
         this.potImage = new Image();
         this.potImage.src = '/sprites/pan.png';
         this.boardImage=new Image();
-        this.boardImage.src='/sprites/cuttingboard.jpg'
+        this.boardImage.src='/sprites/cuttingboard.png'
 
         this.boardImage.onload = () => {
             console.log('Image loaded!');
@@ -104,7 +118,202 @@ export class CookingGame {
 
     }
 
+    update() {
+        this.playsizzle = false;
 
+        for (let ing of this.activeIngredients) {
+            ing.update();
+            if (ing.isCooking) this.playsizzle = true;
+        }
+
+        if (this.playsizzle) {
+            if (this.sizzleSound.paused) {
+                this.sizzleSound.currentTime = 0;
+                this.sizzleSound.play().catch(console.error);
+            }
+        } else {
+            if (!this.sizzleSound.paused) {
+                this.sizzleSound.pause();
+                this.sizzleSound.currentTime = 0;
+            }
+        }
+
+        this.checkForRecipe();
+
+        if (this.currentRecipe) {
+            if (this.ghostGlowTime === undefined) this.ghostGlowTime = 0;
+            this.ghostGlowTime += 0.05;
+        } else {
+            this.ghostGlowTime = 0;
+        }
+
+        // 🎮 Gamepad input handling
+        const gamepads = navigator.getGamepads();
+        const gp = gamepads[0];
+        const now = performance.now();
+
+        if (gp && gp.connected) {
+            this.usingGamepad = true;
+
+            // 🕹️ Move crosshair
+            const deadzone = 0.2;
+            const lx = Math.abs(gp.axes[0]) > deadzone ? gp.axes[0] : 0;
+            const ly = Math.abs(gp.axes[1]) > deadzone ? gp.axes[1] : 0;
+            const speed = this.crosshairspeed;
+
+            this.crosshairTarget.x += lx * speed;
+            this.crosshairTarget.y += ly * speed;
+
+            this.crosshairTarget.x = Math.max(0, Math.min(this.canvas.width, this.crosshairTarget.x));
+            this.crosshairTarget.y = Math.max(0, Math.min(this.canvas.height, this.crosshairTarget.y));
+
+            // 🅰️ A button (click or hold)
+            if (gp.buttons[0].pressed) {
+                if (!this.aPressedLastFrame && this.animationStep >= 1.0) {
+                    this.aHoldStart = now;
+
+                    // ✅ Start dragging immediately on hold
+                    const fakeEvt = { offsetX: this.crosshair.x, offsetY: this.crosshair.y };
+                    this.handleMouseDown(fakeEvt);
+                    this.isGamepadDragging = true;
+                }
+                this.aPressedLastFrame = true;
+            } else {
+                if (this.aPressedLastFrame && this.animationStep >= 1.0) {
+                    const heldFor = now - this.aHoldStart;
+                    const fakeEvt = { offsetX: this.crosshair.x, offsetY: this.crosshair.y };
+
+                    if (heldFor < this.holdThreshold) {
+                        this.simulateClick(this.crosshair.x, this.crosshair.y);
+                    } else {
+                        this.handleMouseUp(fakeEvt); // ✅ drop
+                        this.isGamepadDragging = false;
+                    }
+                }
+                this.aPressedLastFrame = false;
+            }
+
+
+            // 🔁 L1 (button 4): Snap to previous (with repeat)
+            if (gp.buttons[4].pressed && !this.isGamepadDragging && this.animationStep >= 1.0) {
+                if (this.leftBumperHeldTime === 0) {
+                    this.snapToPrevIngredient();
+                    this.leftBumperHeldTime = now;
+                } else if (now - this.leftBumperHeldTime > this.snapRepeatDelay) {
+                    if (!this.lastLeftSnap || now - this.lastLeftSnap > this.snapRepeatRate) {
+                        this.snapToPrevIngredient();
+                        this.lastLeftSnap = now;
+                    }
+                }
+            } else {
+                this.leftBumperHeldTime = 0;
+                this.lastLeftSnap = 0;
+            }
+
+            // 🔁 R1 (button 5): Snap to next (with repeat)
+            if (gp.buttons[5].pressed && !this.isGamepadDragging && this.animationStep >= 1.0) {
+                if (this.rightBumperHeldTime === 0) {
+                    this.snapToNextIngredient();
+                    this.rightBumperHeldTime = now;
+                } else if (now - this.rightBumperHeldTime > this.snapRepeatDelay) {
+                    if (!this.lastRightSnap || now - this.lastRightSnap > this.snapRepeatRate) {
+                        this.snapToNextIngredient();
+                        this.lastRightSnap = now;
+                    }
+                }
+            } else {
+                this.rightBumperHeldTime = 0;
+                this.lastRightSnap = 0;
+            }
+        }
+
+        // 🧲 Drag follows crosshair
+        if (this.isGamepadDragging) {
+            const draggingIng = this.activeIngredients.find(i => i.dragging);
+            if (draggingIng) {
+                const lerp = 0.4;
+                draggingIng.x += (this.crosshair.x - draggingIng.w / 2 - draggingIng.x) * lerp;
+                draggingIng.y += (this.crosshair.y - draggingIng.h / 2 - draggingIng.y) * lerp;
+            }
+        }
+
+        // 🎯 Crosshair easing
+        const lerpFactor = 0.2;
+        this.crosshair.x += (this.crosshairTarget.x - this.crosshair.x) * lerpFactor;
+        this.crosshair.y += (this.crosshairTarget.y - this.crosshair.y) * lerpFactor;
+
+        // ⏱️ Snap animation progress
+        if (this.animationStep < 1.0) {
+            this.animationStep += 0.1;
+        }
+    }
+
+
+    draw() {
+
+
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        drawHorizontalFadeRect(this.ctx, 50, 50, 800, 600, "rgba(30, 30, 60, 0.4)", "both");
+        drawSlider(this.ctx,50, 30, 300, 20);
+        this.ctx.fillStyle = "#654321";
+        this.ctx.drawImage(this.potImage, this.pot.x, this.pot.y, this.pot.w, this.pot.h);
+        this.ctx.drawImage(this.boardImage, 30, 80, 400, 500);
+        //const potrect=this.ctx.fillRect(this.pot.x, this.pot.y, this.pot.w, this.pot.h);
+
+        // 🔮 Draw ghost recipe if a valid combo is detected
+        if (this.currentRecipe && this.itemLibrary[this.currentRecipe.output]) {
+            const outputItem = this.itemLibrary[this.currentRecipe.output];
+            const img = new Image();
+            img.src = outputItem.image;
+
+            const pulse = (Math.sin(this.ghostGlowTime) + 1) / 2;
+            const glowSize = 15 + pulse * 15;
+            const alpha = 0.5 + pulse * 0.3;
+
+            const { ghostX, ghostY, ghostW, ghostH } = this.getGhostRect();
+
+
+            this.ctx.save();
+            this.ctx.shadowColor = `rgba(255, 255, 150, ${0.3 + pulse * 0.5})`;
+            this.ctx.shadowBlur = glowSize;
+            this.ctx.globalAlpha = alpha;
+
+            this.ctx.drawImage(img, ghostX, ghostY, ghostW, ghostH);
+
+            this.ctx.restore();
+            this.ctx.globalAlpha = 1.0;
+        }
+
+
+        for (let ing of this.activeIngredients) {
+            ing.draw(this.ctx);
+            this.ctx.strokeStyle = 'yellow';
+            for (const ing of this.activeIngredients) {
+                this.ctx.strokeRect(ing.x, ing.y, ing.w, ing.h);
+            }
+
+        }
+
+        //gamepad crosshair drawing
+        if (this.usingGamepad) {
+            drawCrosshair(this.ctx, this.crosshair.x, this.crosshair.y, this.crosshairRadius);
+        }
+
+
+        requestAnimationFrame(() => this.draw());
+    }
+    toggle() {
+        this.canvas.style.display = this.canvas.style.display === 'none' ? 'block' : 'none';
+    }
+
+    show() {
+        this.canvas.style.display = 'block';
+    }
+
+    hide() {
+        this.canvas.style.display = 'none';
+    }
 
 
     addIngredient(name) {
@@ -344,101 +553,53 @@ export class CookingGame {
 
         return { ghostX, ghostY, ghostW, ghostH };
     }
+    //GAMEPAD FUNCTIONS
+    snapToNextIngredient() {
+        if (this.animationStep < 1.0) return; // 🧱 don't allow snapping mid-animation
+        if (!this.activeIngredients?.length) return;
 
-
-
-    update() {
-        this.playsizzle=false;
-        for (let ing of this.activeIngredients) {
-            ing.update();
-            if(ing.isCooking){this.playsizzle=true;}
-        }
-        if (this.playsizzle) {
-            if (this.sizzleSound.paused) {
-                this.sizzleSound.currentTime = 0;
-                this.sizzleSound.play().catch(console.error);
-            }
-        } else {
-            if (!this.sizzleSound.paused) {
-                this.sizzleSound.pause();
-                this.sizzleSound.currentTime = 0;
-            }
-        }
-        // 🔍 Check for possible recipes based on ingredients in the pot
-        this.checkForRecipe();
-
-        //  Animate ghost glow if recipe exists
-        if (this.currentRecipe) {
-            if (this.ghostGlowTime === undefined) this.ghostGlowTime = 0;
-            this.ghostGlowTime += 0.05;
-        } else {
-            this.ghostGlowTime = 0;
-        }
-
-
-
+        this.animationStep = 0;
+        this.snapIndex = (this.snapIndex + 1) % this.activeIngredients.length;
+        const ing = this.activeIngredients[this.snapIndex];
+        this.crosshairTarget.x = ing.x + ing.w / 2;
+        this.crosshairTarget.y = ing.y + ing.h / 2;
     }
 
-    draw() {
+    snapToPrevIngredient() {
+        if (this.animationStep < 1.0) return; // 🧱 block mid-animation
+        if (!this.activeIngredients?.length) return;
 
-
-
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.fillStyle = "#654321";
-        this.ctx.drawImage(this.potImage, this.pot.x, this.pot.y, this.pot.w, this.pot.h);
-        this.ctx.drawImage(this.boardImage, 30, 30, 400, 500);
-        //const potrect=this.ctx.fillRect(this.pot.x, this.pot.y, this.pot.w, this.pot.h);
-
-        // 🔮 Draw ghost recipe if a valid combo is detected
-        if (this.currentRecipe && this.itemLibrary[this.currentRecipe.output]) {
-            const outputItem = this.itemLibrary[this.currentRecipe.output];
-            const img = new Image();
-            img.src = outputItem.image;
-
-            const pulse = (Math.sin(this.ghostGlowTime) + 1) / 2;
-            const glowSize = 15 + pulse * 15;
-            const alpha = 0.5 + pulse * 0.3;
-
-            const { ghostX, ghostY, ghostW, ghostH } = this.getGhostRect();
-
-
-            this.ctx.save();
-            this.ctx.shadowColor = `rgba(255, 255, 150, ${0.3 + pulse * 0.5})`;
-            this.ctx.shadowBlur = glowSize;
-            this.ctx.globalAlpha = alpha;
-
-            this.ctx.drawImage(img, ghostX, ghostY, ghostW, ghostH);
-
-            this.ctx.restore();
-            this.ctx.globalAlpha = 1.0;
-        }
-
-
-        for (let ing of this.activeIngredients) {
-            ing.draw(this.ctx);
-            this.ctx.strokeStyle = 'yellow';
-            for (const ing of this.activeIngredients) {
-                this.ctx.strokeRect(ing.x, ing.y, ing.w, ing.h);
-            }
-
-        }
-
-
-
-        requestAnimationFrame(() => this.draw());
+        this.animationStep = 0;
+        this.snapIndex = (this.snapIndex - 1 + this.activeIngredients.length) % this.activeIngredients.length;
+        const ing = this.activeIngredients[this.snapIndex];
+        this.crosshairTarget.x = ing.x + ing.w / 2;
+        this.crosshairTarget.y = ing.y + ing.h / 2;
     }
-    toggle() {
-        this.canvas.style.display = this.canvas.style.display === 'none' ? 'block' : 'none';
+    trySnapNext() {
+        // don't snap while animating or dragging
+        if (this.animationStep < 1.0) return;
+        if (this.isGamepadDragging) return;
+        this.snapToNextIngredient();
     }
 
-    show() {
-        this.canvas.style.display = 'block';
+    trySnapPrev() {
+        if (this.animationStep < 1.0) return;
+        if (this.isGamepadDragging) return;
+        this.snapToPrevIngredient();
     }
 
-    hide() {
-        this.canvas.style.display = 'none';
+
+    simulateClick(x, y) {
+        // Prevent clicking while snapping
+        if (this.animationStep < 1.0) return;
+        const fakeEvent = { offsetX: x, offsetY: y };
+        this.handleMouseDown(fakeEvent);
+        setTimeout(() => this.handleMouseUp(fakeEvent), 100);
     }
+
+
     initializeDropListener() {
+        console.log("bounds was:" +this.canvas.getBoundingClientRect());
         window.addEventListener("inventoryDrop", (e) => {
             if (!this.ingredientsReady || this.canvas.style.display === 'none') return;
 
@@ -446,6 +607,7 @@ export class CookingGame {
 
             // Check if drop was inside cooking canvas bounds
             const bounds = this.canvas.getBoundingClientRect();
+
             const isInside =
                 x >= bounds.left &&
                 x <= bounds.right &&
