@@ -41,6 +41,7 @@ export class gamestateClass{
                 console.log("Server tick:", this.ticks);
             }
         }, 50); // 20 FPS
+
     }
     tick(delta) {
         if(this.maps[1]==true){
@@ -58,7 +59,7 @@ export class gamestateClass{
 
 
     }
-    addloot(loot)
+    loot(loot)
     {
         console.log("addloot called :")
         this.objectManager.addloot(loot,loot.id);

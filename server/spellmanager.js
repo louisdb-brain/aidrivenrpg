@@ -12,8 +12,20 @@ export class SpellManager {
     }
 
     castSpell(casterId, spellData) {
+        const radius = Number(spellData.radius) || 2;
+        const damage = Number(spellData.damage) || 1;
+        const lifetime = Number(spellData.lifetime) || 150;
 
-        const spell = new Spell(spellData.id,casterId,spellData.sprite,spellData.radius,spellData.damage,spellData.lifetime,spellData.position);
+        const spell = new Spell(
+            spellData.id,
+            casterId,
+            spellData.sprite,
+            radius,
+            damage,
+            lifetime,
+            spellData.position
+        );
+
         this.activeSpells.push(spell);
     }
 
@@ -39,7 +51,9 @@ export class SpellManager {
     }
 
     checkCollisions(spell) {
-        if(spell.dealtdame){return};
+
+
+        if(spell.dealtdamage){return};
         // NPC collisions
         for (const npcId in this.npcManager.npcs) {
             const npc = this.npcManager.npcs[npcId];
@@ -51,7 +65,10 @@ export class SpellManager {
             if (dist <= spell.radius ) {
                 npc.takeDamage(spell.damage);
                 this.io.emit('npc-takedamage', { id: npcId, amount: spell.damage });
-                
+
+                    console.log(`Hit ${npc.id} at dist ${dist.toFixed(2)} (radius ${spell.radius})`);
+
+
             }
         }
 
@@ -68,6 +85,6 @@ export class SpellManager {
 
             }
         }
-        spell.dealtdame = true;
+        spell.dealtdamage = true;
     }
 }

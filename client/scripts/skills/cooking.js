@@ -1,7 +1,7 @@
 import {drawHorizontalFadeRect,drawSlider,drawCrosshair} from "../uiDrawUtils.js";
 
 export class CookingGame {
-    constructor(canvas,gamepadInstance=null) {
+    constructor(canvas,networkclient, gamepadInstance = null) {
 
         // Create a new canvas for UI
         this.canvas = document.createElement('canvas');
@@ -14,13 +14,14 @@ export class CookingGame {
         this.canvas.style.zIndex = '10';
         this.canvas.style.pointerEvents = 'auto'; // allow mouse input
 
+        this.networkClient=networkclient;
         // Append to body (or to a wrapper if you prefer)
         document.body.appendChild(this.canvas);
 
         this.ctx = this.canvas.getContext('2d');
         this.usingGamepad = false;
-        this.crosshair = { x: this.canvas.width / 2, y: this.canvas.height / 2 };
-        this.crosshairTarget = { x: this.crosshair.x, y: this.crosshair.y };
+        this.crosshair = {x: this.canvas.width / 2, y: this.canvas.height / 2};
+        this.crosshairTarget = {x: this.crosshair.x, y: this.crosshair.y};
         this.animationStep = 0;
         this.crosshairRadius = 16;
         this.isGamepadDragging = false;
@@ -28,7 +29,6 @@ export class CookingGame {
         this.aButtonHoldStart = 0;
         this.holdThreshold = 100;
         this.crosshairspeed = 10;
-
 
 
         this.ingredientPhase = {
@@ -41,18 +41,31 @@ export class CookingGame {
         };
 
         this.itemLibrary = {};
-
-        this.pot = { x: 600, y: 400, w: 150, h: 100 };
-        this.potImage = new Image();
-        this.potImage.src = '/sprites/pan.png';
-        this.boardImage=new Image();
-        this.boardImage.src='/sprites/cuttingboard.png'
-
-        this.boardImage.onload = () => {
-            console.log('Image loaded!');
-            this.ctx.drawImage(this.boardImage, 30, 30, 400, 200);
+        //this.inventorybag = {x: 800, y: 800, w: 400, h: 800};
+        // pot (bottom center)
+        this.pot = {
+            x:  200,
+            y:  100,
+            w: 1000,
+            h: 800
         };
-        this.boardImage.onerror = () => console.error('Failed to load image!');
+        this.potHit={
+            x: this.pot.x+this.pot.w/2,
+            y:this.pot.y+20,
+            w:this.pot.w/2,
+            h:this.pot.h/2
+        }
+
+
+        this.inventorybag = {
+            x: this.canvas.width - 500,
+            y: 100,
+            w: 500,
+            h: 800
+        };
+
+        this.potImage = new Image();
+        this.potImage.src = '/sprites/stove.png';
 
         this.potImage.onload = () => {
             console.log('Image loaded!');
@@ -107,12 +120,12 @@ export class CookingGame {
         this.customCursor = document.createElement("div");
         this.customCursor.id = "customCursor";
         document.body.appendChild(this.customCursor);
-        this.cursorAngle=0;
+        this.cursorAngle = 0;
         //SOUND
         this.cutSound = new Audio("sounds/cooking_cut.mp3");
-        this.sizzleSound=new Audio("sounds/cooking_longsizzle.mp3");
-        this.shortSizzleSound=new Audio("sounds/cooking_sizzle.mp3");
-        this.playsizzle=false;
+        this.sizzleSound = new Audio("sounds/cooking_longsizzle.mp3");
+        this.shortSizzleSound = new Audio("sounds/cooking_sizzle.mp3");
+        this.playsizzle = false;
 
         this.initializeDropListener();
 
@@ -173,7 +186,7 @@ export class CookingGame {
                     this.aHoldStart = now;
 
                     // ✅ Start dragging immediately on hold
-                    const fakeEvt = { offsetX: this.crosshair.x, offsetY: this.crosshair.y };
+                    const fakeEvt = {offsetX: this.crosshair.x, offsetY: this.crosshair.y};
                     this.handleMouseDown(fakeEvt);
                     this.isGamepadDragging = true;
                 }
@@ -181,7 +194,7 @@ export class CookingGame {
             } else {
                 if (this.aPressedLastFrame && this.animationStep >= 1.0) {
                     const heldFor = now - this.aHoldStart;
-                    const fakeEvt = { offsetX: this.crosshair.x, offsetY: this.crosshair.y };
+                    const fakeEvt = {offsetX: this.crosshair.x, offsetY: this.crosshair.y};
 
                     if (heldFor < this.holdThreshold) {
                         this.simulateClick(this.crosshair.x, this.crosshair.y);
@@ -238,7 +251,7 @@ export class CookingGame {
         }
 
         // 🎯 Crosshair easing
-        const lerpFactor = 0.2;
+        const lerpFactor = 0.6;
         this.crosshair.x += (this.crosshairTarget.x - this.crosshair.x) * lerpFactor;
         this.crosshair.y += (this.crosshairTarget.y - this.crosshair.y) * lerpFactor;
 
@@ -255,10 +268,17 @@ export class CookingGame {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         drawHorizontalFadeRect(this.ctx, 50, 50, 800, 600, "rgba(30, 30, 60, 0.4)", "both");
-        drawSlider(this.ctx,50, 30, 300, 20);
+        drawSlider(this.ctx, 50, 30, 300, 20);
         this.ctx.fillStyle = "#654321";
         this.ctx.drawImage(this.potImage, this.pot.x, this.pot.y, this.pot.w, this.pot.h);
-        this.ctx.drawImage(this.boardImage, 30, 80, 400, 500);
+        this.ctx.fillStyle = "rgba(100, 60, 30, 0.5)";
+        this.ctx.fillRect(this.inventorybag.x, this.inventorybag.y, this.inventorybag.w, this.inventorybag.h);
+        this.ctx.strokeStyle = "white";
+        this.ctx.strokeRect(this.inventorybag.x, this.inventorybag.y, this.inventorybag.w, this.inventorybag.h);
+        this.ctx.fillStyle = "white";
+        this.ctx.fillText("Inventory", this.inventorybag.x + 10, this.inventorybag.y + 20);
+
+
         //const potrect=this.ctx.fillRect(this.pot.x, this.pot.y, this.pot.w, this.pot.h);
 
         // 🔮 Draw ghost recipe if a valid combo is detected
@@ -271,7 +291,7 @@ export class CookingGame {
             const glowSize = 15 + pulse * 15;
             const alpha = 0.5 + pulse * 0.3;
 
-            const { ghostX, ghostY, ghostW, ghostH } = this.getGhostRect();
+            const {ghostX, ghostY, ghostW, ghostH} = this.getGhostRect();
 
 
             this.ctx.save();
@@ -303,6 +323,7 @@ export class CookingGame {
 
         requestAnimationFrame(() => this.draw());
     }
+
     toggle() {
         this.canvas.style.display = this.canvas.style.display === 'none' ? 'block' : 'none';
     }
@@ -342,6 +363,7 @@ export class CookingGame {
         return ing;
         console.log("Spawned ingredient:", name, ing);
     }
+
     tryAddRecipe(list, ingredient, success) {
         if (success) {
             if (!list.includes(ingredient)) {
@@ -419,14 +441,13 @@ export class CookingGame {
         );
 
         // Add the finished dish
-        const ing=this.addIngredient(this.currentRecipe.output);
-        ing.cut=true;
+        const ing = this.addIngredient(this.currentRecipe.output);
+        ing.cut = true;
         ing.state = this.ingredientPhase.DONE;
 
         // Clear the current recipe so you can’t click again
         this.currentRecipe = null;
     }
-
 
 
     isInsidePot(ing) {
@@ -439,12 +460,10 @@ export class CookingGame {
     }
 
 
-
-
     handleMouseDown(e) {
-        const { offsetX, offsetY } = e;
+        const {offsetX, offsetY} = e;
         if (this.currentRecipe) {
-            const { ghostX, ghostY, ghostW, ghostH } = this.getGhostRect();
+            const {ghostX, ghostY, ghostW, ghostH} = this.getGhostRect();
             if (
                 offsetX >= ghostX &&
                 offsetX <= ghostX + ghostW &&
@@ -476,11 +495,10 @@ export class CookingGame {
         this.customCursor.style.transform = `rotate(-45deg)`;
 
 
-
     }
 
     handleMouseMove(e) {
-        const { offsetX, offsetY, pageX, pageY } = e;
+        const {offsetX, offsetY, pageX, pageY} = e;
 
         let isHoveringUncut = false;
         let isHoveringCut = false;
@@ -520,25 +538,59 @@ export class CookingGame {
         for (const ing of this.activeIngredients) {
             if (ing.dragging) {
                 ing.dragging = false;
-                if (
-                    ing.x + ing.w > this.pot.x &&
-                    ing.x < this.pot.x + this.pot.w &&
-                    ing.y + ing.h > this.pot.y &&
-                    ing.y < this.pot.y + this.pot.h
-                ) {
+
+                const insidePot =
+                    ing.x + ing.w > this.potHit.x &&
+                    ing.x < this.potHit.x + this.potHit.w &&
+                    ing.y + ing.h > this.potHit.y &&
+                    ing.y < this.potHit.y + this.potHit.h;
+
+
+                const insideInventory =
+                    ing.x + ing.w > this.inventorybag.x &&
+                    ing.x < this.inventorybag.x + this.inventorybag.w &&
+                    ing.y + ing.h > this.inventorybag.y &&
+                    ing.y < this.inventorybag.y + this.inventorybag.h;
+
+                if (insidePot) {
                     ing.isCooking = true;
-                    this.sizzleSound.currentTime=0;
+                    this.sizzleSound.currentTime = 0;
                     this.sizzleSound.play();
                 } else {
                     ing.isCooking = false;
+                }
 
+                //  Move to inventory if dropped there
+                if (insideInventory) {
+                    //  Remove from cooking game
+                    this.removeIngredient(ing);
+
+                    //  Notify server / network client
+                    if (this.networkClient) {
+                        this.networkClient.addInventoryItem(ing.name);
+                    } else {
+                        console.warn("⚠️ No network client linked to CookingGame!");
+                    }
+                    // Optional: visual feedback
+                    this.ctx.fillStyle = "rgba(255,255,255,0.1)";
+                    this.ctx.fillText(`+ ${ing.name} added to inventory`, this.inventorybag.x + 20, this.inventorybag.y + 40);
+                }
+
+                //  Snap back if dropped outside valid zones (unless burned)
+                else if (!insidePot && !insideInventory) {
+                    if (ing.state !== this.ingredientPhase.BURNED) {
+                        ing.x = ing.originalX ?? 200;
+                        ing.y = ing.originalY ?? 50;
+                    }
                 }
             }
         }
+
         this.customCursor.style.transition = 'transform 0.05s';
         this.customCursor.style.transform = `rotate(0deg)`;
 
-    }
+
+}
 
     handleMouseLeave() {
         document.body.classList.remove("cursor-hidden");
@@ -548,11 +600,16 @@ export class CookingGame {
         const pulseY = Math.sin(this.ghostGlowTime * 2) * 5;
         const ghostW = 128;
         const ghostH = 128;
-        const ghostX = this.pot.x + this.pot.w / 2 - ghostW / 2;
-        const ghostY = this.pot.y - 200 + pulseY*2;
+        const ghostX = this.pot.x + 200+ this.pot.w / 2 - ghostW / 2;
+        const ghostY = this.pot.y + 750 + pulseY*2;
 
         return { ghostX, ghostY, ghostW, ghostH };
     }
+    removeIngredient(ingredient) {
+        this.activeIngredients = this.activeIngredients.filter(i => i !== ingredient);
+        this.addedIngredients = this.addedIngredients.filter(i => i !== ingredient);
+    }
+
     //GAMEPAD FUNCTIONS
     snapToNextIngredient() {
         if (this.animationStep < 1.0) return; // 🧱 don't allow snapping mid-animation
@@ -642,6 +699,8 @@ export class Ingredient {
         };
         this.x = x;
         this.y = y;
+        this.originalX = x;
+        this.originalY = y;
         this.w = 100;
         this.h = 100;
         this.cut = false;

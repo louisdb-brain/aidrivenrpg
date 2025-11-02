@@ -59,13 +59,13 @@
     "id": "dragonscale",
     "image": "sprites/dragonscale.png",
     "burntime": "1500",
-    "cooktime": "1350",
+    "cooktime": "500",
     "description": "smells like dragonbreath"
   },
   {
     "id": "stew",
     "image": "sprites/stew.png",
-    "burntime": "500",
+    "burntime": "300",
     "cooktime": "0",
     "description": "yummy in my tummy"
   },

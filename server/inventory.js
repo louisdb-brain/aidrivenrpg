@@ -8,14 +8,14 @@ export class inventory{
         this.items=[]
     }
 
-    additem(itemId)
+    additem(itemname)
     {
 
         if(this.items.length<this.holdmax){
-            this.items.push(itemId);
+            this.items.push(itemname);
             const payload={
                 id:this.playerid,
-                name:itemId
+                name:itemname
             }
             console.log("[SERVER] Inventory additem:", itemId);
             this.emit('add-item', payload);

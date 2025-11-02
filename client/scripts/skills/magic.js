@@ -122,12 +122,11 @@ export class magicSystem {
 
         const pos = { x: position.x, y: position.y, z: position.z };
         const spellData = {
-            id: this.activeSpell.id,
-            name: this.activeSpell.name,
-            spellSprite:this.activeSpell.spellSprite,
-            damage:this.activeSpell.damage,
-            radius: this.activeSpell.radius,
-            position: pos
+            ...this.activeSpell, // copies id, name, damage, radius, lifetime, etc.
+            position: pos,
+            radius: Number(this.activeSpell.radius) ,     // enforce numeric
+            damage: Number(this.activeSpell.damage) ,
+            lifetime: Number(this.activeSpell.lifetime)
         };
 
         // ✅ Check if onSpellcast exists and is callable
