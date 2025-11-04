@@ -12,6 +12,7 @@ export class NetworkClient {
         this.inputSequence = 0;
         this.pendingInputs = [];
         this.game=pGame;
+        this.game.networkclient=this;
         this.spriteHandeler=pGame.spriteHandeler;
         // ✅ Works locally and on Render
         //this.socket = io(); console.log("RUNNING SERVER ONLINE"); // Uses same origin as page
@@ -153,6 +154,10 @@ export class NetworkClient {
             })
 
         });
+    }
+    addInventoryItem(name) {
+        console.log(" Sending request to add item:", name);
+        this.socket.emit("store-item", { name });
     }
 
     onPlayerReady(callback) {

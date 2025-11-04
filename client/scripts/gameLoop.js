@@ -17,6 +17,7 @@ import { generateUpscaledTexture } from './textureUtils.js';
 
 export class Game {
     constructor(handlers, gamepad = null) {
+        this.networkclient=null;
         this.handlers = handlers;
         this.scene = new THREE.Scene();
         this.scene.fog = new THREE.FogExp2(0x99ffcc, 0.004);
@@ -111,11 +112,6 @@ export class Game {
             console.warn("⚠️ Failed to generate ground texture:", err);
         });
 
-        // UI + Handlers
-        this.UI = new UI(this.scene, this.ctx, this.camera, this.canvas, this.ground, this.handlers);
-        this.levelHandeler = new levelHandler(this.scene);
-        this.VFX = new vfxHandler(this.scene, this.camera);
-
         // Load level asynchronously, but no blocking
         fetch('/level1.json')
             .then(res => res.json())
@@ -141,17 +137,27 @@ export class Game {
         this.mouse = new THREE.Vector2();
         window.addEventListener("click", (e) => this.handleClick(e));
 
+        // Gamepad setup
+        this.gamepad = gamepad;
+
+
+
+
+    }
+    start(){
+        // UI + Handlers
+        this.UI = new UI(this.scene, this.ctx, this.camera, this.canvas, this.ground,this.networkclient, this.handlers);
+        this.levelHandeler = new levelHandler(this.scene);
+        this.VFX = new vfxHandler(this.scene, this.camera);
         // Initialize UI + camera focus
         this.toggleCameraFocus();
         this.UI.cookinggame.toggle();
         this.UI.inventory.toggle();
 
-        // Gamepad setup
-        this.gamepad = gamepad;
+        //gamepad attach
         if (this.gamepad && this.gamepad.virtualCursor) {
             this.UI.attachVirtualCursor(this.gamepad.virtualCursor);
         }
-
 
     }
     update() {

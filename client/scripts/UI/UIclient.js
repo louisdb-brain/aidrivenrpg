@@ -9,7 +9,8 @@ import{Inventory} from "../inventory.js";
 import{inventorySim} from "../inventorySimulation.js";
 
 export class UI{
-    constructor(scene,ctx,camera,canvas,groundplane,handlers) {
+    constructor(scene,ctx,camera,canvas,groundplane,networkclient,handlers) {
+        this.networkclient=networkclient;
         this.networkhandlers=handlers;
         this.groundplane = groundplane;
         this.scene = scene;
@@ -45,7 +46,7 @@ export class UI{
                     //console.log(this.itemLibrary);
                 });
             });
-        this.cookinggame=new CookingGame(this.canvas);
+        this.cookinggame=new CookingGame(this.canvas,this.networkclient);
         this.cookinggame.addIngredient("tomato");
         this.cookinggame.addIngredient("steak");
         this.spellmenu=new magicSystem(this.canvas,this.scene,this.networkhandlers);

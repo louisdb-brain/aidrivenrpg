@@ -17,7 +17,7 @@ export class inventory{
                 id:this.playerid,
                 name:itemname
             }
-            console.log("[SERVER] Inventory additem:", itemId);
+            console.log("[SERVER] Inventory additem:", itemname);
             this.emit('add-item', payload);
         }
         else{

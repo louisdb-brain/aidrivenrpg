@@ -562,8 +562,9 @@ export class CookingGame {
 
                 //  Move to inventory if dropped there
                 if (insideInventory) {
-                    //  Remove from cooking game
+                    this.networkClient.addInventoryItem(ing.name);
                     this.removeIngredient(ing);
+
 
                     //  Notify server / network client
                     if (this.networkClient) {
@@ -601,7 +602,7 @@ export class CookingGame {
         const ghostW = 128;
         const ghostH = 128;
         const ghostX = this.pot.x + 200+ this.pot.w / 2 - ghostW / 2;
-        const ghostY = this.pot.y + 750 + pulseY*2;
+        const ghostY = this.pot.y + 600 + pulseY*2;
 
         return { ghostX, ghostY, ghostW, ghostH };
     }

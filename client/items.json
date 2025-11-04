@@ -7,7 +7,7 @@
   { "id": "stew", "name": "stew", "image": "./sprites/stew.png" },
   { "id": "dragonstew", "name": "dragonstew", "image": "./sprites/dragonstew.png" },
   { "id": "tomato", "name": "tomato", "image": "./sprites/tomato.png" },
-  { "id": "minotaursteak", "name": "minotaursteak", "image": "./sprites/steak.png" },
+  { "id": "steak", "name": "steak", "image": "./sprites/steak.png" },
   { "id": "butter", "name": "butter", "image": "./sprites/butter.png" },
   { "id": "manaherb", "name": "manaherb", "image": "./sprites/manaherb.png" },
   { "id": "vegetablestock", "name": "vegetablestock", "image": "./sprites/vegetablestock.png" },

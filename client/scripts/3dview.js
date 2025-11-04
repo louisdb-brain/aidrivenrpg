@@ -9,6 +9,8 @@ const handlers = {};
 const thisgame = new Game(handlers);
 
 const networkHandler = new NetworkClient("chatLog", thisgame);
+thisgame.networkClient = networkHandler;
+thisgame.start();
 
 for (const [key, methodName] of Object.entries(handlersConfig)) {
     if (typeof networkHandler[methodName] === 'function') {

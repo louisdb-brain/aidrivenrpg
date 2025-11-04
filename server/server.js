@@ -9,6 +9,9 @@ import {toVec3} from "./utilities.js"
 import {Chest} from "./chest.js";
 import {loot} from "./loot.js";
 import {skillNode} from "./interactivenode.js";
+import cors from "cors";
+import fetch from "node-fetch";
+
 
 const app = express();
 const server = http.createServer(app);
@@ -18,6 +21,31 @@ const io = new Server(server,{cors:{origin:"*",methods:["GET","POST"]}});
 const port = process.env.PORT || 3000;
 server.listen(port, () => console.log(`Server running on ${port}`));
 app.use(express.static('dist'));
+
+app.use(express.json());
+app.use(cors());
+
+app.post("/chat", async (req, res) => {
+    const { message } = req.body;
+
+    try {
+        const response = await fetch("http://localhost:11434/api/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                model: "tinyllama",
+                prompt: message,
+                stream: false,
+            }),
+        });
+
+        const data = await response.json();
+        res.json({ reply: data.response });
+    } catch (err) {
+        console.error("❌ AI chat error:", err.message);
+        res.status(500).json({ reply: "AI error: " + err.message });
+    }
+});
 
 
 
@@ -133,6 +161,17 @@ io.on('connection', (socket) => {
         node.click(player,socket);//passes in the socket to get the actual player clicking,not the last one
 
     });
+    socket.on("store-item", (data) => {
+        const player = playermanager.getPlayer(socket.id);
+        if (!player) {
+            console.warn(`⚠️ No player found for socket ${socket.id}`);
+            return;
+        }
+        console.log(`✅ Player ${socket.id} stored item: ${data.name}`);
+        playermanager.additem(socket.id, data.name);
+
+    });
+
 
     /*
     socket.on('move',(pos,target)=> {
