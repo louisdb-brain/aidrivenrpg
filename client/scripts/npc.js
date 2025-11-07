@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { SpriteBillboard } from "./animatedbillboard";
+import {iccColorPreloader} from "../levelEditor/iccColorPreload";
 
 export class npc {
     constructor(scene, texture, level, pStartpos = { x: 0, y: 0, z: 0 }, npcid, onLoaded = () => {}, onDestroy = () => {}) {
@@ -11,7 +12,7 @@ export class npc {
         this.pNpcID = npcid;
         this.position = new THREE.Vector3(pStartpos.x, pStartpos.y, pStartpos.z);
         this.name = "";
-        this.texture = "Goblin.png";
+        this.texture = "";
         this.level = level;
 
         // === Health / damage flags ===
@@ -228,5 +229,29 @@ export class npc {
 
         console.log(`💨 NPC ${this.pNpcID} dissolved into dust`);
     }
+   async setSprite(params) {
+        console.log("sprite setting with params: "+params);
+        // Remove old sprite from scene
+        const tex = await iccColorPreloader.load('/sprites/'+params.artID);
+        if (this.sprite?.sprite) {
+            this.scene.remove(this.sprite.sprite);
+        }
+
+        // Create new sprite billboard
+        this.sprite = new SpriteBillboard(
+            this.scene,
+            params.fps ?? 4,
+            this.position,
+            params.x ?? 2,
+            params.animationRow ?? 0,
+            tex?? this.texture, // default to existing texture
+            params.y ?? 2,
+            params.size ?? 5
+        );
+
+        // Ensure health bar stays visible / aligned
+        this.updateHealthBar();
+    }
+
 
 }

@@ -1,13 +1,13 @@
 import fetch from "node-fetch";
 
-async function testOllama() {
+async function testOllama(chatString) {
     try {
         const res = await fetch("http://localhost:11434/api/generate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                model: "tinyllama", // or "phi"
-                prompt: "Say hello world in a fantasy tone.",
+                model: "phi", // or "phi"
+                prompt: "you are a wizard in an rpg world and you will reply accordingly, if you think the player is offensive start the reply with !agressive , if you feel the player wants a quest start the reply with !quest",
             }),
         });
 

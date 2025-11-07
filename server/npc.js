@@ -5,9 +5,10 @@ import * as THREE from 'three';
 
 export class npc{
 
-    constructor(npcID,positionObj,pName,io,onDestroy,spawnCallback,loot){
+    constructor(pNpcID,positionObj,pName,pArtID,framex,framey,io,onDestroy,spawnCallback,loot){
         this.io=io;
-        this.npcid = npcID;
+        this.npcid = pNpcID;
+        this.artPayload={artID:pArtID,x:framex,y:framey};
         this.position= new THREE.Vector3(positionObj.x,positionObj.y,positionObj.z);
         this.level="1";
         this.zone=0;

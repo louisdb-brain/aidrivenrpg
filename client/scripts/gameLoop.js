@@ -118,6 +118,9 @@ export class Game {
             .then(data => loadLevel(data, this.scene))
             .catch(console.error);
 
+
+
+
         // Postprocessing
         this.composer = new EffectComposer(this.renderer);
         this.composer.renderTarget1.texture.encoding = THREE.sRGBEncoding;
@@ -144,7 +147,11 @@ export class Game {
 
 
     }
+    async initTextureCache{
+
+    }
     start(){
+
         // UI + Handlers
         this.UI = new UI(this.scene, this.ctx, this.camera, this.canvas, this.ground,this.networkclient, this.handlers);
         this.levelHandeler = new levelHandler(this.scene);
@@ -272,6 +279,7 @@ export class Game {
             npcid,
             (npcInstance) => {
                 if (npcInstance.mesh) this.clickableObjects.push(npcInstance.mesh);
+
             },
             (npcInstance) => {
                 // ✅ Remove NPC from Game's list when destroyed
@@ -280,6 +288,7 @@ export class Game {
                 console.log(`🧹 NPC ${id} removed from gameloop.`);
             }
         );
+        this.networkclient.getTextureData(id);
 
         this.npcs[id] = thisnpc;
     }

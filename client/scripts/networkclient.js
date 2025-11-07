@@ -81,6 +81,20 @@ export class NetworkClient {
                     //console.log("updated " + npc.name);
                 });
             });
+            this.socket.on("get-npc-sprite",(data)=>{
+                const npc = this.game.npcs[data.id];
+
+                if (!npc) {
+                    // NPC not created yet → try again shortly
+                    setTimeout(() => {
+                        const lateNpc = this.game.npcs[data.id];
+                        if (lateNpc) lateNpc.setSprite(data.artPayload);
+                    }, 100);
+                    return;
+                }
+                npc.setSprite(data);
+            });
+
             this.socket.on('npc-kill', (payload) => {
                 const npc = this.game.npcs[payload.id];
                 if (npc) {
@@ -196,6 +210,10 @@ export class NetworkClient {
     loot(lootId)
     {
         this.socket.emit('loot',lootId);
+    }
+    getTextureData(id){
+        console.log("get texture data for "+id)
+        this.socket.emit("get-texture-data",id);
     }
     castSpell(spellData) {
         console.log(spellData);

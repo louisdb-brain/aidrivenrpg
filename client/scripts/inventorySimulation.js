@@ -96,6 +96,7 @@ export class inventorySim{
         this.ctx.fillRect(this.fallbox.x,this.fallbox.y,this.fallbox.w,this.fallbox.h)
     }
     addItem(name, imagePath) {
+
         const randX = this.canvas.width - 500 + Math.random() * (370 - 120);
 
         const item = new itemPhysical(randX,20,name,imagePath,"nosound");

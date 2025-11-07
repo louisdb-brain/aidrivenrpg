@@ -109,12 +109,12 @@ async function sendMessage() {
     chatInput.value = "";
 
     appendMessage("You", text);
-
+    const setting="you are a wizard in a magical land, respond in a single line  to this phrase: "
     try {
         const res = await fetch(endpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: text }),
+            body: JSON.stringify({ message: setting + text }),
         });
         const data = await res.json();
         appendMessage("NPC", data.reply || "(no reply)");
