@@ -2,58 +2,60 @@ import * as THREE from 'three';
 import handlersConfig from './networkevents.json' assert { type: 'json' };
 import { NetworkClient } from "./networkclient.js";
 import { Game } from "./gameLoop.js";
-import {gamepad} from "./gamepad.js";
-
+import { gamepad } from "./gamepad.js";
 
 const handlers = {};
 const thisgame = new Game(handlers);
 
-const networkHandler = new NetworkClient("chatLog", thisgame);
-thisgame.networkClient = networkHandler;
-thisgame.start();
+// Network client reference (assigned after start)
+let networkHandler = null;
 
-for (const [key, methodName] of Object.entries(handlersConfig)) {
-    if (typeof networkHandler[methodName] === 'function') {
-        handlers[key] = (...args) => networkHandler[methodName](...args);
-    } else {
-        console.warn(`Method '${methodName}' not found on NetworkClient`);
-    }
-}
+// Boot sequence: preload → start (builds UI etc) → create network → bind network-ready logic
+thisgame.initTextures().then(() => {
+    thisgame.start();
 
-var playerisReady=false;
-networkHandler.onPlayerReady(() => {
-    thisgame.localPlayerId = networkHandler.getsocket().id;
-    thisgame.loop();
-    playerisReady = true;
+    networkHandler = new NetworkClient("chatLog", thisgame);
+    thisgame.networkClient = networkHandler;
 
+
+    // Only now is it safe to subscribe to network readiness
+    let playerisReady = false;
+    networkHandler.onPlayerReady(() => {
+        thisgame.networkClient.initHandlers();
+        thisgame.networkClient.initSocketListeners();
+        const sock = networkHandler.getsocket?.();
+        if (!sock?.id) return;
+        thisgame.localPlayerId = sock.id;
+
+        thisgame.loop();
+        playerisReady = true;
+    });
 });
 
-
-
+// Drag/orbit tracking
 let isDragging = false;
 let dragStart = { x: 0, y: 0 };
 let orbiting = false;
 
-// Track if the OrbitControls is rotating the camera
-thisgame.controls.addEventListener('start', () => orbiting = true);
-thisgame.controls.addEventListener('end',   () => orbiting = false);
+// Orbit state comes from controls created by Game
+thisgame.controls.addEventListener('start', () => (orbiting = true));
+thisgame.controls.addEventListener('end', () => (orbiting = false));
 
-// Track drag start
+// Drag start
 window.addEventListener('pointerdown', (e) => {
     dragStart.x = e.clientX;
     dragStart.y = e.clientY;
     isDragging = false;
 });
 
-// Track drag move
-
+// Drag move (+ spell target preview if spellmenu is active)
 window.addEventListener('pointermove', (e) => {
     const dx = Math.abs(e.clientX - dragStart.x);
     const dy = Math.abs(e.clientY - dragStart.y);
     if (dx > 3 || dy > 3) isDragging = true;
 
-    if(thisgame.UI.spellmenu.activeSpell)
-    {
+    // Guard UI access until start() has created it
+    if (thisgame.UI?.spellmenu?.activeSpell) {
         const rect = thisgame.renderer.domElement.getBoundingClientRect();
         const mouse = new THREE.Vector2(
             ((e.clientX - rect.left) / rect.width) * 2 - 1,
@@ -63,114 +65,137 @@ window.addEventListener('pointermove', (e) => {
         const raycaster = new THREE.Raycaster();
         raycaster.setFromCamera(mouse, thisgame.camera);
         raycaster.far = 100000;
-        if(!thisgame.ground)return;
+        if (!thisgame.ground) return;
 
-
-        const position = thisgame.UI.spellmenu.getMousePositionToGround(
-            mouse, thisgame.camera, raycaster, thisgame.ground
+        const position = thisgame.UI.spellmenu.getMousePositionToGround?.(
+            mouse,
+            thisgame.camera,
+            raycaster,
+            thisgame.ground
         );
         if (!position) return;
-        //thisgame.VFX.spawn('/icons/magiccircle.png', new THREE.Vector3(0, 0, 0), 'billboard', 20, 5000);
 
-        thisgame.VFX.spawn('/icons/magiccircle.png', position, 'flat', 10, 50);
-
+        thisgame.VFX?.spawn?.('/icons/magiccircle.png', position, 'flat', 10, 50);
     }
 });
-document.getElementById('levelButton').addEventListener('click', (e) => {thisgame.levelHandeler.setLevel(document.getElementById('chatInput').value)})
-// Chat functionality
-document.getElementById('chatButton').addEventListener("click", sendMessage);
-const input = document.getElementById('chatInput');
-input.focus();
-input.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') sendMessage();
+
+// Level change button (guard level handler)
+document.getElementById('levelButton')?.addEventListener('click', () => {
+    const val = document.getElementById('chatInput')?.value;
+    thisgame.levelHandeler?.setLevel?.(val);
 });
+
+// Chat wiring
+const chatBtn = document.getElementById('chatButton');
+const input = document.getElementById('chatInput');
+chatBtn?.addEventListener('click', sendMessage);
+if (input) {
+    input.focus();
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') sendMessage();
+    });
+}
 
 function sendMessage() {
-    networkHandler.socket.emit('chat-message', input.value);
+    if (!input?.value) return;
+    const sock = networkHandler?.socket;
+    if (!sock) return console.warn('Network not ready; chat skipped.');
+    sock.emit('chat-message', input.value);
     input.value = '';
 }
-//gamepad setup
 
-var gamepadOne = null;
-window.addEventListener("gamepadconnected", (e) => {
-    console.log("Gamepad connected:", e.gamepad.id);
+// Gamepad setup
+let gamepadOne = null;
 
+window.addEventListener('gamepadconnected', (e) => {
+    console.log('Gamepad connected:', e.gamepad.id);
+
+    // Require network + game objects to exist
+    if (!networkHandler) return console.warn('Network not ready; gamepad deferred.');
     gamepadOne = new gamepad(networkHandler, thisgame);
-
-
-    // 💡 Pass it into the Game
     thisgame.gamepad = gamepadOne;
 
-
-    // Ensure VirtualCursor is linked to all UIs
-    if (gamepadOne.virtualCursor) {
-        thisgame.UI.attachVirtualCursor(gamepadOne.virtualCursor);
+    // Attach virtual cursor to UIs (if present)
+    if (gamepadOne?.virtualCursor) {
+        thisgame.UI?.attachVirtualCursor?.(gamepadOne.virtualCursor);
     }
 
+    // Button 7 pressed → select melee spell
+    gamepadOne.addEventListener('buttondown', (ev) => {
+        if (ev.detail.button === 7) {
+            thisgame.UI?.spellmenu?.selectSpellByName?.('MeleeAttack');
+        }
+    });
 
-    gamepadOne.addEventListener("buttondown", (e) => {
-        if (e.detail.button === 7) {
-            console.log("Gamepad down");
-            thisgame.UI.spellmenu.selectSpellByName("MeleeAttack");
+    // Button 7 released → cast at local player's current position
+    gamepadOne.addEventListener('buttonup', (ev) => {
+        if (ev.detail.button === 7) {
+            const id = networkHandler?.socket?.id;
+            const pos = id ? thisgame.players?.[id]?.position : null;
+            if (pos) thisgame.UI?.spellmenu?.castSpell?.(pos);
         }
     });
-    gamepadOne.addEventListener("buttonup", (e) => {
-        if (e.detail.button === 7) {
-            console.log("Gamepad up");
-            thisgame.UI.spellmenu.castSpell(thisgame.players[networkHandler.socket.id].position)
-        }
-    });
-    if(gamepadOne instanceof gamepad && gamepadOne.connected)
-    {
+
+    if (gamepadOne instanceof gamepad && gamepadOne.connected) {
         gamepadOne.loop();
     }
 });
 
-const keys = {
-    w: false,
-    a: false,
-    s: false,
-    d: false
-};
+window.addEventListener('gamepaddisconnected', (e) => {
+    console.log('Gamepad disconnected:', e.gamepad.id);
+});
 
-window.addEventListener("gamepaddisconnected", (e) => {
-    console.log("Gamepad disconnected:", e.gamepad.id);
-});
-//input setup
-document.addEventListener('keydown', event => {
+// Keyboard input to movement vectors
+const keys = { w: false, a: false, s: false, d: false };
+
+document.addEventListener('keydown', (event) => {
     const k = event.key.toLowerCase();
-    if(keys[k] !== undefined) { keys[k] = true; sendInput(); }
+    if (k in keys) {
+        keys[k] = true;
+        sendInput();
+    }
 });
-document.addEventListener('keyup', event => {
+
+document.addEventListener('keyup', (event) => {
     const k = event.key.toLowerCase();
-    if(keys[k] !== undefined) { keys[k] = false; sendInput(); }
+    if (k in keys) {
+        keys[k] = false;
+        sendInput();
+    }
 });
 
 function sendInput() {
-    let x = 0, y = 0;
+    const sockId = networkHandler?.getsocket?.()?.id;
+    if (!sockId) return; // not ready yet
+
+    let x = 0,
+        y = 0;
     if (keys.w) y -= 1;
     if (keys.s) y += 1;
     if (keys.a) x -= 1;
     if (keys.d) x += 1;
 
-    // normalize
     const len = Math.hypot(x, y);
     if (len > 0) {
         x /= len;
         y /= len;
     }
-    const playerId=networkHandler.getsocket().id;
-    networkHandler.sendInputVector(x, y,playerId);
-    thisgame.sendInputVector(x,y,playerId);
+
+    networkHandler.sendInputVector?.(x, y, sockId);
+    thisgame.sendInputVector?.(x, y, sockId);
 }
-// Raycaster setup
+
+// Global raycaster helpers
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
-window.addEventListener("unhandledrejection", e => {
-    console.error("Unhandled promise rejection:", e.reason);
+
+window.addEventListener('unhandledrejection', (e) => {
+    console.error('Unhandled promise rejection:', e.reason);
 });
+
+// Click handling: spell targeting → nodes → NPCs → loot → ground movement
 window.addEventListener('pointerup', (event) => {
-    if (isDragging || orbiting) return; // ignore camera drag/rotate
+    if (isDragging || orbiting) return;
 
     const rect = thisgame.renderer.domElement.getBoundingClientRect();
     const mouse = new THREE.Vector2(
@@ -182,16 +207,21 @@ window.addEventListener('pointerup', (event) => {
     raycaster.setFromCamera(mouse, thisgame.camera);
     raycaster.far = 100000;
 
-    // ---- 1. Spell targeting (if spell menu is active) ----
-    if (thisgame.UI.spellmenu.activeSpell) {
-        const pos = thisgame.UI.spellmenu.getMousePositionToGround(mouse, thisgame.camera, raycaster, thisgame.ground);
+    // 1) Spell targeting if menu active
+    if (thisgame.UI?.spellmenu?.activeSpell) {
+        const pos = thisgame.UI.spellmenu.getMousePositionToGround?.(
+            mouse,
+            thisgame.camera,
+            raycaster,
+            thisgame.ground
+        );
         if (pos) {
-            thisgame.UI.spellmenu.castSpell(pos);
-            return; // handled, stop further click logic
+            thisgame.UI.spellmenu.castSpell?.(pos);
+            return;
         }
     }
 
-    // ---- 2. SkillNode click ----
+    // 2) Skill node clicking
     if (thisgame.nodeMap && thisgame.nodeMap.size > 0) {
         const nodeMeshes = Array.from(thisgame.nodeMap.keys());
         const nodeHits = raycaster.intersectObjects(nodeMeshes, true);
@@ -199,82 +229,88 @@ window.addEventListener('pointerup', (event) => {
             const mesh = nodeHits[0].object;
             const node = thisgame.nodeMap.get(mesh);
             if (node) {
-                console.log("Clicked skillNode:", node.name);
-                networkHandler.sendNode( node.name);
-                return; // stop — we clicked a node
-            }
-        }
-    }
-
-    // ---- 3. NPC click ----
-    const npcModels = Object.values(thisgame.npcs)
-        .map(n => n?.model)
-        .filter(m => m instanceof THREE.Object3D);
-    const npcHits = raycaster.intersectObjects(npcModels, true);
-    if (npcHits.length > 0) {
-        const hitObj = npcHits[0].object;
-        for (const id in thisgame.npcs) {
-            const npc = thisgame.npcs[id];
-            const mesh = npc.model;
-            if (!mesh) continue;
-
-            // check parent/children
-            if (mesh === hitObj || mesh.children.includes(hitObj) || mesh.children.some(c => c === hitObj)) {
-                console.log("NPC clicked:", id);
-                networkHandler.attackNpc(id);
+                console.log('Clicked skillNode:', node.name);
+                networkHandler?.sendNode?.(node.name);
                 return;
             }
         }
     }
 
-    // ---- 4. Loot click ----
-    const lootResult = thisgame.levelHandeler?.tryPickupLootFromRay(raycaster);
+    // 3) NPC click
+    const npcModels = Object.values(thisgame.npcs)
+        .map((n) => n?.model)
+        .filter((m) => m instanceof THREE.Object3D);
+    const npcHits = raycaster.intersectObjects(npcModels, true);
+    if (npcHits.length > 0) {
+        const hitObj = npcHits[0].object;
+        for (const id in thisgame.npcs) {
+            const npc = thisgame.npcs[id];
+            const mesh = npc?.model;
+            if (!mesh) continue;
+
+            const isThis =
+                mesh === hitObj ||
+                mesh.children.includes(hitObj) ||
+                mesh.children.some((c) => c === hitObj);
+
+            if (isThis) {
+                console.log('NPC clicked:', id);
+                networkHandler?.attackNpc?.(id);
+                return;
+            }
+        }
+    }
+
+    // 4) Loot click
+    const lootResult = thisgame.levelHandeler?.tryPickupLootFromRay?.(raycaster);
     if (lootResult) {
-        networkHandler.loot(lootResult.itemID);
+        networkHandler?.loot?.(lootResult.itemID);
         return;
     }
 
-    // ---- 5. Ground click (movement) ----
+    // 5) Ground click → set movement target
     if (thisgame.ground) {
         const groundHit = raycaster.intersectObject(thisgame.ground);
         if (groundHit.length > 0) {
             const point = groundHit[0].point;
-            const socketid = networkHandler.getsocket().id;
-            const player = thisgame.players[socketid];
-            if (!player) return;
+            const sockId = networkHandler?.getsocket?.()?.id;
+            const player = sockId ? thisgame.players?.[sockId] : null;
+            if (!sockId || !player) return;
 
             const isRightClick = event.button === 2;
-            networkHandler.sendTarget(point, isRightClick);
-            console.log("Ground clicked:", point, isRightClick ? "(right)" : "(left)");
+            networkHandler?.sendTarget?.(point, isRightClick);
+            console.log('Ground clicked:', point, isRightClick ? '(right)' : '(left)');
         }
     }
 });
 
-
-
-// Hover state + helpers
+// Hover state + highlight helpers
 let hoveredNPC = null;
 let isOrbiting = false;
 
-thisgame.controls.addEventListener('start', () => { isOrbiting = true; });
-thisgame.controls.addEventListener('end',   () => { isOrbiting = false; });
+thisgame.controls.addEventListener('start', () => {
+    isOrbiting = true;
+});
+thisgame.controls.addEventListener('end', () => {
+    isOrbiting = false;
+});
 
 function applyHighlight(root) {
     if (!root) return;
-    root.traverse(obj => {
+    root.traverse((obj) => {
         if (obj.isMesh) {
             const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
-            mats.forEach(mat => {
+            mats.forEach((mat) => {
                 if (!mat || !('emissive' in mat)) return;
 
                 if (!obj.userData._hoverBak) obj.userData._hoverBak = [];
                 obj.userData._hoverBak.push({
                     mat,
                     color: mat.emissive.getHex(),
-                    intensity: ('emissiveIntensity' in mat) ? mat.emissiveIntensity : undefined
+                    intensity: 'emissiveIntensity' in mat ? mat.emissiveIntensity : undefined
                 });
 
-                mat.emissive.setHex(0x333333);           // subtle highlight
+                mat.emissive.setHex(0x333333);
                 if ('emissiveIntensity' in mat) mat.emissiveIntensity = 1.25;
             });
         }
@@ -283,7 +319,7 @@ function applyHighlight(root) {
 
 function clearHighlight(root) {
     if (!root) return;
-    root.traverse(obj => {
+    root.traverse((obj) => {
         const bak = obj.userData._hoverBak;
         if (!bak) return;
         bak.forEach(({ mat, color, intensity }) => {
@@ -297,9 +333,8 @@ function clearHighlight(root) {
     });
 }
 
-// Helper: given a mesh hit, return the owning NPC model (top-level)
+// Helper: climb up from a hit child mesh to the owning NPC model
 function findNPCModelFromHit(hitObj) {
-    // hitObj could be a child mesh; climb up until you match an npc.model
     for (const id in thisgame.npcs) {
         const npc = thisgame.npcs[id];
         if (!npc || !npc.model) continue;
@@ -312,5 +347,4 @@ function findNPCModelFromHit(hitObj) {
     return null;
 }
 
-
- // Unused currently, but fine to leave
+// Unused currently, but fine to leave

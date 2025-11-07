@@ -1,0 +1,19 @@
+{
+  "goblin": {
+    "file": "sprites/goblin.png",
+    "cols": 2,
+    "rows": 2,
+    "fps": 4,
+    "size": 5
+
+  },
+  "wizard": {
+    "file": "sprites/wizard.png",
+    "cols": 1,
+    "rows": 1,
+    "fps": 6,
+    "size": 6
+
+  }
+
+}

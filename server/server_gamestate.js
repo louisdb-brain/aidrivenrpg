@@ -126,6 +126,7 @@ export class gamestateClass{
             target: npc.targetPlayerId,
             level:npc.level
         }));
+        console.log(payload);
 
         this.io.emit('npc-position-update', payload);
     }

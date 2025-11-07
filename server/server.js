@@ -66,10 +66,10 @@ const spawnCallback = (lootId, name, location) => {
 }
 const numberofgoblins=20;
 for(let i=0;i<numberofgoblins;i++){
-    gamestate.addnpc(new npc("goblinid"+i,{x:2*i,y:0,z:0},"goblin_"+i,"wizard.png",2,2,io,destroynpcmethod,spawnCallback,"dragonscale"));
+    gamestate.addnpc(new npc("goblinid"+i,{x:2*i,y:0,z:0},"goblin",io,destroynpcmethod,spawnCallback,"dragonscale"));
 
 }
-gamestate.addnpc(new QuestGiver("wizardid1",{x:1,y:0,z:0},"wizard","wizard.png",1,1,io,destroynpcmethod,spawnCallback,"magicstaff","wizard_kind"));
+gamestate.addnpc(new QuestGiver("wizardid1",{x:1,y:0,z:0},"wizard",io,destroynpcmethod,spawnCallback,"magicstaff","wizard_kind"));
 
 gamestate.addChest(new Chest({x:10,y:0,z:0},"chest1"))
 gamestate.start();
@@ -128,9 +128,7 @@ io.on('connection', (socket) => {
         });
     });
 
-    socket.on("get-texture-data",(id)=>{
-        gamestate.npcManager.getNpcSprite(id);
-    })
+
     socket.on('player-target', (target, rightmouse) => {
         const player = playermanager.getPlayer(socket.id);
         if (!player) return;

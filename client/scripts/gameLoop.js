@@ -78,6 +78,9 @@ export class Game {
         this.canvas = document.createElement('canvas');
         this.ctx = this.canvas.getContext('2d');
 
+        this.npcTexturesLoaded = false; // ✅ define default state
+        this.textureCache = {};
+        this.NPC_SPRITE_TABLE = {};
         this.players = {};
         this.npcs = {};
         this.chests = {};
@@ -147,9 +150,7 @@ export class Game {
 
 
     }
-    async initTextureCache{
 
-    }
     start(){
 
         // UI + Handlers
@@ -167,6 +168,35 @@ export class Game {
         }
 
     }
+    initTextures() {
+        this.npcTexturesLoaded = false;
+
+        return fetch("/npcs.json")
+            .then(res => res.json())
+            .then(json => {
+                this.NPC_SPRITE_TABLE = json;
+                this.textureCache = {};
+
+                const loadPromises = Object.entries(json).map(([type, def]) => {
+                    return iccColorPreloader.load(`/${def.file}`).then(tex => {
+                        tex.encoding = THREE.LinearEncoding;
+                        tex.flipY = true;
+                        tex.magFilter = THREE.NearestFilter;
+                        tex.minFilter = THREE.NearestFilter;
+                        tex.needsUpdate = true;
+                        this.textureCache[type] = tex;
+                    });
+                });
+
+                return Promise.all(loadPromises);
+            })
+            .then(() => {
+                this.npcTexturesLoaded = true;
+                console.log("✅ Textures ready");
+            });
+    }
+
+
     update() {
         const delta = this.clock.getDelta();
         for (const id in this.players) this.players[id].update(delta);
@@ -263,35 +293,37 @@ export class Game {
     }
 
 
-    async addNpc(id, position = { x: 0, y: 0, z: 0 }, npcid,level) {
-        const tex = await iccColorPreloader.load('/sprites/Goblin.png');
-        tex.encoding = THREE.LinearEncoding;
-        tex.flipY = true;
-        tex.magFilter = THREE.NearestFilter;
-        tex.minFilter = THREE.NearestFilter;
-        tex.needsUpdate = true;
+    async addNpc(id, position, npcType, level) {
 
-        const thisnpc = new npc(
+        // Lookup sprite info from your preloaded table
+        const def = this.NPC_SPRITE_TABLE[npcType];
+        if (!def) {
+            console.warn(`No sprite definition found for NPC type '${npcType}'`);
+            return;
+        }
+
+        const texture = this.textureCache[npcType];
+        if (!texture) {
+            console.warn(`Texture missing for NPC type '${npcType}'`);
+            return;
+        }
+
+        const npcInstance = new npc(
             this.scene,
-            tex,
+            texture,
+            def.columns,
+            def.rows,
             level,
             position,
-            npcid,
-            (npcInstance) => {
-                if (npcInstance.mesh) this.clickableObjects.push(npcInstance.mesh);
-
-            },
-            (npcInstance) => {
-                // ✅ Remove NPC from Game's list when destroyed
-                this.scene.remove(npcInstance.mesh?.sprite);
-                delete this.npcs[id];
-                console.log(`🧹 NPC ${id} removed from gameloop.`);
-            }
+            id,
+            (inst) => { this.clickableObjects.push(inst.mesh); },
+            (inst) => { delete this.npcs[id]; }
         );
-        this.networkclient.getTextureData(id);
 
-        this.npcs[id] = thisnpc;
+        this.npcs[id] = npcInstance;
     }
+
+
     async addNode(name, position, sprite) {
 
         const node = await skillNode.create(this.scene, name, position, sprite);

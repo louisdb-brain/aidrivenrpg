@@ -60,15 +60,7 @@ export class npcManager {
         });
         this.objectmanager.addloot(lootObject);
     }
-    getNpcSprite(npcId)
-    {
-        if(!this.npcs[npcId]){
-            console.log("no npc with id ");
-            return;
-        }
-        const npc=this.npcs[npcId];
-        this.io.emit("get-npc-sprite",npc.npcid,npc.artPayload);
-    }
+
 
     getNpc(pID)
     {

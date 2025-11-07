@@ -94,6 +94,12 @@ export class UI{
 
 
     }
+    bindNetworkEvents() {
+        this.spellmenu.addEventListener("click", () => {
+            this.game.networkClient.castSpell(/* whatever */);
+        });
+    }
+
     attachVirtualCursor(virtualCursor) {
         this.virtualCursor = virtualCursor;
 

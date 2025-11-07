@@ -5,7 +5,7 @@ import { SpriteBillboard } from "./animatedbillboard";
 import {iccColorPreloader} from "../levelEditor/iccColorPreload";
 
 export class npc {
-    constructor(scene, texture, level, pStartpos = { x: 0, y: 0, z: 0 }, npcid, onLoaded = () => {}, onDestroy = () => {}) {
+    constructor(scene, texture,colums,rows, level, pStartpos = { x: 0, y: 0, z: 0 }, npcid, onLoaded = () => {}, onDestroy = () => {}) {
         this.scene = scene;
         this.model = null;
 
@@ -35,12 +35,14 @@ export class npc {
             scene,
             4,              // fps
             this.position,
-            2,              // frameCount
+            colums,              // frameCount
             0,              // animationRow
             texture,
-            2,              // rowCount
+            rows,              // rowCount
             5               // size
         );
+        this.model = this.sprite.sprite;
+
 
         // Simple world-space healthbar
         this.healthbar = this.initHealthBar();
@@ -51,7 +53,7 @@ export class npc {
 
     get mesh() {
         // expose the billboard sprite for raycasting/clicking
-        return this.sprite;
+        return this.sprite?.sprite;
     }
 
     // --- Healthbar creation: a back (dark) and a fill (colored) plane ---
@@ -229,29 +231,7 @@ export class npc {
 
         console.log(`💨 NPC ${this.pNpcID} dissolved into dust`);
     }
-   async setSprite(params) {
-        console.log("sprite setting with params: "+params);
-        // Remove old sprite from scene
-        const tex = await iccColorPreloader.load('/sprites/'+params.artID);
-        if (this.sprite?.sprite) {
-            this.scene.remove(this.sprite.sprite);
-        }
 
-        // Create new sprite billboard
-        this.sprite = new SpriteBillboard(
-            this.scene,
-            params.fps ?? 4,
-            this.position,
-            params.x ?? 2,
-            params.animationRow ?? 0,
-            tex?? this.texture, // default to existing texture
-            params.y ?? 2,
-            params.size ?? 5
-        );
-
-        // Ensure health bar stays visible / aligned
-        this.updateHealthBar();
-    }
 
 
 }

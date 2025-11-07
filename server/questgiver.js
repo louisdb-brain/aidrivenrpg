@@ -1,11 +1,11 @@
 import {npc} from "./npc.js";
 
 export class QuestGiver extends npc {
-    constructor(pNpcID, positionObj, pName,pArtID,framex,framey, io, onDestroy, spawncallback,loot,personality) {
-        super(pNpcID, positionObj, pName,pArtID,framex,framey, io, onDestroy, spawncallback, loot);
+    constructor(pNpcID, positionObj, pName,io, onDestroy, spawncallback,loot) {
+        super(pNpcID, positionObj, pName, io, onDestroy, spawncallback, loot);
 
 
-        this.personality=personality // array of quest objects
+         // array of quest objects
         this.isQuestGiver = true;
 
         // Quest givers generally do not move or attack
