@@ -21,66 +21,77 @@ export class SpriteBillboard {
         this.timer = 0;
         this.isAnimating = false;
         this.flipped = false;
-        this.position = new THREE.Vector3(position.x, position.y, position.z);
         this.isFrozen = false;
+        this.size = size;
 
-        const placeholderMat = new THREE.SpriteMaterial({ transparent: true });
-        this.sprite = new THREE.Sprite(placeholderMat);
+        this.position = new THREE.Vector3(position.x, position.y, position.z);
+
+        // temporary material before texture loads
+        const mat = new THREE.SpriteMaterial({ transparent: true });
+        this.sprite = new THREE.Sprite(mat);
         this.sprite.center.set(0.5, 0.0);
         this.sprite.position.copy(this.position);
-        this.sprite.scale.set(10, 10, 10);
+        this.sprite.scale.set(size, size, size);
         scene.add(this.sprite);
 
-        const loader = new THREE.TextureLoader();
+        this.baseTexture = null; // actual shared source
+        this.texture = null;     // per-instance clone wrapper
 
-        if (typeof textureInput === 'string') {
-            loader.load(
+        // ---- LOAD TEXTURE ----
+        if (typeof textureInput === "string") {
+            new THREE.TextureLoader().load(
                 textureInput,
-                (tex) => this._onTextureLoaded(tex, size),
+                (tex) => this._onTextureLoaded(tex),
                 undefined,
-                (err) => console.error('Failed to load texture:', textureInput, err)
+                (err) => console.error("Failed loading sprite:", textureInput, err)
             );
         } else if (textureInput && textureInput.isTexture) {
-            this._onTextureLoaded(textureInput, size);
+            this._onTextureLoaded(textureInput);
         } else {
-            console.error('Invalid texture input for SpriteBillboard:', textureInput);
+            console.error("Invalid texture input:", textureInput);
         }
     }
 
-    _onTextureLoaded(tex, size) {
-        tex.minFilter = THREE.NearestFilter;
-        tex.magFilter = THREE.NearestFilter;
-        tex.wrapS = THREE.RepeatWrapping;
-        tex.wrapT = THREE.RepeatWrapping;
-        tex.repeat.set(1 / this.frameCount, 1 / this.rowCount);
-        tex.encoding = THREE.sRGBEncoding;
+    _onTextureLoaded(tex) {
+        // shared source
+        this.baseTexture = tex;
+        this.baseTexture.minFilter = THREE.NearestFilter;
+        this.baseTexture.magFilter = THREE.NearestFilter;
+        this.baseTexture.wrapS = THREE.RepeatWrapping;
+        this.baseTexture.wrapT = THREE.RepeatWrapping;
+        this.baseTexture.encoding = THREE.sRGBEncoding;
 
-        this.sprite.material.map = tex;
+        // per-instance clone wrapper (only UV state differs)
+        this.texture = this.baseTexture.clone();
+        this.texture.repeat.set(1 / this.frameCount, 1 / this.rowCount);
+        this.texture.needsUpdate = true;
+
+        // apply texture to material
+        this.sprite.material.map = this.texture;
+        this.sprite.material.transparent = true;
         this.sprite.material.toneMapped = false;
-        this.sprite.material.color.setScalar(0.9);
-        this.sprite.material.needsUpdate = true;
         this.sprite.material.side = THREE.DoubleSide;
+        this.sprite.material.needsUpdate = true;
 
-        const framePixelWidth = tex.image.width / this.frameCount;
-        const framePixelHeight = tex.image.height / this.rowCount;
-        const aspect = framePixelHeight / framePixelWidth;
-        this.size = size;
+        // Correct sprite aspect ratio
+        const frameW = this.baseTexture.image.width / this.frameCount;
+        const frameH = this.baseTexture.image.height / this.rowCount;
+        const aspect = frameH / frameW;
         this.sprite.scale.set(this.size, aspect * this.size, this.size);
-        if (this.flipped) this.sprite.scale.x *= -1;
 
-        this.texture = tex;
+        // Start at frame 0
         this.setFrame(this.frame);
     }
 
     update(delta, camera) {
         if (camera) this.sprite.quaternion.copy(camera.quaternion);
-        if (this.isFrozen) return; // 👈 stops animation when frozen
+        if (this.isFrozen) return;
 
         if (this.isAnimating) {
             this.timer += delta;
-            const frameDuration = this.frameTime / this.fps;
-            if (this.timer >= frameDuration) {
-                this.timer -= frameDuration;
+            const dur = this.frameTime / this.fps;
+            if (this.timer >= dur) {
+                this.timer -= dur;
                 this.frame = (this.frame + 1) % this.frameCount;
                 this.setFrame(this.frame);
             }
@@ -90,27 +101,26 @@ export class SpriteBillboard {
         }
     }
 
-    setCell(col, row) {
-        this.animationRow = row;
-        this.setFrame(col);
-    }
-
     setFrame(frame) {
         this.frame = frame % this.frameCount;
         if (!this.texture) return;
 
-        let offsetX;
         const offsetY = (this.rowCount - 1 - this.animationRow) / this.rowCount;
 
         if (this.flipped) {
-            offsetX = 1 - (this.frame + 1) / this.frameCount;
-            this.texture.repeat.x = -Math.abs(this.texture.repeat.x);
+            this.texture.repeat.x = -1 / this.frameCount;
+            const offsetX = (this.frame + 1) / this.frameCount;
+            this.texture.offset.set(offsetX, offsetY);
         } else {
-            offsetX = this.frame / this.frameCount;
-            this.texture.repeat.x = Math.abs(this.texture.repeat.x);
+            this.texture.repeat.x = 1 / this.frameCount;
+            const offsetX = this.frame / this.frameCount;
+            this.texture.offset.set(offsetX, offsetY);
         }
+    }
 
-        this.texture.offset.set(offsetX, offsetY);
+    setCell(col, row) {
+        this.animationRow = row;
+        this.setFrame(col);
     }
 
     setAnimationRow(row) {
@@ -119,31 +129,19 @@ export class SpriteBillboard {
     }
 
     setFlippedX(flipped) {
-        const want = !!flipped;
-        if (this.flipped === want) return;
-        this.flipped = want;
-
-        if (!this.texture) return;
-
-        const repeatX = 1 / this.frameCount;
-        const repeatY = 1 / this.rowCount;
-        this.texture.repeat.set(this.flipped ? -repeatX : repeatX, repeatY);
-        this.texture.offset.x = this.flipped
-            ? (1 - this.frame / this.frameCount - 1 / this.frameCount)
-            : (this.frame / this.frameCount);
-        this.texture.needsUpdate = true;
+        this.flipped = !!flipped;
+        this.setFrame(this.frame);
     }
 
-    setTarget(posVec3) {
-        this.sprite.position.copy(posVec3);
-        this.position.copy(posVec3);
+    setTarget(pos) {
+        this.sprite.position.copy(pos);
+        this.position.copy(pos);
     }
 
     getposition() {
         return this.position.clone();
     }
 
-    // 👇 NEW — to show one specific frame and freeze it
     showStaticFrame(col, row) {
         this.isFrozen = true;
         this.isAnimating = false;
@@ -152,7 +150,6 @@ export class SpriteBillboard {
         this.setFrame(col);
     }
 
-    // 👇 NEW — unfreeze and reset animation cleanly
     resumeAnimation() {
         this.isFrozen = false;
         this.timer = 0;

@@ -9,7 +9,7 @@ export class Player {
         this.targetPosition = this.position.clone();
         this.locked = false;
         this.lockedPosition = this.position.clone();
-        this.speed =  options.speed||8;
+        this.speed =  8;
         this.interactionRadius=0.8;
         this.level="level1";
         this.angle = null;

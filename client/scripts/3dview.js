@@ -13,7 +13,7 @@ let networkHandler = null;
 // Boot sequence: preload → start (builds UI etc) → create network → bind network-ready logic
 thisgame.initTextures().then(() => {
     thisgame.start();
-
+    window.game = thisgame;
     networkHandler = new NetworkClient("chatLog", thisgame);
     thisgame.networkClient = networkHandler;
 

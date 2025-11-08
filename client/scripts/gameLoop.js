@@ -311,7 +311,8 @@ export class Game {
         const npcInstance = new npc(
             this.scene,
             texture,
-            def.columns,
+            def.size,
+            def.cols,
             def.rows,
             level,
             position,

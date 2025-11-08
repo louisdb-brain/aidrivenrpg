@@ -5,7 +5,7 @@ import { SpriteBillboard } from "./animatedbillboard";
 import {iccColorPreloader} from "../levelEditor/iccColorPreload";
 
 export class npc {
-    constructor(scene, texture,colums,rows, level, pStartpos = { x: 0, y: 0, z: 0 }, npcid, onLoaded = () => {}, onDestroy = () => {}) {
+    constructor(scene, texture,size,colums,rows, level, pStartpos = { x: 0, y: 0, z: 0 }, npcid, onLoaded = () => {}, onDestroy = () => {}) {
         this.scene = scene;
         this.model = null;
 
@@ -39,7 +39,7 @@ export class npc {
             0,              // animationRow
             texture,
             rows,              // rowCount
-            5               // size
+            size               // size
         );
         this.model = this.sprite.sprite;
 

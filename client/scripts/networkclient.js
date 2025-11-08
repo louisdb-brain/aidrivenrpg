@@ -28,25 +28,26 @@ export class NetworkClient {
 
         // Chat
         socket.on("chat-message", (msg) => {
-            if (!document.getElementById(this.chatElementId)) {        // <- guard: UI not ready yet
-                   // <- store until UI exists
-                return;
-            }
-
             const log = document.getElementById(this.chatElementId);
+            if (!log) return; // <-- Add this line
+
             const entry = document.createElement("li");
             entry.textContent = `[${msg.id.slice(0,5)}]: ${msg.message}`;
             log.appendChild(entry);
             log.scrollTop = log.scrollHeight;
         });
 
+
         socket.on("local-message", (msg) => {
             const log = document.getElementById(this.chatElementId);
+            if (!log) return; // <-- Add this line
+
             const entry = document.createElement("li");
             entry.textContent = `[You]: ${msg}`;
             log.appendChild(entry);
             log.scrollTop = log.scrollHeight;
         });
+
 
         // Player join/leave
         socket.on("playerjoin", (data) => {

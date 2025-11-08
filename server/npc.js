@@ -22,7 +22,7 @@ export class npc{
         this.onDestroy = onDestroy;
         this.hitTime=0;
         this.hitTimer=13;
-        this.speed= 2;
+        this.speed= 0;
         this.attackspeed=3;
         this.loot=loot;
         this.spawnCallback = spawnCallback;
