@@ -1,4 +1,4 @@
-import { VirtualCursor } from "./virtualCursor.js";
+import { VirtualCursor } from "./virtualcursor.js";
 
 export class gamepad {
     constructor(networkhandeler, game) {
