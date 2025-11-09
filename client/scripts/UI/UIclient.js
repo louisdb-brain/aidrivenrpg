@@ -25,7 +25,7 @@ export class UI{
         }
         this.music = new Audio('/music/pubsong.mp3');
         this.music.loop = true;
-
+        this.hitSound=new Audio('/sounds/hitsound.mp3');
 
 
 
@@ -62,6 +62,8 @@ export class UI{
                 console.log("pressed &")
                 this.activeMenus.cooking=!this.activeMenus.cooking;
                 this.cookinggame?.toggle();
+                this.inventory.show();
+                this.activeMenus.inventory=true;
 
                 if (this.virtualCursor) {
                     this.virtualCursor.active = !this.activeMenus.cooking; // disable it
@@ -192,6 +194,7 @@ export class UI{
 
     }
     drawHit(position, amount) {
+        this.hitSound.play();
         const canvas = document.createElement('canvas');
         canvas.width = 128;
         canvas.height = 64;

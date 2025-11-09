@@ -16,13 +16,14 @@ export class npc{
         this.health=10;
         this.attack=2;
         this.detectionRadius=10;
+        this.boidsRadius=10;
         this.attackRadius= 1;
         this.hitboxRadius=1.5;
         this.detectionsphere= new THREE.Sphere(this.position, this.detectionRadius);
         this.onDestroy = onDestroy;
         this.hitTime=0;
         this.hitTimer=13;
-        this.speed= 0;
+        this.speed= 3;
         this.attackspeed=3;
         this.loot=loot;
         this.spawnCallback = spawnCallback;
@@ -39,13 +40,14 @@ export class npc{
 
 
     }
-    update(delta, players) {
+    update(delta, players,allNpcs) {
         if (this._destroyed) return; // skip dead NPCs
 
         if (this.hitTimer > 0) this.hitTime--;
 
         this.aiupdate(delta);
         this.checkFollow(players);
+        this.checkAvoid(allNpcs);
         this.move(delta);
     }
 
@@ -53,6 +55,7 @@ export class npc{
         let temppos=position.clone();
         temppos.y=0;
         this.targetPosition.copy(temppos); // store destination
+        console.log(this.targetPosition);
     }
     move(delta){
         if(this.hitTime>0)return; //check invincibleframes
@@ -86,6 +89,31 @@ export class npc{
             }
         }
     }
+    checkAvoid(allNpcs) {
+        let avoidVec = new THREE.Vector3(0, 0, 0);
+        let nearbyCount = 0;
+
+        for (const other of allNpcs) {
+            if (other === this) continue; // Don't compare with self
+
+            const dist = this.position.distanceTo(other.position);
+            const minDistance = this.boidsRadius;
+
+            if (dist < minDistance && dist > 0.001) {
+                let push = this.position.clone().sub(other.position); // Direction away from other
+                push.normalize().divideScalar(dist)*this.boidsRadius; // Make closer ones push more strongly
+                avoidVec.add(push); // Accumulate pushes
+                nearbyCount++;
+            }
+        }
+
+        if (nearbyCount > 0) {
+            avoidVec.divideScalar(nearbyCount); // Average the total push
+            this.targetPosition.add(avoidVec);  // Apply the avoidance to target position
+        }
+    }
+
+
     aiupdate(delta){
         //console.log(this.targetPosition.x +" " +this.position.x);
         //console.log(this.decisiontimer);

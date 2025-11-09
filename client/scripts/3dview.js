@@ -12,10 +12,12 @@ let networkHandler = null;
 
 // Boot sequence: preload → start (builds UI etc) → create network → bind network-ready logic
 thisgame.initTextures().then(() => {
-    thisgame.start();
+
     window.game = thisgame;
     networkHandler = new NetworkClient("chatLog", thisgame);
     thisgame.networkClient = networkHandler;
+    thisgame.toggleCameraFocus();
+    thisgame.start();
 
 
     // Only now is it safe to subscribe to network readiness
@@ -41,11 +43,17 @@ let orbiting = false;
 thisgame.controls.addEventListener('start', () => (orbiting = true));
 thisgame.controls.addEventListener('end', () => (orbiting = false));
 
+let spellActive=false;
+window.addEventListener('keyup', (event) => {
+    if(event.key==='a'){
+        thisgame.UI.spellmenu.selectSpell("fireball")
+    }});
 // Drag start
 window.addEventListener('pointerdown', (e) => {
     dragStart.x = e.clientX;
     dragStart.y = e.clientY;
     isDragging = false;
+
 });
 
 // Drag move (+ spell target preview if spellmenu is active)

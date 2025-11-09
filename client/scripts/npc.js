@@ -12,7 +12,7 @@ export class npc {
         this.pNpcID = npcid;
         this.position = new THREE.Vector3(pStartpos.x, pStartpos.y, pStartpos.z);
         this.name = "";
-        this.texture = "";
+        this.texture = texture;
         this.level = level;
 
         // === Health / damage flags ===
@@ -96,25 +96,27 @@ export class npc {
     }
 
     update(delta, camera) {
-        // Damage flash countdown (controls sprite flash & hpbar visibility window)
+        // 1) Damage flash window (hitTime): show a static hit frame
         if (this.hitTime > 0) {
             this.hitTime -= delta;
             if (this.hitTime < 0) this.hitTime = 0;
 
-            // Flash frame (bottom-right) while hit
+            // show a single frame while flashing (eg: col=1,row=1 in your atlas)
             this.sprite.showStaticFrame(1, 1);
-            if (this.sprite) this.sprite.update(delta, camera);
         } else {
-            // When hitTime ends, return to idle row
+            // when flash ends → return to normal anim row and resume anim
             if (this.sprite.isFrozen) {
                 this.sprite.animationRow = 0;
                 this.sprite.resumeAnimation();
             }
+            // normal movement towards target
             this.move(delta);
-            if (this.sprite) this.sprite.update(delta, camera);
         }
 
-        // Handle damage flag timing (for UI decisions like painting the bar)
+        // 2) Always advance the billboard + keep it facing camera
+        if (this.sprite) this.sprite.update(delta, camera);
+
+        // 3) DamageTimer controls UI state (HP bar visibility window)
         if (this.damageTimer > 0) {
             this.damageTimer -= delta;
             if (this.damageTimer <= 0) {
@@ -123,9 +125,10 @@ export class npc {
             }
         }
 
-        // Update healthbar (position, facing camera, scale to health, visibility)
+        // 4) Update the world-space health bar
         this.updateHealthBar(camera);
     }
+
 
     move(delta) {
         if (!this.sprite) return;

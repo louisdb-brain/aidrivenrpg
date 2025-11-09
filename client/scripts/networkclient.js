@@ -66,12 +66,15 @@ export class NetworkClient {
         // NPC updates
         socket.on("npc-position-update", (npcList) => {
             npcList.forEach(n => {
-                console.log(npcList);
+                //if (n.id=="goblinid4")console.log(n.targetPosition);
+
                 if (!this.game.npcs[n.id]) {
                     this.game.addNpc(n.id, n.position, n.name, n.level);
                 }
                 this.game.updateNpc(
-                    n.id, n.name, n.level,
+                    n.id,
+                    n.name,
+                    n.level,
                     toVec3(n.position),
                     toVec3(n.targetPosition),
                     n.angle,
@@ -123,6 +126,11 @@ export class NetworkClient {
                 console.warn(`Method '${methodName}' not found on NetworkClient`);
             }
         }
+        if (this.game.UI) {
+            this.game.UI.networkClient = this;
+            this.game.UI.cookinggame.networkClient = this; // <-- the one you need
+            this.game.UI.spellmenu.networkhandlers=this.handlers;
+        }
     }
 
     addInventoryItem(name) {
@@ -135,6 +143,8 @@ export class NetworkClient {
             this.game.addPlayer(this.socket.id, { x: 0, y: 0, z: 0 });
             console.log("Local player created with ID:", this.socket.id);
             this.localPlayerId=this.socket.id;
+            this.game.localPlayerId = this.socket.id;
+            console.log("Local player created with ID:", this.socket.id);
             setTimeout(() => {
                 callback();
             }, 0); // Wait one tick to ensure player is added

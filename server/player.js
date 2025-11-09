@@ -22,7 +22,7 @@ export class player {
         this.cooldown=50;
 
         this.attackspeed=3;
-        this.basepower=2;
+        this.basepower=20;
         this.equipmentpower=5;
         this.attacking=false;
         this.followTarget="";
@@ -106,7 +106,7 @@ export class player {
 
             return;
         }
-        console.log("combatlogic: attacking "+this.followTarget);
+        //console.log("combatlogic: attacking "+this.followTarget);
 
         //console.log(this.followTarget);
 

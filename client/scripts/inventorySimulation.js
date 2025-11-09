@@ -90,6 +90,10 @@ export class inventorySim{
     toggle() {
         this.canvas.style.display = this.canvas.style.display === 'none' ? 'block' : 'none';
     }
+    show() {
+        this.canvas.style.display = 'block';
+        this.visible = true;
+    }
     debugFallboxDrawing()
     {
         this.ctx.fillStyle="orange";

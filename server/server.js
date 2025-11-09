@@ -64,6 +64,8 @@ const spawnCallback = (lootId, name, location) => {
     const newLoot = new loot(lootId, name, location, emitCallback); // ✅ emits to client
     gamestate.objectManager.addloot(newLoot,lootId);                       // ✅ stores on server
 }
+gamestate.npcManager.spawnCallback=spawnCallback;
+
 const numberofgoblins=20;
 for(let i=0;i<numberofgoblins;i++){
     gamestate.addnpc(new npc("goblinid"+i,{x:2*i,y:0,z:0},"goblin",io,destroynpcmethod,spawnCallback,"dragonscale"));
@@ -93,10 +95,9 @@ io.on('connection', (socket) => {
         id: socket.id,
         position: {x:0,y:0,z:0}
     });
-
+    /*playermanager.additem(socket.id,"onion");
     playermanager.additem(socket.id,"onion");
-    playermanager.additem(socket.id,"onion");
-    playermanager.additem(socket.id,"onion");
+    playermanager.additem(socket.id,"onion");*/
 
     gamestate.objectManager.addloot(new loot("steakid1","steak",{x:0,y:0,z:0},emitCallback));
 

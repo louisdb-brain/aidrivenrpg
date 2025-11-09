@@ -23,14 +23,17 @@ function makeBillboard(mesh, mode = 'y') {
 }
 
 export class levelHandler {
-    constructor(scene, player,level) {
+    constructor(scene, player,level,networkclient) {
         this.scene = scene;
+        this.networkclient = networkclient;
         //this.networkHandler=networkhandler
         this.level=level;
         this.player = player; // Should be a THREE.Object3D or something with .position
         this.loots = new Map();     // id -> { loot, mesh }
         this.nextLootId = 1;
         this.PICKUP_RADIUS = 10;
+        this.pickupDistance=0.7;
+        this.lootSound = new Audio("sounds/lootsound.mp3");
     }
     setLevel(levelname) {
         fetch('/'+levelname+'.json')
@@ -80,6 +83,39 @@ export class levelHandler {
 
         //return lootId;
     }
+    attractLoot(player, radius = 3, speed = 6) {
+        if (!player) return;
+
+        const playerPos = player.position;
+
+        for (const [id, lootObj] of this.loots.entries()) {
+            const mesh = lootObj.mesh;
+            if (!mesh) continue;
+
+            const lootPos = mesh.position;
+            const dist = lootPos.distanceTo(playerPos);
+
+            if (dist < radius) {
+                const direction = new THREE.Vector3().subVectors(playerPos, lootPos).normalize();
+                lootPos.addScaledVector(direction, speed * 0.016); // delta-time approx
+
+                // Auto-pickup if very close
+                if (dist < this.pickupDistance) {
+                    // Remove from map & scene
+                    this.scene.remove(mesh);
+                    mesh.geometry.dispose();
+                    mesh.material.dispose();
+                    this.loots.delete(id);
+
+                    // Tell server you picked it up
+                    this.networkclient.loot(id);
+                    this.lootSound.play();
+                    console.log("✅ Auto-picked loot:", lootObj.loot.name);
+                }
+            }
+        }
+    }
+
 
     // Call this from your click/pointer handler
     tryPickupLootFromRay(raycaster) {

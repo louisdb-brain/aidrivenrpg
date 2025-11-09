@@ -125,6 +125,7 @@ export class CookingGame {
         this.cutSound = new Audio("sounds/cooking_cut.mp3");
         this.sizzleSound = new Audio("sounds/cooking_longsizzle.mp3");
         this.shortSizzleSound = new Audio("sounds/cooking_sizzle.mp3");
+        this.grabSound = new Audio("sounds/grabsound.mp3");
         this.playsizzle = false;
 
         this.initializeDropListener();
@@ -486,6 +487,7 @@ export class CookingGame {
                 }
             } else if (ing.cut && ing.hitTest(offsetX, offsetY)) {
                 ing.dragging = true;
+                this.grabSound.play();
 
             }
         }

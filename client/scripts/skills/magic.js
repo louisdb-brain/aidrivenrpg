@@ -13,7 +13,7 @@ export class magicSystem {
         this.canvas.style.top = '0';
         this.canvas.style.left = '0';
         this.canvas.style.zIndex = '10';
-        this.canvas.style.pointerEvents = 'auto';
+        this.canvas.style.pointerEvents = 'none';
         document.body.appendChild(this.canvas);
 
         this.ctx = this.canvas.getContext('2d');
@@ -27,6 +27,7 @@ export class magicSystem {
         this.menuContainer.style.bottom = '20px';
         this.menuContainer.style.left = '20px';
         this.menuContainer.style.zIndex = '11';
+        this.menuContainer.style.pointerEvents = 'auto';
         document.body.appendChild(this.menuContainer);
 
         // ✅ Fetch spells and build buttons dynamically
@@ -41,7 +42,13 @@ export class magicSystem {
                 console.log("spell menu created");
             })
             .catch(err => console.error(err));
+        let spellActive=false;
 
+        //attempt at hotkeysf
+        window.addEventListener('keyup', (event) => {
+            if(event.key==='a'){
+                this.spellmenu.selectSpell("fireball")
+            }});
         //canvas tester
         //this.canvas.style.background = 'rgba(0,0,255,0.1)';
 

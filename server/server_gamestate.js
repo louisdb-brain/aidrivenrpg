@@ -54,6 +54,7 @@ export class gamestateClass{
            this.objectManager.update(delta);
            this.emitChests();
            this.spellManager.update();
+           //console.log(this.npcManager.npcs["goblinid2"].targetPosition);
 
         }
 
@@ -126,7 +127,7 @@ export class gamestateClass{
             target: npc.targetPlayerId,
             level:npc.level
         }));
-        console.log(payload);
+        //console.log(payload);
 
         this.io.emit('npc-position-update', payload);
     }

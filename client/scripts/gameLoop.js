@@ -22,7 +22,7 @@ export class Game {
         this.scene = new THREE.Scene();
         this.scene.fog = new THREE.FogExp2(0x99ffcc, 0.004);
         this.scene.background = new THREE.Color(0x99ffcc);
-
+        this.localPlayerId = 0;
         // Camera & renderer setup
         const aspect = window.innerWidth / window.innerHeight;
         const frustumSize = 30;
@@ -155,10 +155,10 @@ export class Game {
 
         // UI + Handlers
         this.UI = new UI(this.scene, this.ctx, this.camera, this.canvas, this.ground,this.networkclient, this.handlers);
-        this.levelHandeler = new levelHandler(this.scene);
+        this.levelHandeler = new levelHandler(this.scene,"","",this.networkclient);
         this.VFX = new vfxHandler(this.scene, this.camera);
         // Initialize UI + camera focus
-        this.toggleCameraFocus();
+
         this.UI.cookinggame.toggle();
         this.UI.inventory.toggle();
 
@@ -166,6 +166,7 @@ export class Game {
         if (this.gamepad && this.gamepad.virtualCursor) {
             this.UI.attachVirtualCursor(this.gamepad.virtualCursor);
         }
+
 
     }
     initTextures() {
@@ -199,12 +200,14 @@ export class Game {
 
     update() {
         const delta = this.clock.getDelta();
+        this.levelHandeler.attractLoot(this.players[this.localPlayerId]);
         for (const id in this.players) this.players[id].update(delta);
         for (const id in this.npcs) this.npcs[id].update(delta,this.camera);
         for (const id in this.chests) this.chests[id].update(delta);
 
         const player = this.players[this.localPlayerId];
         this.levelHandeler.player = player;
+        this.levelHandeler.attractLoot(player);
         //this.levelHandeler.level=player.level;
         this.UI.update();
     }
@@ -347,12 +350,15 @@ export class Game {
 
     updateNpc(id, name,level, position, targetposition, angle, health) {
         if (!this.npcs[id]) return;
-        this.npcs[id].name = name;
-        this.npcs[id].angle = angle;
-        this.npcs[id].health = health;
-        this.npcs[id].level = level;
-        this.npcs[id].position.copy(toVec3(position));
-        this.npcs[id].setTarget(toVec3(targetposition));
+        if(id=="goblinid4")console.log(targetposition);
+        const npc=this.npcs[id];
+        npc.name = name;
+        npc.angle = angle;
+        npc.health = health;
+        npc.level = level;
+        npc.position.copy(toVec3(position));
+        npc.setTarget(toVec3(targetposition));
+
     }
 
     removePlayer(id) {
