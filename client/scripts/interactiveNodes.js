@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { placeSprite } from '../levelEditor/loadlevel.js';
+import { SpriteBillboard } from './animatedbillboard.js';
+
 
 export class skillNode {
     constructor(scene, name, position = { x: 0, y: 0, z: 0 }, spritePath) {
@@ -13,15 +15,19 @@ export class skillNode {
     static async create(scene, name, position, spritePath) {
         const node = new skillNode(scene, name, position, spritePath);
 
+        // Use SpriteBillboard
+        node.sprite = new SpriteBillboard(
+            scene,          // THREE.Scene
+            0,              // fps (0 = no animation)
+            position,       // { x, y, z }
+            1,              // frameCount (1 if static)
+            0,              // animationRow
+            spritePath,     // texture path
+            1,              // rowCount
+            1               // size
+        );
 
-        const record = await placeSprite({
-            name,
-            texturePath: spritePath,
-            position,
-            scene
-        });
-
-        node.mesh = record.mesh;
         return node;
     }
+
 }
