@@ -126,7 +126,7 @@ function generatePermutation() {
 
 // Load and process texture
 const loader = new THREE.TextureLoader();
-loader.load('/textures/ground_small.png', async (smallTex) => {
+loader.load('', async (smallTex) => {
     const img = smallTex.image;
 
     const scale = 8;
