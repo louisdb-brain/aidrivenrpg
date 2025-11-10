@@ -26,7 +26,7 @@ export class magicSystem {
         this.menuContainer.style.position = 'absolute';
         this.menuContainer.style.bottom = '20px';
         this.menuContainer.style.left = '20px';
-        this.menuContainer.style.zIndex = '11';
+        this.menuContainer.style.zIndex = '1000';
         this.menuContainer.style.pointerEvents = 'auto';
         document.body.appendChild(this.menuContainer);
 

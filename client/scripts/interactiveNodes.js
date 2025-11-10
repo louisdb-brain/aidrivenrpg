@@ -1,7 +1,5 @@
 import * as THREE from 'three';
-import { placeSprite } from '../levelEditor/loadlevel.js';
 import { SpriteBillboard } from './animatedbillboard.js';
-
 
 export class skillNode {
     constructor(scene, name, position = { x: 0, y: 0, z: 0 }, spritePath) {
@@ -9,25 +7,32 @@ export class skillNode {
         this.name = name;
         this.position = new THREE.Vector3(position.x, position.y, position.z);
         this.type = 'skillNode';
-        this.mesh = null;
+        this.sprite = null;
+        this.mesh = null; // ⬅️ important!
     }
 
     static async create(scene, name, position, spritePath) {
         const node = new skillNode(scene, name, position, spritePath);
 
-        // Use SpriteBillboard
         node.sprite = new SpriteBillboard(
-            scene,          // THREE.Scene
-            0,              // fps (0 = no animation)
-            position,       // { x, y, z }
-            1,              // frameCount (1 if static)
-            0,              // animationRow
+            scene,
+            0,              // fps
+            position,
+            1,              // frameCount
+            0,              // row
             spritePath,     // texture path
-            1,              // rowCount
-            1               // size
+            1,              // rows
+            1.5             // size
         );
+
+        node.mesh = node.sprite.sprite; // ⬅️ expose the THREE.Sprite
 
         return node;
     }
 
+    update(delta, camera) {
+        if (this.sprite) {
+            this.sprite.update(delta, camera);
+        }
+    }
 }

@@ -27,7 +27,9 @@ export class UI{
         this.music.loop = true;
         this.hitSound=new Audio('/sounds/hitsound.mp3');
 
-
+        this.MAX_SOUNDS = 8;
+        this.hitPool = Array.from({ length: this.MAX_SOUNDS }, () => new Audio("sounds/hitsound.mp3"));
+        this.hitIndex = 0;
 
         this.inventory=new inventorySim();
         this.playerInventory=["potion","sword"]
@@ -55,7 +57,9 @@ export class UI{
 
         window.addEventListener('mousemove', (event) => {
             this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
+            this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            this.mouseX = event.clientX;
+            this.mouseY = event.clientY;
         });
         window.addEventListener('keyup', (event) => {
             if(event.key==='&'){
@@ -87,6 +91,9 @@ export class UI{
         musicButton.style.position = "absolute";
         musicButton.style.top = "10px";
         musicButton.style.right = "10px";
+
+
+
         document.body.appendChild(musicButton);
 
         musicButton.addEventListener('click', () => this.toggleMusic());
@@ -96,6 +103,19 @@ export class UI{
 
 
     }
+    bringToFront(canvas) {
+        if (!canvas) return;
+
+        canvas.style.zIndex = 200;
+
+        // lower inventory + cooking, but never magic
+        this.cookinggame.canvas.style.zIndex = (this.cookinggame.canvas === canvas ? 200 : 0);
+        this.inventory.canvas.style.zIndex = (this.inventory.canvas === canvas ? 200 : 0);
+        // magic intentionally untouched
+    }
+
+
+
     bindNetworkEvents() {
         this.spellmenu.addEventListener("click", () => {
             this.game.networkClient.castSpell(/* whatever */);
@@ -135,6 +155,13 @@ export class UI{
         }
     }
 
+    playHitSound() {
+        this.hitPool[this.hitIndex].currentTime = 0;
+        this.hitPool[this.hitIndex].play();
+        this.hitIndex = (this.hitIndex + 1) % this.MAX_SOUNDS;
+    }
+
+
     makeSprite()
     {
         const canvas = document.createElement('canvas');
@@ -147,6 +174,7 @@ export class UI{
 
     update()
     {
+        this.checkUIHover();
         this.cookinggame.update();
         this.cookinggame.draw();
         this.inventory.update();
@@ -194,7 +222,7 @@ export class UI{
 
     }
     drawHit(position, amount) {
-        this.hitSound.play();
+        this.playHitSound();
         const canvas = document.createElement('canvas');
         canvas.width = 128;
         canvas.height = 64;
@@ -290,6 +318,62 @@ export class UI{
 
         }
     }
+    checkUIHover() {
+
+        if (!this.cookinggame || !this.inventory) return;
+
+
+        const cookingCanvas = this.cookinggame.canvas;
+        const inventoryCanvas = this.inventory.canvas;
+
+        // Do NOT run this logic if either UI is not visible
+        if (
+            cookingCanvas.style.display === "none" ||
+            inventoryCanvas.style.display === "none" ||
+            cookingCanvas.hidden ||
+            inventoryCanvas.hidden
+        ) {  return;}
+
+        // Convert mouse to cooking canvas space
+        const rect = cookingCanvas.getBoundingClientRect();
+        const scaleX = cookingCanvas.width / rect.width;
+        const scaleY = cookingCanvas.height / rect.height;
+
+        const x = (this.mouseX - rect.left) * scaleX;
+        const y = (this.mouseY - rect.top) * scaleY;
+
+        // Drag checks
+        const draggingCooking = this.cookinggame.activeIngredients.some(ing => ing.dragging);
+        const draggingInventory = !!this.inventory.draggedItem;
+
+        // Inventory hitbox
+        const bag = this.cookinggame.inventorybag;
+
+        const hoveringInventory =
+            x >= bag.x && x <= bag.x + bag.w &&
+            y >= bag.y && y <= bag.y + bag.h;
+
+        // === Final Layer Logic ===
+        if (draggingCooking) {
+            // always keep cooking on top when dragging ingredient
+            this.bringToFront(cookingCanvas);
+            return;
+        }
+
+        if (draggingInventory) {
+            // always keep inventory on top when dragging an item
+            this.bringToFront(inventoryCanvas);
+            return;
+        }
+
+        if (hoveringInventory) {
+            this.bringToFront(inventoryCanvas);
+        } else {
+            this.bringToFront(cookingCanvas);
+        }
+    }
+
+
     checkhover(clickableobjects) {
         this.clickableObjects=clickableobjects;
         //console.log(this.clickableObjects);

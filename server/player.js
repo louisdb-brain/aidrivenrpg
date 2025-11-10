@@ -99,7 +99,7 @@ export class player {
     }
     combatlogic()
     {
-
+        if(!this.targetObject);
         if(this.followTarget=="" )
         {
             //console.log("error doing combat logic ,no follow target");
@@ -136,7 +136,14 @@ export class player {
         //push damage on npc
         //set cooldown
     }
+    takeDamage(pAmount) {
+        if (this.hitTime > 0) return; // invulnerability frames
+        //PLACEHOLDER DAMAGE IS NOT ACTUALLY TAKEN
+
+    }
     setTarget(position) {
+        this.followTarget = "";
+        this.targetObject = null;
         // Convert plain object to Vector3 if needed
         const posVec = position instanceof THREE.Vector3
             ? position

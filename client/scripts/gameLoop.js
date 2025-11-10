@@ -36,6 +36,7 @@ export class Game {
         );
 
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        this.renderer.setPixelRatio(window.devicePixelRatio || 1);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         document.getElementById('game-container').appendChild(this.renderer.domElement);
         this.renderer.outputEncoding = THREE.LinearEncoding;
@@ -44,8 +45,23 @@ export class Game {
         this.renderer.physicallyCorrectLights = false;
 
         window.addEventListener('resize', () => {
+            // 3D sharpness
+            this.renderer.setPixelRatio(window.devicePixelRatio || 1);
             this.renderer.setSize(window.innerWidth, window.innerHeight);
+            this.camera.aspect = window.innerWidth / window.innerHeight;
+            this.camera.updateProjectionMatrix();
+
+            //  UI canvas sharpness and correct size
+            const dpr = window.devicePixelRatio || 1;
+            this.canvas.style.width = this.canvas.clientWidth + "px";
+            this.canvas.style.height = this.canvas.clientHeight + "px";
+            this.canvas.width = this.canvas.clientWidth * dpr;
+            this.canvas.height = this.canvas.clientHeight * dpr;
+            this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            this.ctx.imageSmoothingEnabled = false;
         });
+
+
 
         // Orbit controls
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -166,6 +182,25 @@ export class Game {
         if (this.gamepad && this.gamepad.virtualCursor) {
             this.UI.attachVirtualCursor(this.gamepad.virtualCursor);
         }
+
+        // === CONNECT UI BUTTONS ===
+        document.getElementById("btn-inventory").addEventListener("click", () => {
+            this.UI.inventory.toggle();
+        });
+
+        document.getElementById("btn-cooking").addEventListener("click", () => {
+            this.UI.cookinggame.toggle();
+        });
+
+        // Optional placeholders until implemented:
+        document.getElementById("btn-skills").addEventListener("click", () => {
+            console.log("Skills UI not implemented yet");
+        });
+
+        document.getElementById("btn-equipment").addEventListener("click", () => {
+            console.log("Equipment UI not implemented yet");
+        });
+
 
 
     }
@@ -329,19 +364,20 @@ export class Game {
 
 
     async addNode(name, position, sprite) {
-
         const node = await skillNode.create(this.scene, name, position, sprite);
 
-
-        if (node.mesh && node.mesh.isObject3D) {
+        // Ensure the sprite (mesh) is valid and clickable
+        if (node.mesh instanceof THREE.Object3D) {
             this.nodeMap.set(node.mesh, node);
             this.clickableObjects.push(node.mesh);
+            this.nodeMap.push(node); // ✅ Track for animation/update
         } else {
-            console.warn(`⚠️ Failed to create mesh for node '${name}'`);
+            console.warn(`⚠️ Failed to create valid mesh for skill node '${name}'`);
         }
 
         return node;
     }
+
     addChest(id) {
         const pos = { x: 5, y: 0, z: -3 };
         const thischest = new Chest(id, this.scene, true, pos);

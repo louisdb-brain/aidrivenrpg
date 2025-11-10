@@ -21,6 +21,7 @@ body {
     font-family: monospace;
     font-size: 14px;
     pointer-events: auto;
+    border:none;
 }
 #game-container {
     position: relative;
@@ -74,4 +75,56 @@ canvas {
     z-index: 1;
     pointer-events: none; /* makes mouse clicks go through to Three.js canvas */
 }
+/* === FANTASY RPG UI BUTTON BAR === */
+
+#rpg-ui-buttons {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 14px;
+    z-index: 2000;
+    pointer-events: auto;
+}
+
+#rpg-ui-buttons button {
+    padding: 8px 18px;
+    background: linear-gradient(#6b4a2e, #3c2a18); /* leather/brown */
+    border: 2px solid #d2a679;  /* gold trim */
+    border-radius: 6px;
+    color: #f0e6d2; /* parchment white */
+    font-family: serif;
+    font-weight: bold;
+    cursor: pointer;
+    text-shadow: 0 0 4px #000;
+}
+
+#rpg-ui-buttons button:hover {
+    background: linear-gradient(#7d5b38, #45311d);
+}
+
+/* UI Panels */
+#rpg-ui-panels {
+    position: fixed;
+    bottom: 80px; /* above the buttons */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2000;
+    pointer-events: auto;
+}
+
+.rpg-ui-panel {
+    display: none;
+    width: 320px;
+    padding: 16px;
+
+    background-size: cover;
+    border: 3px solid #4b2f1f;
+    color: #2e1b0f;
+    font-family: serif;
+    font-size: 16px;
+    border-radius: 10px;
+}
+
 

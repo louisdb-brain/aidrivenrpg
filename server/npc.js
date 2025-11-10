@@ -17,7 +17,7 @@ export class npc{
         this.attack=2;
         this.detectionRadius=10;
         this.boidsRadius=10;
-        this.attackRadius= 1;
+        this.attackRadius= 3;
         this.hitboxRadius=1.5;
         this.detectionsphere= new THREE.Sphere(this.position, this.detectionRadius);
         this.onDestroy = onDestroy;
@@ -47,6 +47,7 @@ export class npc{
 
         this.aiupdate(delta);
         this.checkFollow(players);
+        this.handleCombat(players);
         this.checkAvoid(allNpcs);
         this.move(delta);
     }
@@ -72,23 +73,27 @@ export class npc{
         this.detectionsphere.center.copy(this.position);
     }
 
-    checkFollow(players){
+    checkFollow(players) {
+        let foundTarget = false;
 
         for (const playerId in players) {
             const player = players[playerId];
-            const playerpos = new THREE.Vector3(
-                player.position.x,
-                player.position.y,
-                player.position.z
-            );
-
+            const playerpos = new THREE.Vector3(player.position.x, player.position.y, player.position.z);
 
             if (this.detectionsphere.containsPoint(playerpos)) {
+
+                this.targetPlayerId = playerId; // <-- REMEMBER THIS PLAYER
                 this.setTarget(playerpos);
-                //console.log(playerId + "  is colliding with  "+this.name +" "+playerpos.x + " "+playerpos.y);
+                foundTarget = true;
             }
         }
+
+        // If target walked away, stop following
+        if (!foundTarget) {
+            this.targetPlayerId = null;
+        }
     }
+
     checkAvoid(allNpcs) {
         let avoidVec = new THREE.Vector3(0, 0, 0);
         let nearbyCount = 0;
@@ -137,20 +142,41 @@ export class npc{
         }
 
     }
-    calculateCombat()
-    {
-        if( this.cooldown == 50)
-        {
-            this.cooldown-=this.attackspeed;
-            return true; // register hit
-        }else
-        {
-            this.cooldown-=this.attackspeed;
+    handleCombat(players) {
+        if (!this.targetPlayerId) return; // no target selected
+
+        const player = players[this.targetPlayerId];
+        if (!player) return; // target disappeared
+
+        const playerPos = player.position;
+        const dist = this.position.distanceTo(new THREE.Vector3(playerPos.x, playerPos.y, playerPos.z));
+
+        // If close enough, attack instead of moving closer
+        if (dist <= this.attackRadius) {
+            this.performAttack(player);
         }
-        if (this.cooldown <=0){this.cooldown=50;}
-
-
     }
+    performAttack(player) {
+        if (this.cooldown > 0) {
+            this.cooldown -= this.attackspeed;
+            return;
+        }
+
+        this.cooldown = 50; // reset attack cooldown
+
+        const dmg = this.attack;
+        player.takeDamage(dmg);
+        this.io.emit('player-takedamage', {
+            id: player.id,
+
+            amount: this.attack,
+        });
+
+        // Send event to client UI (optional)
+        this.io.emit('npc-attack', { npc: this.npcid});
+    }
+
+
     takeDamage(pAmount) {
         if (this.hitTime > 0) return; // invulnerability frames
 
@@ -167,7 +193,7 @@ export class npc{
 
         // If dead, destroy safely
         if (this.health <= 0) {
-            this.spawnCallback();
+            //this.spawnCallback();
             this.destroy();
         }
     }
@@ -175,6 +201,8 @@ export class npc{
     destroy() {
         if (this._destroyed) return; // prevent double cleanup
         this._destroyed = true;
+        this.targetPlayerId = null;
+        this.targetPosition = this.position.clone();
         const uniqueId = `${this.name}_loot_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
         this.spawnCallback(uniqueId,this.loot,this.position)
 

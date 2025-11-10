@@ -14,6 +14,8 @@ export class CookingGame {
         this.canvas.style.zIndex = '10';
         this.canvas.style.pointerEvents = 'auto'; // allow mouse input
 
+
+
         this.networkClient=networkclient;
         // Append to body (or to a wrapper if you prefer)
         document.body.appendChild(this.canvas);
@@ -46,8 +48,8 @@ export class CookingGame {
         this.pot = {
             x:  200,
             y:  100,
-            w: 1000,
-            h: 800
+            w: 800,
+            h: 650
         };
         this.potHit={
             x: this.pot.x+this.pot.w/2,
@@ -127,6 +129,8 @@ export class CookingGame {
         this.shortSizzleSound = new Audio("sounds/cooking_sizzle.mp3");
         this.grabSound = new Audio("sounds/grabsound.mp3");
         this.playsizzle = false;
+        this.dropsound=new Audio("sounds/lootsound.mp3");
+        this.ringsound=new Audio("sounds/ringsound.mp3");
 
         this.initializeDropListener();
 
@@ -472,6 +476,7 @@ export class CookingGame {
                 offsetY <= ghostY + ghostH
             ) {
                 this.finishRecipe();
+                this.ringsound.play();
                 return;
             }
         }
@@ -571,6 +576,7 @@ export class CookingGame {
                     //  Notify server / network client
                     if (this.networkClient) {
                         this.networkClient.addInventoryItem(ing.name);
+                        this.dropsound.play();
                     } else {
                         console.warn("⚠️ No network client linked to CookingGame!");
                     }
@@ -601,10 +607,10 @@ export class CookingGame {
     }
     getGhostRect() {
         const pulseY = Math.sin(this.ghostGlowTime * 2) * 5;
-        const ghostW = 128;
-        const ghostH = 128;
-        const ghostX = this.pot.x + 200+ this.pot.w / 2 - ghostW / 2;
-        const ghostY = this.pot.y + 600 + pulseY*2;
+        const ghostW = 100;
+        const ghostH = 100;
+        const ghostX = this.pot.x + 130+ this.pot.w / 2 - ghostW / 2;
+        const ghostY = this.pot.y + 400 + pulseY*2;
 
         return { ghostX, ghostY, ghostW, ghostH };
     }
@@ -704,8 +710,8 @@ export class Ingredient {
         this.y = y;
         this.originalX = x;
         this.originalY = y;
-        this.w = 100;
-        this.h = 100;
+        this.w = 70;
+        this.h = 70;
         this.cut = false;
         this.cutCount = 0;
         this.dragging = false;
