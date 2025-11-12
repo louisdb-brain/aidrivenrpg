@@ -1,10 +1,12 @@
 {
+
   "goblin": {
     "file": "sprites/goblin.png",
     "cols": 2,
     "rows": 2,
     "fps": 4,
-    "size": 5
+    "size": 5,
+    "loot": "manaherb"
 
   },
   "wizard": {
@@ -12,7 +14,8 @@
     "cols": 1,
     "rows": 1,
     "fps": 6,
-    "size": 3.5
+    "size": 3.5,
+    "loot": "mithrilsword"
 
   }
 

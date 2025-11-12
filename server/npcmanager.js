@@ -62,16 +62,11 @@ export class npcManager {
             destroynpcmethod:npc.destroynpcmethod,
             spawnCallback:npc.spawnCallback,
             loot:npc.loot,
+            level:npc.level,
             respawnTime: Date.now() + 200  // 1 minute
         };
         delete this.npcs[id];
 
-        // Drop loot
-        const lootId = `loot_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-        const lootObject = new loot(lootId, "steak", { x: npc.position.x, y: 0, z: npc.position.z }, (event, data) => {
-            this.io.emit(event, data);
-        });
-        this.objectmanager.addloot(lootObject);
     }
     updateRespawns() {
         const now = Date.now();
@@ -97,7 +92,8 @@ export class npcManager {
                     this.io,
                     (npc)=>this.removeNPC(npc),   // ✅ fresh onDestroy
                     this.spawnCallback,
-                    data.loot
+                    data.loot,
+                    data.level
                 );
                 console.log(newNpc);
 

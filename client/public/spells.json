@@ -5,22 +5,75 @@
     "icon": "icons/fireball.png",
     "targetSprite": "icons/spellcircle.png",
     "spellSprite":"vfx/firecircle.png",
-    "secondary": "icons/fireball.png",
-    "secondaryamount": 7,
     "radius": 10,
     "speed": 12,
     "damage": 50,
-    "lifetime": 500
-  },
+    "lifetime": 500,
+    "static": true
+  },{
+  "id":"meleeattack",
+  "name": "MeleeAttack",
+  "icon": "vfx/melee_slash.png",
+  "targetSprite": "icons/targetarrow1.png",
+  "spellSprite": "vfx/melee_slash.png",
+  "radius": 10,
+  "speed": 12,
+  "damage": 50,
+  "lifetime": 500,
+  "static": true,
+  "buff": null
+},
   {
-    "id":"meleeattack",
-    "name": "MeleeAttack",
-    "icon": "vfx/melee_slash.png",
-    "targetSprite": "vfx/targetarrow1.png",
-    "spellSprite": "vfx/melee_slash.png",
-    "secondary": "vfx/melee_slash.png",
-    "lifetime": 150,
-    "radius": 255,
-    "damage": 3
-  }
+    "id":"boltfire",
+    "name": "boltfire",
+    "icon": "vfx/bolt_fire.png",
+    "targetSprite": "icons/targetarrow1.png",
+    "spellSprite": "vfx/bolt_fire.png",
+    "radius": 10,
+    "speed": 12,
+    "damage": 50,
+    "lifetime": 500,
+    "static": false,
+    "buff": null
+  },{
+  "id":"healholy",
+  "name": "healholy",
+  "icon": "vfx/heal_holy.png",
+  "targetSprite": "icons/spellcircle.png",
+  "spellSprite": "vfx/heal_holy.png",
+  "radius": 10,
+  "speed": 12,
+  "damage": -50,
+  "lifetime": 500,
+  "static": false,
+  "buff": null
+},{
+  "id":"healnature",
+  "name": "healnature",
+  "icon": "vfx/heal_nature.png",
+  "targetSprite": "icons/spellcircle.png",
+  "spellSprite": "vfx/heal_nature.png",
+  "radius": 10,
+  "speed": 12,
+  "damage": -10,
+  "lifetime": 500,
+  "static": false,
+  "buff": null
+},{
+  "id":"meleefire",
+  "name": "meleefire",
+  "icon": "vfx/melee_fireslash.png",
+  "targetSprite": "icons/targetarrow1.png",
+  "spellSprite": "vfx/melee_fireslash.png",
+  "radius": 10,
+  "speed": 12,
+  "damage": 30,
+  "lifetime": 500,
+  "static": false,
+  "buff": null
+}
+
+
+
+
 ]

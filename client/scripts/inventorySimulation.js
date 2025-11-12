@@ -32,14 +32,60 @@ export class inventorySim{
             });
         this.backpack = { x: this.canvas.width - 500, y: 20, w: 500, h: 600 };
         this.backpackImg = new Image();
+        this.swordImg=new Image();
+        this.armorImage=new Image();
+        this.helmetImage=new Image();
         this.backpackImg.src = '/sprites/backpack_open.png';
+        this.swordImg.src = '/sprites/slot_sword.png';
+        this.armorImage.src = '/sprites/slot_armor.png';
+        this.helmetImage.src = '/sprites/slot_helmet.png';
+
+
+        this.sword={
+            x:this.backpack.x,
+            y:this.backpack.y+this.backpack.h+(this.backpack.h/10),
+            w:100,
+            h:100
+        };
+        this.armor={
+            x:this.sword.x+this.backpack.w/3,
+            y:this.sword.y,
+            w:this.sword.w,
+            h:this.sword.h
+        }
+        this.helmet={
+            x:this.sword.x+this.backpack.w/3*2,
+            y:this.sword.y,
+
+            w:this.sword.w,
+            h:this.sword.h
+        }
 
         this.backpackImg.onload = () => {
             console.log('Image loaded!');
             this.ctx.drawImage(this.backpackImg, this.backpack.x, this.backpack.y, this.backpack.w, this.backpack.h);
             this.debugFallboxDrawing();
         };
-        this.backpack.onerror = () => console.error('Failed to load image!');
+
+        this.swordImg.onload = () => {
+            console.log('Sword slot loaded!');
+            this.ctx.drawImage(this.swordImg, this.sword.x, this.sword.y, this.sword.w, this.sword.h);
+        };
+
+        this.armorImage.onload = () => {
+            console.log('Armor slot loaded!');
+            this.ctx.drawImage(this.armorImage, this.armor.x, this.armor.y, this.armor.w, this.armor.h);
+        };
+
+        this.helmetImage.onload = () => {
+            console.log('Helmet slot loaded!');
+            this.ctx.drawImage(this.helmetImage, this.helmet.x, this.helmet.y, this.helmet.w, this.helmet.h);
+        };
+
+        this.backpackImg.onerror = () => console.error('Failed to load backpack image!');
+        this.swordImg.onerror = () => console.error('Failed to load sword image!');
+        this.armorImage.onerror = () => console.error('Failed to load armor image!');
+        this.helmetImage.onerror = () => console.error('Failed to load helmet image!');
         this.fallbox={x:120,y:150,w:270,h:340}
 
 
@@ -70,6 +116,9 @@ export class inventorySim{
             this.checkResolved()
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.ctx.drawImage(this.backpackImg, this.backpack.x, this.backpack.y, this.backpack.w, this.backpack.h);
+            this.ctx.drawImage(this.swordImg, this.sword.x, this.sword.y, this.sword.w, this.sword.h);
+            this.ctx.drawImage(this.armorImage, this.armor.x, this.armor.y, this.armor.w, this.armor.h);
+            this.ctx.drawImage(this.helmetImage, this.helmet.x, this.helmet.y, this.helmet.w, this.helmet.h);
 
             for(let item of this.items){
 
@@ -148,15 +197,37 @@ export class inventorySim{
     handleMouseUp(e) {
         if (this.draggedItem) {
             this.draggedItem.dragging = false;
-            this.snapToInventoryBounds(this.draggedItem);
 
-            // Make it fall again
-            this.draggedItem.supported = false;
-            this.draggedItem.fallspeed = 0;
+            // weapon slot snapping
+            const i = this.draggedItem;
+            const s = this.sword;
+
+            // check if item overlaps sword slot
+            const overlapsWeaponSlot =
+                i.x + i.w > s.x &&
+                i.x < s.x + s.w &&
+                i.y + i.h > s.y &&
+                i.y < s.y + s.h;
+
+            if (overlapsWeaponSlot && i.name.startsWith("weapon")) {
+                // snap perfectly to the weapon slot
+                i.x = s.x;
+                i.y = s.y;
+                i.equiped = true;
+                i.supported = true;
+                console.log(`⚔️ Equipped weapon: ${i.name}`);
+            } else {
+                // fallback to normal snap inside backpack
+                this.snapToInventoryBounds(i);
+                i.supported = false;
+                i.fallspeed = 0;
+                i.equiped = false;
+            }
 
             this.draggedItem = null;
         }
     }
+
 
 
     snapToInventoryBounds(item) {
@@ -191,6 +262,7 @@ export class itemPhysical{
         this.w = 100;
         this.h = 100;
         this.supported = false;
+        this.equiped=false;
         this.fallspeed = 0
         this.bagBottom=500;
         this.dragging = false;
@@ -207,6 +279,7 @@ export class itemPhysical{
     }
     update(ctx, objectArray) {
         if (this.dragging) {
+            this.equiped=!this.equiped;
             // Don't apply gravity while dragging
             this.fallspeed = 0;
 
@@ -220,7 +293,7 @@ export class itemPhysical{
             return;
         }
 
-        if (!this.supported) {
+        if (!this.supported&&!this.equiped) {
             this.fallspeed += 0.3; // gravity
             this.y += this.fallspeed;
 

@@ -20,7 +20,7 @@ export class skillNode {
             position,
             1,              // frameCount
             0,              // row
-            spritePath,     // texture path
+            "/sprites/"+spritePath,     // texture path
             1,              // rows
             1.5             // size
         );

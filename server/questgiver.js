@@ -1,8 +1,8 @@
 import {npc} from "./npc.js";
 
 export class QuestGiver extends npc {
-    constructor(pNpcID, positionObj, pName,io, onDestroy, spawncallback,loot) {
-        super(pNpcID, positionObj, pName, io, onDestroy, spawncallback, loot);
+    constructor(pNpcID, positionObj, pName,io, onDestroy, spawncallback,loot,level) {
+        super(pNpcID, positionObj, pName, io, onDestroy, spawncallback, loot,level);
 
 
          // array of quest objects

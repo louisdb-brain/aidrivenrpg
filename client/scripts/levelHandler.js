@@ -53,8 +53,8 @@ export class levelHandler {
         loader.load(loot.iconPath, (texture) => {
             const imgW = texture.image.width;
             const imgH = texture.image.height;
-            const planeW = imgW / loot.scaleDivisor;
-            const planeH = imgH / loot.scaleDivisor;
+            const planeW = 2 ;
+            const planeH = 2;
 
             const geometry = new THREE.PlaneGeometry(planeW, planeH);
             const material = new THREE.MeshStandardMaterial({

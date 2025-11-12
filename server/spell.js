@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 export class Spell {
-    constructor(id,caster,sprite,radius,damage,time,position) {
+    constructor(id,caster,sprite,radius,damage,time,position,level) {
         this.id = id;
         this.manager = "" ; // reference to manager holds all active spells
         this.caster=caster;
@@ -12,7 +12,7 @@ export class Spell {
         this.damage=damage;
         this.time=time;
         this.dealtdamage = false;
-
+        this.level=level;
 
     }
 

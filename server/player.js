@@ -3,7 +3,7 @@ import {gamestateClass}     from './server_gamestate.js';
 import {inventory} from "./inventory.js";
 import {levelManager} from "./levelManager.js";
 export class player {
-    constructor(pId,emitCallback,position = { x: 0, y: 0, z: 0 },pName) {
+    constructor(pId,emitCallback,position = { x: 0, y: 0, z: 0 },level,pName) {
 
 
         this.id=pId;
@@ -46,7 +46,7 @@ export class player {
         this.zone=0;
         this.name=pName;
 
-        this.levelId="";
+        this.level=level;
 
         this.inventory=new inventory(this.id,this.emit,20);
     }
@@ -76,7 +76,7 @@ export class player {
         }
         const distance = movedirection.length();
 
-        if (distance > 0.0002) {
+        if (distance > 0.2) {
             movedirection.normalize();
             angledirection.normalize();
             const moveStep = this.speed * delta;

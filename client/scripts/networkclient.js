@@ -19,7 +19,7 @@ export class NetworkClient {
         this.spriteHandeler = pGame.spriteHandeler;
         // ✅ Works locally and on Render
         //this.socket = io(); console.log("RUNNING SERVER ONLINE"); // Uses same origin as page
-
+        this.playerLevel="level1";
         this.socket = io('http://localhost:3000');
 
     }
@@ -67,7 +67,7 @@ export class NetworkClient {
         socket.on("npc-position-update", (npcList) => {
             npcList.forEach(n => {
                 //if (n.id=="goblinid4")console.log(n.targetPosition);
-
+                if(n.level!=this.playerLevel)return;
                 if (!this.game.npcs[n.id]) {
                     this.game.addNpc(n.id, n.position, n.name, n.level);
                 }
@@ -107,9 +107,15 @@ export class NetworkClient {
                 this.game.UI.inventory.addItem(data.name, `./sprites/${data.name}.png`);
             }
         });
+        socket.on("emitnode", (data) => {
+            this.game.addNode(data.name, data.position, data.sprite);
+            console.log("emit "+data.name);
+        });
+
 
         socket.on("newloot", (data) => {
-            this.game.levelHandeler.spawnLoot(data.id, data.name, data.location, `./sprites/${data.name}.png`);
+            const path = this.itemData?.get(data.name)
+            this.game.levelHandeler.spawnLoot(data.id, data.name, data.location, path);
         });
 
         socket.on("spellcast", (data) => {
@@ -131,6 +137,19 @@ export class NetworkClient {
             this.game.UI.cookinggame.networkClient = this; // <-- the one you need
             this.game.UI.spellmenu.networkhandlers=this.handlers;
         }
+    }
+    async loadItemData() {
+        const response = await fetch('/items.json');
+        const items = await response.json();
+        this.itemData = new Map(items.map(item => [item.name, item.image]));
+
+    }
+    setlevel(level){
+        this.playerLevel=level;
+        this.game.players[this.socket.id].level=level;
+        this.game.cleanLevel();
+        this.game.levelHandeler.setLevel(level);
+        this.socket.emit("player-levelchange",level);
     }
 
     addInventoryItem(name) {

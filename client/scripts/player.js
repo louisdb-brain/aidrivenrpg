@@ -38,7 +38,7 @@ export class Player {
         const distance = direction.length();
         const moveStep = this.speed * delta;
 
-        if (distance > 0.0002) {
+        if (distance > 0.2) {
             direction.normalize();
             this.position.add(direction.multiplyScalar(moveStep));
             this.sprite.setTarget(this.position);

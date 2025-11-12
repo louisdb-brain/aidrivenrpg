@@ -23,6 +23,7 @@ export class UI{
             magic: false
 
         }
+
         this.music = new Audio('/music/pubsong.mp3');
         this.music.loop = true;
         this.hitSound=new Audio('/sounds/hitsound.mp3');
@@ -97,6 +98,7 @@ export class UI{
         document.body.appendChild(musicButton);
 
         musicButton.addEventListener('click', () => this.toggleMusic());
+
 
 
 
@@ -230,14 +232,18 @@ export class UI{
 
 
         const img = new Image();
-        if (amount != 0)
-        {
-            img.src = './sprites/hit.png';
+        switch (true) {
+            case (amount < 0):
+                img.src = './sprites/heal.png';
+                break;
+            case (amount > 0):
+                img.src = './sprites/hit.png';
+                break;
+            case (amount === 0):
+                img.src = './sprites/miss.png';
+                break;
         }
-        else
-        {
-            img.src='./sprites/miss.png';
-        }
+
 
 
         img.onload = () => {
@@ -251,7 +257,8 @@ export class UI{
             ctx.font = 'bold 28px sans-serif';
             ctx.fillStyle = 'white';
             ctx.textAlign = 'center';
-            ctx.fillText(amount, canvas.width / 2, canvas.height / 1.8);
+
+            ctx.fillText(Math.abs(amount), canvas.width / 2, canvas.height / 1.8);
 
             // Create texture after drawing
             const texture = new THREE.CanvasTexture(canvas);

@@ -60,18 +60,18 @@ const gamestate=new gamestateClass(io);
 //CALLBACKS
 const destroynpcmethod = (npcInstance) => gamestate.npcManager.removeNPC(npcInstance);
 const emitCallback=(event, data) => {io.emit(event, data)}
-const spawnCallback = (lootId, name, location) => {
-    const newLoot = new loot(lootId, name, location, emitCallback); // ✅ emits to client
+const spawnCallback = (lootId, name, location,level) => {
+    const newLoot = new loot(lootId, name,level, location, emitCallback); // ✅ emits to client
     gamestate.objectManager.addloot(newLoot,lootId);                       // ✅ stores on server
 }
 gamestate.npcManager.spawnCallback=spawnCallback;
 
 const numberofgoblins=20;
 for(let i=0;i<numberofgoblins;i++){
-    gamestate.addnpc(new npc("goblinid"+i,{x:2*i,y:0,z:0},"goblin",io,destroynpcmethod,spawnCallback,"dragonscale"));
+    gamestate.addnpc(new npc("goblinid"+i,{x:2*i,y:0,z:0},"goblin",io,destroynpcmethod,spawnCallback,"manaherb","level1"));
 
 }
-gamestate.addnpc(new QuestGiver("wizardid1",{x:1,y:0,z:0},"wizard",io,destroynpcmethod,spawnCallback,"magicstaff","wizard_kind"));
+gamestate.addnpc(new QuestGiver("wizardid1",{x:1,y:0,z:0},"wizard",io,destroynpcmethod,spawnCallback,"weapon_sword_copper","level1","wizard_kind"));
 
 gamestate.addChest(new Chest({x:10,y:0,z:0},"chest1"))
 gamestate.start();
@@ -83,7 +83,7 @@ gamestate.start();
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
     const socketCallback=(event,data)=>{socket.emit(event,data)};
-    playermanager.addPlayer(socket.id,(event, data) => {
+    playermanager.addPlayer(socket.id,"level1",(event, data) => {
         io.to(socket.id).emit(event, data);//callback function for events
     });
     io.emit('chat-message',{id:socket.id,message:"welcome to the game press F to fix camera, press I ,S and 1 for overlays"});
@@ -99,13 +99,15 @@ io.on('connection', (socket) => {
     playermanager.additem(socket.id,"onion");
     playermanager.additem(socket.id,"onion");*/
 
-    gamestate.objectManager.addloot(new loot("steakid1","steak",{x:0,y:0,z:0},emitCallback));
+    gamestate.objectManager.addloot(new loot("steakid1","steak","level1",{x:0,y:0,z:0},emitCallback));
+    gamestate.objectManager.addloot(new loot("sword1id","equipment_sword_mithril","level1",{x:5,y:0,z:0},emitCallback));
+    gamestate.objectManager.addloot(new loot("steakid1","equipment_sword_copper","level1",{x:5,y:0,z:3},emitCallback));
 
 
 
-    gamestate.objectManager.addNode(new skillNode("woodcutting1",{x:5,y:0,z:0},"plants/woodcutting_tree_oak","WOODCUTTING","0","log",emitCallback,socketCallback,spawnCallback));
-    gamestate.objectManager.addNode(new skillNode("mining1",{x:-5,y:0,z:0},"miningrock_copper","MINING","0","ore_copper",emitCallback,socketCallback,spawnCallback));
-    gamestate.objectManager.addNode(new skillNode("mining2",{x:-5,y:0,z:+5},"miningrock_mithril","MINING","30","ore_mithril",emitCallback,socketCallback,spawnCallback));
+    gamestate.objectManager.addNode(new skillNode("woodcutting1",{x:5,y:0,z:0},'level1',"plants/woodcutting_tree_oak","WOODCUTTING","0","log",emitCallback,socketCallback,spawnCallback));
+    gamestate.objectManager.addNode(new skillNode("mining1",{x:-5,y:0,z:0},"level1","miningrock_copper","MINING","0","ore_copper",emitCallback,socketCallback,spawnCallback));
+    gamestate.objectManager.addNode(new skillNode("mining2",{x:-5,y:0,z:+5},"level1","miningrock_mithril","MINING","30","ore_mithril",emitCallback,socketCallback,spawnCallback));
 
 
     //gamestate.emitNpc();
@@ -128,7 +130,11 @@ io.on('connection', (socket) => {
             message: msg
         });
     });
-
+    socket.on('player-levelchange',(level)=>{
+    const player=playermanager.getPlayer(socket.id)
+    player.level = level;
+    console.log(player.level);
+    });
 
     socket.on('player-target', (target, rightmouse) => {
         const player = playermanager.getPlayer(socket.id);

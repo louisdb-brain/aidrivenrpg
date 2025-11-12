@@ -102,6 +102,7 @@ export class Game {
         this.chests = {};
         this.clickableObjects = [];
         this.nodeMap = new Map();
+        this.nodeList = [];
         this.hoverFrameCounter = 10;
         this.hasStartedLoop = false;
 
@@ -161,11 +162,69 @@ export class Game {
 
         // Gamepad setup
         this.gamepad = gamepad;
-
+        this.caveposition={x:10,y:0,z:20}
 
 
 
     }
+    async caveDoor(position ) {
+        const textureLoader = new THREE.TextureLoader();
+        const tex = await textureLoader.loadAsync('/sprites/cavedoor.png');
+        tex.encoding = THREE.LinearEncoding;
+        tex.flipY = true;
+        tex.magFilter = THREE.NearestFilter;
+        tex.minFilter = THREE.NearestFilter;
+
+        const material = new THREE.SpriteMaterial({ map: tex, transparent: true });
+        const doorSprite = new THREE.Sprite(material);
+
+        // billboard effect and scale
+        doorSprite.scale.set(4, 4, 1);
+        doorSprite.position.copy(position);
+         // lift off the ground a bit
+        doorSprite.name = "cavedoor";
+        this.scene.add(doorSprite);
+
+        // Optional glow or helper
+        // const helper = new THREE.BoxHelper(doorSprite, 0xff0000);
+        // this.scene.add(helper);
+
+        // proximity check each frame
+        const checkDistance = () => {
+            const player = this.players[this.localPlayerId];
+            if (!player) return;
+
+            const dist = player.position.distanceTo(doorSprite.position);
+            if (dist < 10) {
+
+                console.log("🚪 Player is near the cave door!" +this.networkclient.playerLevel);
+                if(this.networkclient.playerLevel=="level1"){
+                    this.networkclient.setlevel("cavelevel");
+                    this.caveposition.x=0;
+
+
+                }
+                if(this.networkclient.playerLevel=="cavelevel"){
+                    //this.networkclient.setLevel("level1")
+                    this.caveposition.x=20;
+
+
+                }
+
+                // You can trigger a level load or teleport here
+            }
+        };
+
+        // hook into your game loop
+        const originalUpdate = this.update.bind(this);
+        this.update = () => {
+            originalUpdate();
+            checkDistance();
+        };
+
+        console.log("🪄 Cave door created at", position);
+    }
+
 
     start(){
 
@@ -245,6 +304,7 @@ export class Game {
         this.levelHandeler.attractLoot(player);
         //this.levelHandeler.level=player.level;
         this.UI.update();
+        this.caveDoor(new THREE.Vector3(this.caveposition.x, 0, this.caveposition.x));
     }
 
 
@@ -271,6 +331,8 @@ export class Game {
             requestAnimationFrame(loopInternal);
             this.composer.render();
         };
+
+
 
         loopInternal();
     }
@@ -386,7 +448,7 @@ export class Game {
 
     updateNpc(id, name,level, position, targetposition, angle, health) {
         if (!this.npcs[id]) return;
-        if(id=="goblinid4")console.log(targetposition);
+        //if(id=="goblinid4")console.log(targetposition);
         const npc=this.npcs[id];
         npc.name = name;
         npc.angle = angle;
@@ -513,4 +575,29 @@ export class Game {
 
 
     }
+    cleanLevel() {
+        // Remove each NPC mesh from the scene and dispose resources
+        for (const id in this.npcs) {
+            const npc = this.npcs[id];
+            if (!npc || !npc.mesh) continue;
+
+            this.scene.remove(npc.mesh);
+
+            if (npc.mesh.geometry) npc.mesh.geometry.dispose();
+            if (npc.mesh.material) {
+                if (Array.isArray(npc.mesh.material)) {
+                    npc.mesh.material.forEach(mat => mat.dispose());
+                } else {
+                    npc.mesh.material.dispose();
+                }
+            }
+        }
+
+        // Empty the npc dictionary and clickable objects related to them
+        this.npcs = {};
+        this.clickableObjects = this.clickableObjects.filter(obj => obj.type !== 'Sprite' && obj.type !== 'Mesh');
+
+        console.log("🧹 All NPCs cleared from scene.");
+    }
+
 }

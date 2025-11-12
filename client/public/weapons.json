@@ -1,0 +1,13 @@
+[
+  {
+  "name":"coppersword",
+  "damage": 3,
+  "sprite": "weapons/sword_copper.png"
+},
+  {
+
+    "name": "mithrilsword",
+    "damage": 10,
+    "sprite": "weapons/sword_mithril.png"
+  }
+]

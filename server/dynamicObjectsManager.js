@@ -11,9 +11,10 @@ export class objectManager{
             chest.update(delta);
         }
     }
-    addNode(node) {
+    addNode(node,level) {
         if(!this.nodes[node.name]) {
             this.nodes[node.name] = node;
+            this.nodes[node.name].level=level;
         }
     }
     clickNode(id,player) {

@@ -1,18 +1,19 @@
 
 
 export class skillNode {
-    constructor( name,position,sprite,skill,level,resources,emitCallback,socketCallback,spawnCallback) {
+    constructor( name,position,level,sprite,skill,skilllevel,resources,emitCallback,socketCallback,spawnCallback) {
         this.name=name;
         this.position = position
         this.sprite = sprite;
         this.type="skillNode";
         this.skill=skill;
-        this.level=level;
+        this.skill=skilllevel;
         this.resources=resources;
         this.emitCallback=emitCallback;
         this.socketCallback=socketCallback;
         this.spawnCallback=spawnCallback;
         this.emitNode();
+        this.level=level;
     }
     emitNode() {
         const payload={
@@ -25,7 +26,7 @@ export class skillNode {
     click(player, socket) {
         console.log("clicked " + this.name);
 
-        if (this.checkSkill(player, this.skill, this.level)) {
+        if (this.checkSkill(player, this.skill, this.skilllevel)) {
             socket.emit('clickedNode', this.name);
 
             const randomnumber = Math.random() * 2 - 1;
@@ -48,7 +49,7 @@ export class skillNode {
         } else {
             socket.emit(
                 "local-message",
-                `Skill level not high enough — need ${this.level} in ${this.skill}`
+                `Skill level not high enough — need ${this.skilllevel} in ${this.skill}`
             );
         }
     }

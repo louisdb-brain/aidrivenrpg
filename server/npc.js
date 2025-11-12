@@ -5,13 +5,13 @@ import * as THREE from 'three';
 
 export class npc{
 
-    constructor(pNpcID,positionObj,pName,io,onDestroy,spawnCallback,loot){
+    constructor(pNpcID,positionObj,pName,io,onDestroy,spawnCallback,loot,level){
         this.io=io;
         this.npcid = pNpcID;
 
         this.position= new THREE.Vector3(positionObj.x,positionObj.y,positionObj.z);
         this.level="1";
-        this.zone=0;
+        this.level=level;
         this.name=pName;
         this.health=10;
         this.attack=2;
@@ -56,7 +56,7 @@ export class npc{
         let temppos=position.clone();
         temppos.y=0;
         this.targetPosition.copy(temppos); // store destination
-        console.log(this.targetPosition);
+        //console.log(this.targetPosition);
     }
     move(delta){
         if(this.hitTime>0)return; //check invincibleframes
@@ -77,6 +77,8 @@ export class npc{
         let foundTarget = false;
 
         for (const playerId in players) {
+            if (players[playerId].level!=this.level) return;
+            console.log(players[playerId].level);
             const player = players[playerId];
             const playerpos = new THREE.Vector3(player.position.x, player.position.y, player.position.z);
 
@@ -146,6 +148,7 @@ export class npc{
         if (!this.targetPlayerId) return; // no target selected
 
         const player = players[this.targetPlayerId];
+        if (player.level!=this.level)return;
         if (!player) return; // target disappeared
 
         const playerPos = player.position;
@@ -204,7 +207,7 @@ export class npc{
         this.targetPlayerId = null;
         this.targetPosition = this.position.clone();
         const uniqueId = `${this.name}_loot_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
-        this.spawnCallback(uniqueId,this.loot,this.position)
+        this.spawnCallback(uniqueId,this.loot,this.position,this.level);
 
         console.log(`NPC ${this.name} (${this.npcid}) destroyed`);
         this.io.emit('npc-kill', { id: this.npcid, name: this.name });

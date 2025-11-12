@@ -15,7 +15,7 @@ thisgame.initTextures().then(() => {
 
     window.game = thisgame;
     networkHandler = new NetworkClient("chatLog", thisgame);
-    thisgame.networkClient = networkHandler;
+    thisgame.networkclient = networkHandler;
     thisgame.toggleCameraFocus();
     thisgame.start();
 
@@ -23,8 +23,9 @@ thisgame.initTextures().then(() => {
     // Only now is it safe to subscribe to network readiness
     let playerisReady = false;
     networkHandler.onPlayerReady(() => {
-        thisgame.networkClient.initHandlers();
-        thisgame.networkClient.initSocketListeners();
+        thisgame.networkclient.initHandlers();
+        thisgame.networkclient.initSocketListeners();
+        thisgame.networkclient.loadItemData();
         const sock = networkHandler.getsocket?.();
         if (!sock?.id) return;
         thisgame.localPlayerId = sock.id;
@@ -91,6 +92,8 @@ window.addEventListener('pointermove', (e) => {
 document.getElementById('levelButton')?.addEventListener('click', () => {
     const val = document.getElementById('chatInput')?.value;
     thisgame.levelHandeler?.setLevel?.(val);
+    thisgame.networkclient.setlevel(val);
+    thisgame.cleanLevel();
 });
 
 // Chat wiring
@@ -103,6 +106,7 @@ if (input) {
         if (event.key === 'Enter') sendMessage();
     });
 }
+
 
 function sendMessage() {
     if (!input?.value) return;
