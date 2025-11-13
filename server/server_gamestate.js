@@ -52,6 +52,7 @@ export class gamestateClass{
             this.emitNpc(playermanager.getAllPlayers());
            this.emitPlayers();
            this.objectManager.update(delta);
+           this.emitNodes();
            this.emitChests();
            this.spellManager.update();
            //console.log(this.npcManager.npcs["goblinid2"].targetPosition);
@@ -74,6 +75,15 @@ export class gamestateClass{
         this.emitNpc();
 
     }
+    emitNodes() {
+        for (const key in this.objectManager.nodes) {
+            const node = this.objectManager.nodes[key]; // the real node object
+            if (node && typeof node.emitNode === "function") {
+                node.emitNode();
+            }
+        }
+    }
+
 
     emitPlayers()
     {

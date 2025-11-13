@@ -83,7 +83,7 @@ export class levelHandler {
 
         //return lootId;
     }
-    attractLoot(player, radius = 3, speed = 6) {
+    attractLoot(player, radius = 5, speed = 12) {
         if (!player) return;
 
         const playerPos = player.position;

@@ -18,9 +18,9 @@ export class NetworkClient {
         this.game.networkclient = this;
         this.spriteHandeler = pGame.spriteHandeler;
         // ✅ Works locally and on Render
-        //this.socket = io(); console.log("RUNNING SERVER ONLINE"); // Uses same origin as page
+        this.socket = io(); console.log("RUNNING SERVER ONLINE"); // Uses same origin as page
         this.playerLevel="level1";
-        this.socket = io('http://localhost:3000');
+        //this.socket = io('http://localhost:3000');
 
     }
     initSocketListeners() {
@@ -108,9 +108,18 @@ export class NetworkClient {
             }
         });
         socket.on("emitnode", (data) => {
+            const exists = [...this.game.nodeMap.values()].some(n => n.name === data.name);
+
+            if (exists) {
+                console.log("Node already exists:", data.name);
+                return;
+            }
+
             this.game.addNode(data.name, data.position, data.sprite);
-            console.log("emit "+data.name);
+            console.log("Created node:", data.name);
         });
+
+
 
 
         socket.on("newloot", (data) => {
@@ -121,6 +130,17 @@ export class NetworkClient {
         socket.on("spellcast", (data) => {
             this.game.spawnSpell(data);
         });
+        socket.on("weapon-sprite",(payload)=>{
+            const player=game.players[payload.id];
+            if(!player) {
+                console.log("No player for weapon");
+                return
+            }
+            console.log("weaponsprite " +payload.name);
+
+            player.setWeaponSprite(payload.name);
+        })
+
 
         console.log("✅ NetworkClient event listeners initialized");
     }
@@ -134,8 +154,9 @@ export class NetworkClient {
         }
         if (this.game.UI) {
             this.game.UI.networkClient = this;
-            this.game.UI.cookinggame.networkClient = this; // <-- the one you need
+            this.game.UI.cookinggame.networkClient = this;
             this.game.UI.spellmenu.networkhandlers=this.handlers;
+            this.game.UI.inventory.networkhandlers=this.handlers;
         }
     }
     async loadItemData() {
@@ -173,6 +194,7 @@ export class NetworkClient {
     {
         this.socket.emit("click-node",name);
     }
+
     sendTarget(pTarget,rightmouse) {
         const player = this.game.players[this.socket.id];
         if (player) {
@@ -217,6 +239,23 @@ export class NetworkClient {
 
         });
         console.log(`Spellcast emitted:`, spellData);
+    }
+    dropItem(itemname) {
+        const player=this.game.players[this.localPlayerId];
+        const data={
+            name:itemname,
+            level:this.playerLevel,
+            location:player.location
+        }
+
+        this.socket.emit("player-drop-item", data);
+    }
+    equipWeapon(data){
+
+        this.socket.emit("equip-weapon",data);
+    }
+    unequipWeapon(){
+        this.socket.emit("unequip-weapon");
     }
 
     /*sendInputVector(x, y)

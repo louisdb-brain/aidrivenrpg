@@ -14,6 +14,7 @@
   { "id": "dragonbroth", "name": "dragonbroth", "image": "/sprites/dragonbroth.png" },
   { "id": "eyeballsjar", "name": "eyeballsjar", "image": "/sprites/eyeballjar.png" },
   { "id": "dragonscale", "name": "dragonscale", "image": "/sprites/dragonscale.png" },
-  {"id": "weapon_sword_mithril", "name": "mithrilsword", "image":"/sprites/weapon_sword_mithril.png"},
-  {"id": "weapon_sword_copper", "name": "coppersword", "image":"/sprites/weapon_sword_copper.png"}
+  {"id": "weapon_mithrilsword", "name": "weapon_mithrilsword", "image":"/sprites/weapon_mithrilsword.png"},
+  {"id": "weapon_mithrilsword", "name": "weapon_coppersword", "image":"/sprites/weapon_coppersword.png"},
+  {"id": "weapon_chickensword", "name": "weapon_chickensword", "image":"/sprites/weapon_chickensword.png"}
 ]

@@ -67,7 +67,7 @@ export class SmithingGame {
         };
 
         this.WorkshopImage = new Image();
-        this.WorkshopImage.src = '/sprites/stove.png';
+        this.WorkshopImage.src = '/sprites/forge.png';
 
         this.WorkshopImage.onload = () => {
             console.log('Image loaded!');

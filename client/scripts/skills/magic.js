@@ -66,10 +66,9 @@ export class magicSystem {
 
             // ✅ Prevent the click from propagating to your raycaster handler
             btn.addEventListener('click', e => {
-                //e.stopPropagation(); // stops click-to-move
-                e.stopPropagation(); // ✅ stops click-to-move or raycast in 3D
-                e.preventDefault();
+
                 this.selectSpell(spell);
+
             });
 
             this.menuContainer.appendChild(btn);

@@ -26,6 +26,7 @@ export class npc{
         this.speed= 3;
         this.attackspeed=3;
         this.loot=loot;
+        this.rareloot="mithrilsword"
         this.spawnCallback = spawnCallback;
 
         this.cooldown=50;
@@ -78,7 +79,7 @@ export class npc{
 
         for (const playerId in players) {
             if (players[playerId].level!=this.level) return;
-            console.log(players[playerId].level);
+            //console.log(players[playerId].level);
             const player = players[playerId];
             const playerpos = new THREE.Vector3(player.position.x, player.position.y, player.position.z);
 

@@ -1,13 +1,20 @@
 [
   {
-  "name":"coppersword",
-  "damage": 3,
-  "sprite": "weapons/sword_copper.png"
+    "name":"weapon_coppersword",
+    "damage": 3,
+    "speed": 2.5,
+    "sprite": "/sprites/weapons/sword_copper.png"
 },
   {
-
-    "name": "mithrilsword",
+    "name": "weapon_mithrilsword",
     "damage": 10,
-    "sprite": "weapons/sword_mithril.png"
+    "speed": 2.5,
+    "sprite": "/sprites/weapons/sword_mithril.png"
+  },
+  {
+    "name": "weapon_chickensword",
+    "damage": 10,
+    "speed": 2.5,
+    "sprite": "/sprites/weapons/sword_chicken.png"
   }
 ]

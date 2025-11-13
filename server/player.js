@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import {gamestateClass}     from './server_gamestate.js';
 import {inventory} from "./inventory.js";
 import {levelManager} from "./levelManager.js";
+import {rand} from "three/tsl";
 export class player {
     constructor(pId,emitCallback,position = { x: 0, y: 0, z: 0 },level,pName) {
 
@@ -22,12 +23,14 @@ export class player {
         this.cooldown=50;
 
         this.attackspeed=3;
-        this.basepower=20;
+        this.basepower=2;
         this.equipmentpower=5;
         this.attacking=false;
         this.followTarget="";
         this.targetObject=null;
         this.follow=false;
+        this.fistWeapon={name:"",power:"0",speed:3};
+        this.weapon=this.fistWeapon;
         this.skillLevels={
             ADVENTURING:10,
             WOODCUTTING:10,
@@ -49,9 +52,27 @@ export class player {
         this.level=level;
 
         this.inventory=new inventory(this.id,this.emit,20);
+        //this.equipWeapon({name:"mithrilsword",power:"10",speed:"2.5"})
     }
 
-
+    equipWeapon(data){
+        this.weapon={name:data.name,power:data.attack,speed:data.speed};
+        const payload={
+            name:data.name,
+            id:this.id
+        }
+        this.emit("weapon-sprite",payload);
+        console.log(payload);
+    }
+    unequipWeapon()
+    {
+        this.weapon=this.fistWeapon;
+        const payload={
+            name:"fist",
+            id:this.id
+        }
+        this.emit("weapon-sprite",payload);
+    }
     update(delta) {
 
         this.combatlogic();
@@ -99,7 +120,7 @@ export class player {
     }
     combatlogic()
     {
-        if(!this.targetObject);
+        if(!this.targetObject)return;;
         if(this.followTarget=="" )
         {
             //console.log("error doing combat logic ,no follow target");
@@ -114,16 +135,17 @@ export class player {
         this.targetPosition= this.targetObject.position.clone();
         const movedirection=new THREE.Vector3().subVectors(this.targetPosition,this.position);
         const distance=movedirection.length();
-
+        this.attackspeed=this.weapon.speed;
             if (this.cooldown > 0) {
                 this.cooldown -= this.attackspeed;
             }
             //hit register
             if (this.cooldown <= 0) {
                 this.cooldown = this.maxcooldown;
-                const randomhHit = Math.floor(Math.random() * (this.basepower + this.equipmentpower / 2));
-                this.targetObject.takeDamage(randomhHit);
-                this.targetObject.takeDamage(randomhHit);
+                const randomhHit = (this.basepower + this.equipmentpower / 2);
+                const calculatedHit=randomhHit+this.weapon.power;
+                this.targetObject.takeDamage(calculatedHit);
+                this.targetObject.takeDamage(calculatedHit);
                 //console.log(randomhHit + "damage dealt to " + this.targetObject);
             }
 

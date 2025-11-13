@@ -110,7 +110,9 @@ export class Game {
         this.ground = new THREE.Mesh(
             new THREE.PlaneGeometry(100, 100),
             new THREE.MeshStandardMaterial({ color: 0x99ffcc })
-        );
+            //new THREE.MeshStandardMaterial({ color: 0x2e2e2e })
+
+    );
         this.ground.rotation.x = -Math.PI / 2;
         this.ground.position.y = -1.05;
         this.ground.name = 'ground';
@@ -222,7 +224,7 @@ export class Game {
             checkDistance();
         };
 
-        console.log("🪄 Cave door created at", position);
+        //console.log("🪄 Cave door created at", position);
     }
 
 
@@ -304,7 +306,7 @@ export class Game {
         this.levelHandeler.attractLoot(player);
         //this.levelHandeler.level=player.level;
         this.UI.update();
-        this.caveDoor(new THREE.Vector3(this.caveposition.x, 0, this.caveposition.x));
+        //this.caveDoor(new THREE.Vector3(this.caveposition.x, 0, this.caveposition.x));
     }
 
 
@@ -426,7 +428,7 @@ export class Game {
 
 
     async addNode(name, position, sprite) {
-        const node = await skillNode.create(this.scene, name, position, sprite);
+        const node = await skillNode.create(this.scene, name, position, sprite+".png");
 
         // Ensure the sprite (mesh) is valid and clickable
         if (node.mesh instanceof THREE.Object3D) {

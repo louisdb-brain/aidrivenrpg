@@ -20,12 +20,14 @@ thisgame.initTextures().then(() => {
     thisgame.start();
 
 
+
     // Only now is it safe to subscribe to network readiness
     let playerisReady = false;
     networkHandler.onPlayerReady(() => {
         thisgame.networkclient.initHandlers();
         thisgame.networkclient.initSocketListeners();
         thisgame.networkclient.loadItemData();
+
         const sock = networkHandler.getsocket?.();
         if (!sock?.id) return;
         thisgame.localPlayerId = sock.id;

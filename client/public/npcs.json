@@ -8,7 +8,15 @@
     "size": 5,
     "loot": "manaherb"
 
-  },
+  },"dragon": {
+  "file": "sprites/dragon.png",
+  "cols": 2,
+  "rows": 2,
+  "fps": 4,
+  "size": 30,
+  "loot": "sprites/dragonscale.png"
+
+},
   "wizard": {
     "file": "sprites/wizard.png",
     "cols": 1,

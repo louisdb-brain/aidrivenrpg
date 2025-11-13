@@ -15,6 +15,7 @@ export class inventorySim{
         document.body.appendChild(this.canvas);
 
         this.ctx = this.canvas.getContext('2d');
+        this.networkhandlers=null;
         this.items=[];
         this.itemLibrary = {};
         this.physicsResolved=false;
@@ -43,7 +44,7 @@ export class inventorySim{
 
         this.sword={
             x:this.backpack.x,
-            y:this.backpack.y+this.backpack.h+(this.backpack.h/10),
+            y:this.backpack.y+this.backpack.h,
             w:100,
             h:100
         };
@@ -86,6 +87,10 @@ export class inventorySim{
         this.swordImg.onerror = () => console.error('Failed to load sword image!');
         this.armorImage.onerror = () => console.error('Failed to load armor image!');
         this.helmetImage.onerror = () => console.error('Failed to load helmet image!');
+
+        this.popitemsound=new Audio("sounds/popitem.mp3");
+        this.equipsound=new Audio("sounds/equip.mp3");
+
         this.fallbox={x:120,y:150,w:270,h:340}
 
 
@@ -94,6 +99,18 @@ export class inventorySim{
         this.canvas.addEventListener("mouseup",   e => this.handleMouseUp(e));
 
         this.draggedItem = null;
+        this.currentWeapon = null;
+
+        this.weaponsData = null;
+
+        fetch("/weapons.json")
+            .then(res => res.json())
+            .then(data => {
+                this.weaponsData = data;
+                console.log("Weapons loaded:", this.weaponsData);
+            })
+            .catch(err => console.error("Failed to load weapons.json:", err));
+
 
         //this.items.push(new itemPhysical(200,20,"onion1","./sprites/onion.png","nosounds"));
         //this.items[0].bagBottom=this.fallbox.y+this.fallbox.h
@@ -119,6 +136,22 @@ export class inventorySim{
             this.ctx.drawImage(this.swordImg, this.sword.x, this.sword.y, this.sword.w, this.sword.h);
             this.ctx.drawImage(this.armorImage, this.armor.x, this.armor.y, this.armor.w, this.armor.h);
             this.ctx.drawImage(this.helmetImage, this.helmet.x, this.helmet.y, this.helmet.w, this.helmet.h);
+
+            // Draw weapon attack under weapon slot
+            if (this.currentWeapon && this.currentWeapon.attack !== undefined) {
+                this.ctx.font = "16px Arial";
+                this.ctx.textAlign = "center";
+                this.ctx.fillStyle = "white";
+                this.ctx.strokeStyle = "black";
+                this.ctx.lineWidth = 4;
+
+                const textX = this.weaponSlot.x + this.slotSize / 2;
+                const textY = this.weaponSlot.y + this.slotSize + 18; // ← underneath the slot
+
+                this.ctx.strokeText(`Attack: ${this.currentWeapon.attack}`, textX, textY);
+                this.ctx.fillText(`Attack: ${this.currentWeapon.attack}`, textX, textY);
+            }
+
 
             for(let item of this.items){
 
@@ -158,6 +191,19 @@ export class inventorySim{
         this.items.push(item);
 
     }
+    moveWeaponToInventory(item) {
+        // Place at top of inventory, random x inside the bag
+        item.x = this.backpack.x+100;
+        item.y = this.fallbox.y ;  // slightly above the box
+
+        // Enable gravity
+        item.supported = false;
+        item.equiped = false;
+        item.fallspeed = 0;
+    }
+
+
+
 
     handleMouseDown(e) {
         const rect = this.canvas.getBoundingClientRect();
@@ -171,6 +217,7 @@ export class inventorySim{
                 mouseX >= item.x && mouseX <= item.x + item.w &&
                 mouseY >= item.y && mouseY <= item.y + item.h
             ) {
+                this.popitemsound.play();
                 item.dragging = true;
                 this.draggedItem = item;
                 item.offsetX = mouseX - item.x;
@@ -196,7 +243,9 @@ export class inventorySim{
 
     handleMouseUp(e) {
         if (this.draggedItem) {
+
             this.draggedItem.dragging = false;
+            this.popitemsound.play();
 
             // weapon slot snapping
             const i = this.draggedItem;
@@ -209,23 +258,70 @@ export class inventorySim{
                 i.y + i.h > s.y &&
                 i.y < s.y + s.h;
 
-            if (overlapsWeaponSlot && i.name.startsWith("weapon")) {
-                // snap perfectly to the weapon slot
+            if (overlapsWeaponSlot ) {
+                if (this.isWeapon(i.name)) {
+                    if (this.currentWeapon && this.currentWeapon !== i) {
+                        // Move old weapon back to inventory
+                        this.networkhandlers.onUnequipWeapon();
+                        this.moveWeaponToInventory(this.currentWeapon);
+                    }
+                    const stats = this.getWeaponStats(i.name);
+                    if (stats) {
+                        this.networkhandlers.onEquipWeapon({
+                            name: stats.name,
+                            attack: stats.damage,
+                            speed: stats.speed
+                        });
+                    }
+
+                    // snap perfectly to the weapon slot
                 i.x = s.x;
                 i.y = s.y;
                 i.equiped = true;
                 i.supported = true;
-                console.log(`⚔️ Equipped weapon: ${i.name}`);
-            } else {
-                // fallback to normal snap inside backpack
-                this.snapToInventoryBounds(i);
-                i.supported = false;
-                i.fallspeed = 0;
-                i.equiped = false;
-            }
+                this.equipsound.play();
+                this.currentWeapon = i;
 
-            this.draggedItem = null;
+
+                console.log(`Equipped weapon ⚔️: ${i.name}`);
+                }
+                else{
+                    this.snapToInventoryBounds(i);
+                    i.supported = false;
+                    i.fallspeed = 0;
+                    i.equiped = false;
+                }
+            }
+            else {
+                if (this.currentWeapon === i) {
+                    this.currentWeapon = null;
+                    this.networkhandlers.onUnequipWeapon();
+                }
+                    // Keep item inside bag
+                    this.snapToInventoryBounds(i);
+
+                    // RESET physics so it falls again
+                    i.equiped = false;
+                    i.supported = false;   // important!
+                    i.fallspeed = 0;
+
+                    // Tell server
+                    if (this.networkhandlers?.onDropItem) {
+                        this.networkhandlers.onDropItem(i.name);
+                    }
+                }
+
+
+                this.draggedItem = null;
         }
+    }
+    isWeapon(name) {
+        if (!this.weaponsData) return false;
+        return this.weaponsData.some(w => w.name === name);
+    }
+    getWeaponStats(name) {
+        if (!this.weaponsData) return null;
+        return this.weaponsData.find(w => w.name === name);
     }
 
 
@@ -279,7 +375,9 @@ export class itemPhysical{
     }
     update(ctx, objectArray) {
         if (this.dragging) {
-            this.equiped=!this.equiped;
+
+            this.equiped=false;
+
             // Don't apply gravity while dragging
             this.fallspeed = 0;
 
@@ -293,7 +391,7 @@ export class itemPhysical{
             return;
         }
 
-        if (!this.supported&&!this.equiped) {
+        if (!this.supported/*&&!this.equiped*/) {
             this.fallspeed += 0.3; // gravity
             this.y += this.fallspeed;
 

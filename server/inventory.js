@@ -24,21 +24,15 @@ export class inventory{
             //CODE FOR DROPPING LOOT ON FLOOR;
         }
     }
-    removeitem(index){
-        this.items.splice(1,index);
-        const payload={
-            id:this.playerid,
-            index:index
+    removeitem(itemName) {
+        const index = this.items.findIndex(item => item.name === itemName);
+
+        if (index !== -1) {
+            this.items.splice(index, 1);
+            return true;  // removed successfully
         }
-        //change this to socket
-        this.emit('remove-item', payload);
-    }
-    searchItem(itemid){
-        for(let i=0;i<this.items.length;i++){
-            if (this.items[i].id == itemid){
-                return i;
-            }
-        }
+        console.log(this.items);
+        return false; // nothing removed
     }
     getItems(){
         return this.items;

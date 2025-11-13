@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import {CookingGame} from "../skills/cooking.js";
 import{magicSystem} from "../skills/magic.js";
 
-import{Inventory} from "../inventory.js";
+
 import{inventorySim} from "../inventorySimulation.js";
 
 export class UI{

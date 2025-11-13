@@ -1,5 +1,8 @@
 {
   "onSpellcast": "castSpell",
   "onPlayerMove": "sendPlayerMove",
-  "onInventoryChange": "sendInventoryChange"
+  "onDropItem": "dropItem",
+  "onInventoryChange": "sendInventoryChange",
+  "onEquipWeapon": "equipWeapon",
+  "onUnequipWeapon": "unequipWeapon"
 }

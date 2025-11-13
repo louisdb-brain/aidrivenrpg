@@ -141,6 +141,34 @@ export class SpriteBillboard {
     getposition() {
         return this.position.clone();
     }
+    setTexture(tex) {
+        if (!tex) return;
+
+        // new base atlas
+        this.baseTexture = tex;
+
+        // clone so we can still control UVs (repeat/offset)
+        this.texture = this.baseTexture.clone();
+        this.texture.repeat.set(1 / this.frameCount, 1 / this.rowCount);
+        this.texture.needsUpdate = true;
+
+        // assign to material
+        this.sprite.material.map = this.texture;
+        this.sprite.material.transparent = true;
+        this.sprite.material.toneMapped = false;
+        this.sprite.material.needsUpdate = true;
+
+        // recalc scale based on new texture
+        const frameW = this.baseTexture.image.width / this.frameCount;
+        const frameH = this.baseTexture.image.height / this.rowCount;
+        const aspect = frameH / frameW;
+        this.sprite.scale.set(this.size, aspect * this.size, this.size);
+
+        // keep current frame
+        this.setFrame(this.frame);
+    }
+
+
 
     showStaticFrame(col, row) {
         this.isFrozen = true;

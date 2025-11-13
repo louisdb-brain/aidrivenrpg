@@ -80,6 +80,16 @@ export const playermanager = {
     additem(id,itemname)
     {
         players[id].inventory.additem(itemname);
+    },
+    removeitem(id,itemname)
+    {
+        players[id].inventory.removeitem(itemname);
+    },
+    equipWeapon(id,data){
+      players[id].equipWeapon(data);
+    },
+    unequipWeapon(id){
+        players[id].unequipWeapon();
     }
 
 
