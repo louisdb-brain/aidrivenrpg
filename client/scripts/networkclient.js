@@ -18,9 +18,9 @@ export class NetworkClient {
         this.game.networkclient = this;
         this.spriteHandeler = pGame.spriteHandeler;
         // ✅ Works locally and on Render
-        this.socket = io(); console.log("RUNNING SERVER ONLINE"); // Uses same origin as page
+        //this.socket = io(); console.log("RUNNING SERVER ONLINE"); // Uses same origin as page
         this.playerLevel="level1";
-        //this.socket = io('http://localhost:3000');
+        this.socket = io('http://localhost:3000');
 
     }
     initSocketListeners() {
