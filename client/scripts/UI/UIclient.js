@@ -4,6 +4,7 @@ import * as THREE from 'three';
 
 import {CookingGame} from "../skills/cooking.js";
 import{magicSystem} from "../skills/magic.js";
+import{smithingGame} from "../skills/smithing.js";
 
 
 import{inventorySim} from "../inventorySimulation.js";
@@ -53,7 +54,7 @@ export class UI{
         this.cookinggame.addIngredient("tomato");
         this.cookinggame.addIngredient("steak");
         this.spellmenu=new magicSystem(this.canvas,this.scene,this.networkhandlers);
-
+        this.smithingGame=new smithingGame(this.canvas,this.networkhandlers);
 
 
         window.addEventListener('mousemove', (event) => {
@@ -73,6 +74,10 @@ export class UI{
                 if (this.virtualCursor) {
                     this.virtualCursor.active = !this.activeMenus.cooking; // disable it
                 }
+            }
+            if(event.key=='à'||event.key==='°'){
+                this.activeMenus.smithingGame=!this.activeMenus.smithingGame;
+                this.smithingGame?.toggle();
             }
             if (event.key === 'i' || event.key === 'I') {
                 this.activeMenus.inventory=!this.activeMenus.inventory;
@@ -179,6 +184,8 @@ export class UI{
         this.checkUIHover();
         this.cookinggame.update();
         this.cookinggame.draw();
+        this.smithingGame.update();
+        this.smithingGame.draw();
         this.inventory.update();
 
 

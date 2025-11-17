@@ -1,6 +1,6 @@
 import {drawHorizontalFadeRect,drawSlider,drawCrosshair} from "../uiDrawUtils.js";
 
-export class SmithingGame {
+export class smithingGame { //never change this name's syntax
     constructor(canvas,networkclient, gamepadInstance = null) {
 
         // Create a new canvas for UI
@@ -11,7 +11,7 @@ export class SmithingGame {
         this.canvas.style.position = 'absolute';
         this.canvas.style.top = '0px';
         this.canvas.style.left = '0px';
-        this.canvas.style.zIndex = '10';
+        this.canvas.style.zIndex = '11';
         this.canvas.style.pointerEvents = 'auto'; // allow mouse input
 
 
@@ -83,7 +83,7 @@ export class SmithingGame {
         this.recipesReady = false;
 
         Promise.all([
-            fetch('/ingredients.json').then(res => res.json()),
+            fetch('/smithingingredients.json').then(res => res.json()),
             fetch('/recipes.json').then(res => res.json())
         ])
             .then(([ingredientsData, recipesData]) => {
@@ -96,15 +96,13 @@ export class SmithingGame {
                 this.ingredientsReady = true;
 
                 // Example: spawn a few starter ingredients
-                this.addIngredient("minotaursteak");
-                this.addIngredient("onion");
-                this.addIngredient("butter");
-                this.addIngredient("manaherb");
-                this.addIngredient("vegetablestock");
-                this.addIngredient("dragonbroth");
-                this.addIngredient("dragonscale");
-                this.addIngredient("tomato");
-                this.addIngredient("eyeballsjar");
+                this.addIngredient("iron");
+                this.addIngredient("charoite");
+                this.addIngredient("copper");
+                this.addIngredient("mithril");
+                this.addIngredient("adamant");
+                this.addIngredient("gold");
+
             });
 
 
@@ -125,18 +123,19 @@ export class SmithingGame {
         this.cursorAngle = 0;
         //SOUND
         this.cutSound = new Audio("sounds/cooking_cut.mp3");
-        this.sizzleSound = new Audio("sounds/cooking_longsizzle.mp3");
-        this.shortSizzleSound = new Audio("sounds/cooking_sizzle.mp3");
+        this.hitsound = new Audio("sounds/anvilhit.mp3");
+        this.bellowsound = new Audio("sounds/bellows.mp3");
         this.grabSound = new Audio("sounds/grabsound.mp3");
         this.playsizzle = false;
         this.dropsound=new Audio("sounds/lootsound.mp3");
-        this.ringsound=new Audio("sounds/ringsound.mp3");
+        this.anvilfinish=new Audio("sounds/anvilfinish.mp3");
 
         this.initializeDropListener();
 
     }
 
     update() {
+        /*
         this.playsizzle = false;
 
         for (let ing of this.activeIngredients) {
@@ -154,7 +153,7 @@ export class SmithingGame {
                 this.sizzleSound.pause();
                 this.sizzleSound.currentTime = 0;
             }
-        }
+        }*/
 
         this.checkForRecipe();
 
@@ -352,21 +351,27 @@ export class SmithingGame {
 
         const y = 50 + this.activeIngredients.length * 120;
         const imagePath = info.image;
+        const barPath = info.barimage;
 
-        const ing = new Ingredient(
+
+        const ing = new SmithingItem(
             200, y,
             name,
+            5,
             this.ingredientPhase,
             imagePath,
+            barPath,
+            null,
             (success) => this.tryAddRecipe(this.addedIngredients, ing, success),
-            this.shortSizzleSound,
-            Number(info.cooktime) || 0,
-            Number(info.burntime) || 9999
+            this.bellowsound,
+            this.hitsound,
+
         );
 
         this.activeIngredients.push(ing);
-        return ing;
         console.log("Spawned ingredient:", name, ing);
+        return ing;
+
     }
 
     tryAddRecipe(list, ingredient, success) {
@@ -694,7 +699,7 @@ export class SmithingGame {
 }
 
 export class SmithingItem {
-    constructor(x, y, name,hits ,phases,imagePath,barImage,weaponImage,finishedCallback,psizzlesound,pHitsound) {
+   constructor(x, y, name,hits ,phases,imagePath,barImage,weaponImage,finishedCallback,psizzlesound,pHitsound){
         this.name=name;
 
         this.image = new Image();
@@ -702,7 +707,7 @@ export class SmithingItem {
         this.weaponImage=new Image();
         this.image.src = imagePath;
         this.barImage.src = barImage;
-        this.weaponImage.src = weaponImage;
+        this.weaponImage.src = imagePath; //CHANGE LATER TO WEAPONIMAGE
         this.image.onload = () => {
             console.log(`✅ Loaded: ${imagePath}`);
         };
@@ -750,39 +755,17 @@ export class SmithingItem {
         if(this.isHeating){
 
         }
-
-        if (this.isCooking) {
-            this.state = this.phases.COOKING;
-            this.timeCooking++;
-
-            if (this.timeCooking > this.burnTime && this.state !== this.phases.BURNED) {
-                this.state = this.phases.BURNED;
-                this.cookedCallback(false);
-            }
-            else if (this.timeCooking > this.cookTime && this.state !== this.phases.DONE) {
-                this.state = this.phases.DONE;
-                this.cookedCallback(true);
-            }
-        }
-        else if (wasCooking && !this.isCooking && this.state !== this.phases.DONE) {
-            // Ingredient was cooking last frame but just got removed from pan
-            this.cookedCallback(false);
-            console.log(`🥄 ${this.name} removed from pan mid-cook`);
-        }
-
-        // Remember this frame's cooking state
-        this.wasCooking = this.isCooking;
     }
     draw(ctx) {
 
-        ctx.fillStyle = this.cut ? "lightgreen" : "blue";
+
         switch (this.state) {
-            case this.phases.DONE:
+            case this.phases.HAMMERED:
                 ctx.fillStyle="orange";
                 break;
 
 
-            case this.phases.BURNED:
+            case this.phases.BROKEN:
                 ctx.fillStyle="red";
 
         }

@@ -1,0 +1,41 @@
+[
+  {
+    "id": "mithril",
+    "image": "sprites/ore_mithril.png",
+    "barimage": "sprites/bar_mithril.png"
+
+  },
+  {
+    "id": "copper",
+    "image": "sprites/ore_copper.png",
+    "barimage": "sprites/bar_copper.png"
+
+  },
+  {
+    "id": "charoite",
+    "image": "sprites/ore_charoite.png",
+    "barimage": "sprites/bar_charoite.png"
+
+  },
+  {
+    "id": "iron",
+    "image": "sprites/ore_iron.png",
+    "barimage": "sprites/bar_iron.png"
+
+  },
+  {
+    "id": "gold",
+    "image": "sprites/ore_gold.png",
+    "barimage": "sprites/bar_gold.png"
+
+  },
+  {
+    "id": "adamant",
+    "image": "sprites/ore_adamant.png",
+    "barimage": "sprites/bar_adamant.png"
+
+  }
+
+]
+
+

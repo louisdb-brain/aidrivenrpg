@@ -434,7 +434,7 @@ export class Game {
         if (node.mesh instanceof THREE.Object3D) {
             this.nodeMap.set(node.mesh, node);
             this.clickableObjects.push(node.mesh);
-            this.nodeMap.push(node); // ✅ Track for animation/update
+
         } else {
             console.warn(`⚠️ Failed to create valid mesh for skill node '${name}'`);
         }
